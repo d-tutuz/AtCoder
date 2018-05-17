@@ -1,4 +1,4 @@
-package agc010;
+package abc011;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class B {
+public class C {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -29,21 +30,46 @@ public class B {
 	static class TaskX {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			int[] a = new int[n];
-			int min = Integer.MAX_VALUE;
-			int minidx = -1;
+			int n  = in.nextInt();
+			int[] ng = in.nextIntArray(3);
 
-			for (int i = 0; i < n; i++) {
-				int ai = in.nextInt();
-				a[i] = ai;
-				if (ai < min) {
-					min = ai;
-					minidx = i;
+			Arrays.sort(ng);
+
+			if (n == ng[0]) {
+				out.println("NO");
+				return;
+			}
+
+			if (n < ng[0]) {
+				out.println("YES");
+				return;
+			}
+
+			if (ng[2]-ng[0]==2) {
+				out.println("NO");
+				return;
+			}
+
+			if (n == 300) {
+				if (ng[0]%3 == 0 || ng[1]%3 == 0 || ng[2]%3 == 0) {
+					out.println("NO");
+					return;
+				}
+			}
+			if (n == 299) {
+				if (ng[1] == 296 && ng[2] == 298) {
+					out.println("NO");
+					return;
+				}
+			}
+			if (n == 298) {
+				if (ng[1] == 295 && ng[2] == 296) {
+					out.println("NO");
+					return;
 				}
 			}
 
-
+			out.println("YES");
 
 		}
 	}

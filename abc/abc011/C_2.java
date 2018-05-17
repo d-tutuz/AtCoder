@@ -1,4 +1,4 @@
-package agc010;
+package abc011;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class B {
+public class C_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -30,21 +31,45 @@ public class B {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			int n = in.nextInt();
-			int[] a = new int[n];
-			int min = Integer.MAX_VALUE;
-			int minidx = -1;
+			int[] a = in.nextIntArray(3);
+			int[] dp = new int[n+1];
+			Arrays.fill(dp, INF);
 
-			for (int i = 0; i < n; i++) {
-				int ai = in.nextInt();
-				a[i] = ai;
-				if (ai < min) {
-					min = ai;
-					minidx = i;
+			Arrays.sort(a);
+			int t = -1;
+			for (int i : a) {
+				if (i <= n) {
+					t = i;
+				}
+			}
+			if (t == n) {
+				out.println("NO");
+				return;
+			}
+
+			dp[n] = 0;
+			for (int i = n; i >= 0; i--) {
+				for (int j = 1; j <= 3; j++) {
+					if (i - j < 0 || skip(a, i-j)) {
+						continue;
+					}
+					dp[i-j] = Math.min(dp[i]+1, dp[i-j]);
 				}
 			}
 
+			if (dp[0] <= 100) {
+				out.println("YES");
+			} else {
+				out.println("NO");
+			}
 
-
+		}
+		static boolean skip(int[] a, int t) {
+			boolean ret = false;
+			for (int i : a) {
+				if (i == t) ret = true;
+			}
+			return ret;
 		}
 	}
 

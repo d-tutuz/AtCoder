@@ -1,4 +1,4 @@
-package agc010;
+package agc006;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class B {
+public class B_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -28,21 +28,6 @@ public class B {
 
 	static class TaskX {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
-
-			int n = in.nextInt();
-			int[] a = new int[n];
-			int min = Integer.MAX_VALUE;
-			int minidx = -1;
-
-			for (int i = 0; i < n; i++) {
-				int ai = in.nextInt();
-				a[i] = ai;
-				if (ai < min) {
-					min = ai;
-					minidx = i;
-				}
-			}
-
 
 
 		}
