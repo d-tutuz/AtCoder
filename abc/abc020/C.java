@@ -1,4 +1,4 @@
-package abc031;
+package abc020;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,8 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.InputMismatchException;
+import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class C {
@@ -23,53 +25,87 @@ public class C {
 	}
 
 	static int INF = 1 << 30;
-	static int modP = 1000000007;
+	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
 
 	static class TaskX {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			long[] a = in.nextLongArray(n);
+			int h = in.nextInt(), w = in.nextInt(), t = in.nextInt();
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = in.nextString().toCharArray();
+			}
 
-			long ta = 0, ao = -INF;
-			long ans = -INF;
-			for (int i = 0; i < n; i++) {
-
-				ta = 0; ao = -INF;
-				for (int j = 0; j < n; j++) {
-					if (i == j) {
-						continue;
+			int sh = -1, sw = -1;
+			int gh = -1, gw = -1;
+			for (int i = 0; i < h; i++) {
+				for (int j = 0; j < w; j++) {
+					if (s[i][j] == 'S') {
+						sh = i;
+						sw = j;
+					} else if (s[i][j] == 'G') {
+						gh = i;
+						gw = j;
 					}
+				}
+			}
 
-					long tmp_ta = 0, tmp_ao = 0;
+			int l = 0, r = t;
+			while (r - l > 1) {
+				int mid = (r+l)/2;
 
-					long[] na = Arrays.copyOfRange(a, Math.min(i, j), Math.max(i, j)+1);
 
-					for (int k = 0; k < na.length; k++) {
-						if ((k+1) % 2 == 1) {
-							tmp_ta += na[k];
-						} else {
-							tmp_ao += na[k];
+				int[][] cost = new int[h][w];
+				for (int i = 0; i < h; i++) {
+					Arrays.fill(cost[i], INF);
+				}
+
+				Queue<P> q = new ArrayDeque<>();
+				q.add(new P(sw, sh));
+				cost[sh][sw] = 0;
+
+				while (!q.isEmpty()) {
+					P p = q.remove();
+					int pw = p.x;
+					int ph = p.y;
+
+					for (int i = 0; i < 4; i++) {
+						int tw = pw + mh4[i];
+						int th = ph + mw4[i];
+
+						if (tw < 0 || th < 0 || tw >= w || th >= h) {
+							continue;
 						}
-					}
+						int c = s[th][tw] == '#' ? mid : 1;
+						if (cost[th][tw] < cost[ph][pw] + c) {
+							continue;
+						}
 
-					if (ao < tmp_ao) {
-						ao = tmp_ao;
-						ta = tmp_ta;
+						q.add(new P(tw, th));
+						cost[th][tw] = cost[ph][pw] + c;
 					}
 				}
 
-				ans = Math.max(ans, ta);
-
+				if (cost[gh][gw] > t) {
+					r = mid;
+				} else {
+					l = mid;
+				}
 
 			}
 
-			out.println(ans);
+			out.println(l);
 
 		}
-
+	}
+	static class P {
+		int x, y, cost;
+		P (int x, int y) {
+			this.x = x;
+			this.y = y;
+		}
 	}
 
 	static class InputReader {

@@ -1,4 +1,4 @@
-package abc031;
+package agc024;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,11 +6,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.InputMismatchException;
+import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.TreeSet;
 
-public class C {
+public class B_3 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -23,7 +27,7 @@ public class C {
 	}
 
 	static int INF = 1 << 30;
-	static int modP = 1000000007;
+	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
 
@@ -33,43 +37,31 @@ public class C {
 			int n = in.nextInt();
 			long[] a = in.nextLongArray(n);
 
-			long ta = 0, ao = -INF;
-			long ans = -INF;
-			for (int i = 0; i < n; i++) {
+			int ans = 0;
 
-				ta = 0; ao = -INF;
-				for (int j = 0; j < n; j++) {
-					if (i == j) {
-						continue;
-					}
+		    TreeSet<Long> treeSet = new TreeSet<>();
+		    Set<Long> set = Collections.synchronizedSet(treeSet);
 
-					long tmp_ta = 0, tmp_ao = 0;
-
-					long[] na = Arrays.copyOfRange(a, Math.min(i, j), Math.max(i, j)+1);
-
-					for (int k = 0; k < na.length; k++) {
-						if ((k+1) % 2 == 1) {
-							tmp_ta += na[k];
-						} else {
-							tmp_ao += na[k];
-						}
-					}
-
-					if (ao < tmp_ao) {
-						ao = tmp_ao;
-						ta = tmp_ta;
-					}
-				}
-
-				ans = Math.max(ans, ta);
-
-
+		    List<Long> list = new ArrayList<>();
+		    for (long i = 1; i <= n; i++) {
+				set.add(i);
 			}
 
-			out.println(ans);
+		    for (Long l : set) {
+		    	int tmp = 0;
+				for (int i = 0; i < n; i++) {
+					if (a[i] == l) {
+						tmp++;
+						list.add(l);
+						l++;
+					}
+				}
+			}
+
+			out.println(n-ans);
+
 
 		}
-
 	}
 
 	static class InputReader {

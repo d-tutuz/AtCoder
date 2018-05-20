@@ -1,4 +1,4 @@
-package abc031;
+package agc024;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,11 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class C {
+public class B {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -23,7 +22,7 @@ public class C {
 	}
 
 	static int INF = 1 << 30;
-	static int modP = 1000000007;
+	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
 
@@ -33,43 +32,29 @@ public class C {
 			int n = in.nextInt();
 			long[] a = in.nextLongArray(n);
 
-			long ta = 0, ao = -INF;
-			long ans = -INF;
+			int s1 = 1;
+			int c1 = 0;
 			for (int i = 0; i < n; i++) {
+				if (a[i] == s1) {
+					c1++;
+					s1++;
+				}
+			}
 
-				ta = 0; ao = -INF;
-				for (int j = 0; j < n; j++) {
-					if (i == j) {
-						continue;
-					}
-
-					long tmp_ta = 0, tmp_ao = 0;
-
-					long[] na = Arrays.copyOfRange(a, Math.min(i, j), Math.max(i, j)+1);
-
-					for (int k = 0; k < na.length; k++) {
-						if ((k+1) % 2 == 1) {
-							tmp_ta += na[k];
-						} else {
-							tmp_ao += na[k];
-						}
-					}
-
-					if (ao < tmp_ao) {
-						ao = tmp_ao;
-						ta = tmp_ta;
+			for (int i = 0; i < Math.pow(10, 2); i++) {
+				int s2 = Math.random()*10;
+				int c2 = 0;
+				for (int i = n-1; i >= 0; i--) {
+					if (a[i] == s2) {
+						c2++;
+						s2--;
 					}
 				}
 
-				ans = Math.max(ans, ta);
-
-
 			}
 
-			out.println(ans);
-
+			out.println(n-(Math.max(c1, c2)));
 		}
-
 	}
 
 	static class InputReader {

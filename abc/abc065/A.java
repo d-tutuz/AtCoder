@@ -1,4 +1,4 @@
-package abc031;
+package abc065;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,11 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class C {
+public class A {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -23,53 +22,24 @@ public class C {
 	}
 
 	static int INF = 1 << 30;
-	static int modP = 1000000007;
+	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
 
 	static class TaskX {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			long[] a = in.nextLongArray(n);
+			int x = in.nextInt(), a = in.nextInt(), b = in.nextInt();
 
-			long ta = 0, ao = -INF;
-			long ans = -INF;
-			for (int i = 0; i < n; i++) {
-
-				ta = 0; ao = -INF;
-				for (int j = 0; j < n; j++) {
-					if (i == j) {
-						continue;
-					}
-
-					long tmp_ta = 0, tmp_ao = 0;
-
-					long[] na = Arrays.copyOfRange(a, Math.min(i, j), Math.max(i, j)+1);
-
-					for (int k = 0; k < na.length; k++) {
-						if ((k+1) % 2 == 1) {
-							tmp_ta += na[k];
-						} else {
-							tmp_ao += na[k];
-						}
-					}
-
-					if (ao < tmp_ao) {
-						ao = tmp_ao;
-						ta = tmp_ta;
-					}
-				}
-
-				ans = Math.max(ans, ta);
-
-
+			if (0 <= b && b <= a) {
+				out.println("delicious");
+			} else if (a < b && b <= a+x) {
+				out.println("safe");
+			} else {
+				out.println("dangerous");
 			}
 
-			out.println(ans);
-
 		}
-
 	}
 
 	static class InputReader {
