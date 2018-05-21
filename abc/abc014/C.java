@@ -1,4 +1,4 @@
-package agc024;
+package abc014;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class B_2 {
+public class C {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -30,28 +30,8 @@ public class B_2 {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			int n = in.nextInt();
-			long[] a = in.nextLongArray(n);
-
-			boolean[] visited = new boolean[n+1];
-
-			int ans = 0;
-			for (int j = 1; j <= n; j++) {
-				if (visited[j]) continue;
-				int t = j;
-				int add = 0;
-				int tmp = 0;
-				for (int i = 0; i < n; i++) {
-					if (a[i] == t) {
-						tmp++;
-						visited[t] = true;
-						t++;
-					}
-				}
-				ans = Math.max(ans, tmp);
-			}
-
-			out.println(n-ans);
-
+			int[] an = new int[1000002];
+			int[] a = new int[n], b = new int[n];
 
 		}
 	}

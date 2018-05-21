@@ -1,4 +1,4 @@
-package agc024;
+package abc022;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.InputMismatchException;
+import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
-public class B_4 {
+public class C {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -29,30 +31,55 @@ public class B_4 {
 	static class TaskX {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			long[] a = in.nextLongArray(n);
-
-			boolean[] visited = new boolean[n+1];
-
-			int ans = 0;
-			for (int j = 1; j <= n; j++) {
-				if (visited[j]) continue;
-				int t = j;
-				int add = 0;
-				int tmp = 0;
-				for (int i = 0; i < n; i++) {
-					if (a[i] == t) {
-						tmp++;
-						t++;
-						add++;
-					}
-				}
-				j += add-1;
-				ans = Math.max(ans, tmp);
+			int n = in.nextInt(), m = in.nextInt();
+			int[][] g = new int[n][n];
+			for (int i = 0; i < n; i++) {
+				Arrays.fill(g[i], -1);
+			}
+			for (int i = 0; i < m; i++) {
+				int u = in.nextInt()-1, v = in.nextInt()-1, l = in.nextInt();
+				g[u][v] = l;
+				g[v][u] = l;
 			}
 
-			out.println(n-ans);
+			int ans = INF;
+			for (int j = 0; j < g[0].length; j++) {
+				if (g[0][j] == -1) {
+					continue;
+				}
+				int s = j;
+				int c = g[0][j];
+				int tmps = j;
+				int tmpc = g[0][j];
 
+				g[0][j] = -1;
+				g[j][0] = -1;
+
+				int[] cost = new int[n];
+				Arrays.fill(cost, INF);
+				PriorityQueue<Integer> q = new PriorityQueue<Integer>();
+				q.add(s);
+				cost[s] = c;
+
+				while (!q.isEmpty()) {
+					int f = q.remove();
+					for (int t = 0; t < g[f].length; t++) {
+						if (g[f][t] == -1) continue;
+						if (cost[f] + g[f][t] < cost[t]) {
+							cost[t] = cost[f] + g[f][t];
+							q.add(t);
+						}
+					}
+				}
+
+				ans = Math.min(ans, cost[0]);
+
+				g[0][tmps] = tmpc;
+				g[tmps][0] = tmpc;
+
+			}
+
+			out.println(ans == INF ? -1 : ans);
 
 		}
 	}

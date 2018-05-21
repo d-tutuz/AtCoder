@@ -1,4 +1,4 @@
-package agc024;
+package abc026;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.StringTokenizer;
+import java.util.stream.Stream;
 
-public class B {
+public class C {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -30,20 +35,52 @@ public class B {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			int n = in.nextInt();
-			int[] a = in.nextIntArray(n);
-
-			int[] len = new int[n+1];
-
-			for (int i = 0; i < n; i++) {
-				len[a[i]] = len[a[i]-1] + 1;
+			List<Integer>[] g = new ArrayList[n];
+			g = Stream.generate(ArrayList::new).limit(n).toArray(List[]::new);
+			for (int t = 1; t <= n-1; t++) {
+				int f = in.nextInt()-1;
+				g[f].add(t);
 			}
 
-			int ans = 0;
-			for (int i = 0; i <= n; i++) {
-				ans = Math.max(ans, len[i]);
+			Deque<Integer> q = new ArrayDeque<Integer>();
+			q.add(0);
+			boolean[] visited = new boolean[n];
+			int[] cost = new int[n];
+
+			while (!q.isEmpty()) {
+
+				int f = q.peek();
+				boolean isAdd = false;
+				for (int t : g[f]) {
+					if (!visited[t]) {
+						q.push(t);
+						visited[t] = true;
+						isAdd = true;
+						break;
+					}
+				}
+				if (isAdd) {
+					continue;
+				}
+				f = q.pop();
+				visited[f] = true;
+				if (g[f].size() == 0) {
+					cost[f] = 1;
+				} else if (g[f].size() == 1) {
+					cost[f] = cost[g[f].get(0)]*2 + 1;
+				} else {
+					int min = INF, max = -INF;
+					for (int t : g[f]) {
+						int c = cost[t];
+						min = Math.min(min, c);
+						max = Math.max(max, c);
+					}
+					cost[f] = max + min + 1;
+				}
+
 			}
 
-			out.println(n-ans);
+			out.println(cost[0]);
 
 		}
 	}

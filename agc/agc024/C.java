@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class B {
+public class C {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -30,20 +30,33 @@ public class B {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			int n = in.nextInt();
-			int[] a = in.nextIntArray(n);
+			long[] a = in.nextLongArray(n);
 
-			int[] len = new int[n+1];
+			long ans = 0;
 
-			for (int i = 0; i < n; i++) {
-				len[a[i]] = len[a[i]-1] + 1;
+			if (a[0] != 0) {
+				out.println(-1);
+				return;
 			}
 
-			int ans = 0;
-			for (int i = 0; i <= n; i++) {
-				ans = Math.max(ans, len[i]);
+			for (int i = 1; i < n; i++) {
+				long sa = a[i] - a[i-1];
+				if (sa > 1) {
+					out.println(-1);
+					return;
+				}
 			}
 
-			out.println(n-ans);
+			for (int i = 1; i < n; i++) {
+				long sa = a[i] - a[i-1];
+				if (sa == 1) {
+					ans++;
+				} else {
+					ans += a[i];
+				}
+			}
+
+			out.println(ans);
 
 		}
 	}

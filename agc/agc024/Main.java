@@ -1,5 +1,4 @@
 package agc024;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,7 +8,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class B {
+public class Main {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -32,18 +31,29 @@ public class B {
 			int n = in.nextInt();
 			int[] a = in.nextIntArray(n);
 
-			int[] len = new int[n+1];
+			long ans = 0;
 
-			for (int i = 0; i < n; i++) {
-				len[a[i]] = len[a[i]-1] + 1;
+			for (int i = n-1; i > 0; i--) {
+				int sa = a[i] - a[i-1];
+				if (a[0] != 0 || sa > 1) {
+					out.println(-1);
+					return;
+				}
+				if (sa == 0) {
+					ans += a[i];
+				} else if (sa == 1) {
+					ans++;
+				} else if (sa < 0 && a[i] == 1) {
+					ans++;
+				} else if (sa < 0 && a[i] == 0) {
+					continue;
+				} else {
+					out.println(-1);
+					return;
+				}
 			}
 
-			int ans = 0;
-			for (int i = 0; i <= n; i++) {
-				ans = Math.max(ans, len[i]);
-			}
-
-			out.println(n-ans);
+			out.println(ans);
 
 		}
 	}

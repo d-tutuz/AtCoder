@@ -1,4 +1,4 @@
-package agc024;
+package abc006;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,15 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.TreeSet;
 
-public class B_3 {
+public class C {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -34,32 +29,26 @@ public class B_3 {
 	static class TaskX {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			long[] a = in.nextLongArray(n);
-
-			int ans = 0;
-
-		    TreeSet<Long> treeSet = new TreeSet<>();
-		    Set<Long> set = Collections.synchronizedSet(treeSet);
-
-		    List<Long> list = new ArrayList<>();
-		    for (long i = 1; i <= n; i++) {
-				set.add(i);
+			long n = in.nextLong(), m = in.nextLong();
+			long sa = 4*n - m;
+			if (sa < 0) {
+				out.println("-1 -1 -1");
+				return;
 			}
 
-		    for (Long l : set) {
-		    	int tmp = 0;
-				for (int i = 0; i < n; i++) {
-					if (a[i] == l) {
-						tmp++;
-						list.add(l);
-						l++;
-					}
+			long ansA = -1, ansB = -1, ansC = -1;
+			for (int a = 0; a <= n; a++) {
+				long b = 4*n-m-2*a;
+				if (0 <= b && a + b <= n) {
+					ansA = a;
+					ansB = b;
 				}
 			}
+			if (ansA != -1 && ansB != -1) {
+				ansC = n - ansA - ansB;
+			}
 
-			out.println(n-ans);
-
+			out.printf("%d %d %d", ansA, ansB, ansC);
 
 		}
 	}
