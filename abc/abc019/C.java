@@ -1,4 +1,4 @@
-package abc014;
+package abc019;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.HashSet;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
@@ -26,32 +27,27 @@ public class C {
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
 
-	static int maxN = 1000002;
 	static class TaskX {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			int n = in.nextInt();
-			int[] an = new int[maxN];
-			int[] a = new int[n], b = new int[n];
+			HashSet<Integer> set = new HashSet<>();
 			for (int i = 0; i < n; i++) {
-				a[i] = in.nextInt();
-				b[i] = in.nextInt();
+				set.add(div(in.nextInt()));
 			}
 
-			for (int i = 0; i < n; i++) {
-				an[a[i]]++;
-				an[b[i]+1]--;
+			out.println(set.size());
+
+		}
+
+		int div(int a) {
+			int ret = a;
+
+			while (ret % 2 == 0) {
+				ret /= 2;
 			}
 
-			int[] sum = new int[maxN];
-			sum[0] = an[0];
-			int ans = sum[0];
-			for (int i = 1; i < sum.length; i++) {
-				sum[i] = sum[i-1] + an[i];
-				ans = Math.max(ans, sum[i]);
-			}
-
-			out.println(ans);
+			return ret;
 		}
 	}
 

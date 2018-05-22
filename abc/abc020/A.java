@@ -1,4 +1,4 @@
-package abc014;
+package abc020;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class C {
+public class A {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -26,32 +26,17 @@ public class C {
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
 
-	static int maxN = 1000002;
 	static class TaskX {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			int[] an = new int[maxN];
-			int[] a = new int[n], b = new int[n];
-			for (int i = 0; i < n; i++) {
-				a[i] = in.nextInt();
-				b[i] = in.nextInt();
+			int q = in.nextInt();
+
+			if (q == 1) {
+				out.println("ABC");
+			} else {
+				out.println("chokudai");
 			}
 
-			for (int i = 0; i < n; i++) {
-				an[a[i]]++;
-				an[b[i]+1]--;
-			}
-
-			int[] sum = new int[maxN];
-			sum[0] = an[0];
-			int ans = sum[0];
-			for (int i = 1; i < sum.length; i++) {
-				sum[i] = sum[i-1] + an[i];
-				ans = Math.max(ans, sum[i]);
-			}
-
-			out.println(ans);
 		}
 	}
 

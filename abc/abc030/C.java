@@ -1,4 +1,4 @@
-package abc014;
+package abc030;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,34 +26,61 @@ public class C {
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
 
-	static int maxN = 1000002;
 	static class TaskX {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			int[] an = new int[maxN];
-			int[] a = new int[n], b = new int[n];
-			for (int i = 0; i < n; i++) {
-				a[i] = in.nextInt();
-				b[i] = in.nextInt();
+			int n = in.nextInt(), m = in.nextInt();
+			long x = in.nextInt(), y = in.nextInt();
+			long[] a = in.nextLongArray(n);
+			long[] b = in.nextLongArray(m);
+
+			long now = a[0];
+			now += x;
+			int t = lowerBound(b, now);
+			long ans = 0, count = 0;
+			count++; ans++;
+
+			if (t >= m) {
+				out.println(ans/2);
+				return;
 			}
 
-			for (int i = 0; i < n; i++) {
-				an[a[i]]++;
-				an[b[i]+1]--;
+			while (true) {
+				if (count % 2 == 1) {
+					now = b[t];
+					now += y;
+					t = lowerBound(b, now);
+					count++; ans++;
+					if (t >= n) {
+						break;
+					}
+				} else {
+					now = a[t];
+					now += x;
+					t = lowerBound(a, now);
+					count++; ans++;
+					if (t >= m) {
+						break;
+					}
+				}
 			}
 
-			int[] sum = new int[maxN];
-			sum[0] = an[0];
-			int ans = sum[0];
-			for (int i = 1; i < sum.length; i++) {
-				sum[i] = sum[i-1] + an[i];
-				ans = Math.max(ans, sum[i]);
-			}
-
-			out.println(ans);
+			out.println(ans/2);
 		}
 	}
+	public static int lowerBound(long[] a, long obj) {
+		int l = 0,r = a.length - 1;
+		while (r - l >= 0) {
+			int c = (l + r) / 2;
+			if (obj <= a[c]) {
+				r = c - 1;
+			} else {
+				l = c + 1;
+			}
+		}
+		return l;
+	}
+
 
 	static class InputReader {
 		BufferedReader in;

@@ -1,4 +1,4 @@
-package abc014;
+package abc024;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class C {
+public class C_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -26,33 +26,56 @@ public class C {
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
 
-	static int maxN = 1000002;
 	static class TaskX {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			int[] an = new int[maxN];
-			int[] a = new int[n], b = new int[n];
-			for (int i = 0; i < n; i++) {
-				a[i] = in.nextInt();
-				b[i] = in.nextInt();
+			int n = in.nextInt(), d = in.nextInt(), k = in.nextInt();
+			P[] ps = new P[d];
+			for (int i = 0; i < d; i++) {
+				ps[i] = new P(in.nextInt(), in.nextInt());
 			}
 
-			for (int i = 0; i < n; i++) {
-				an[a[i]]++;
-				an[b[i]+1]--;
+			for (int i = 0; i < k; i++) {
+				int s = in.nextInt(), t = in.nextInt();
+
+				if (s < t) {
+					int now = s;
+					for (int j = 0; j < d; j++) {
+						P p = ps[j];
+						if (p.l <= now && now <= p.r) {
+							now = p.r;
+						}
+						if (now >= t) {
+							out.println(j+1);
+							break;
+						}
+					}
+				} else {
+					int now = s;
+					for (int j = 0; j < d; j++) {
+						P p = ps[j];
+						if (p.l <= now && now <= p.r) {
+							now = p.l;
+						}
+						if (now <= t) {
+							out.println(j+1);
+							break;
+						}
+					}
+				}
 			}
 
-			int[] sum = new int[maxN];
-			sum[0] = an[0];
-			int ans = sum[0];
-			for (int i = 1; i < sum.length; i++) {
-				sum[i] = sum[i-1] + an[i];
-				ans = Math.max(ans, sum[i]);
-			}
-
-			out.println(ans);
 		}
+	}
+	static class P {
+		int l, r;
+
+		public P(int l, int r) {
+			super();
+			this.l = l;
+			this.r = r;
+		}
+
 	}
 
 	static class InputReader {
