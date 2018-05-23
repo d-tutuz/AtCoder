@@ -1,4 +1,4 @@
-package abc030;
+package abc039;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class C {
+public class D {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -25,60 +26,87 @@ public class C {
 	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
+	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
+	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
 	static class TaskX {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt(), m = in.nextInt();
-			long x = in.nextLong(), y = in.nextLong();
-			long[] a = in.nextLongArray(n);
-			long[] b = in.nextLongArray(m);
-
-			long now = a[0];
-			now += x;
-			int t = lowerBound(b, now);
-			long ans = 0, count = 0;
-			count++;
-
-			if (t >= m) {
-				out.println(ans/2);
-				return;
+			int h = in.nextInt(), w = in.nextInt();
+			char[][] s = new char[h][w];
+			char[][] ans = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				Arrays.fill(ans[i], '.');
+			}
+			for (int i = 0; i < h; i++) {
+				s[i] = in.nextString().toCharArray();
 			}
 
-			while (true) {
-				if (count % 2 == 1) {
-					if (t >= m) {
-						break;
+			for (int i = 0; i < h; i++) {
+				for (int j = 0; j < w; j++) {
+					if (s[i][j] == '.') {
+						continue;
 					}
-					now = b[t] + y;
-					t = lowerBound(a, now);
-					count++; ans++;
-				} else {
-					if (t >= n) {
-						break;
+					boolean can = true;
+					for (int k = 0; k < 8; k++) {
+						int nh = i + mh8[k];
+						int nw = j + mw8[k];
+						if (nh < 0 || nw < 0 || nh >= h || nw >= w) {
+							continue;
+						}
+						if (s[nh][nw] == '#') {
+							continue;
+						} else {
+							can = false;
+						}
 					}
-					now = a[t] + x;
-					t = lowerBound(b, now);
-					count++;
+
+					if (can) {
+						ans[i][j] = '#';
+					}
 				}
 			}
 
-			out.println(ans);
-		}
-	}
-	public static int lowerBound(long[] a, long obj) {
-		int l = 0,r = a.length - 1;
-		while (r - l >= 0) {
-			int c = (l + r) / 2;
-			if (obj <= a[c]) {
-				r = c - 1;
-			} else {
-				l = c + 1;
+			char[][] tmp = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				Arrays.fill(tmp[i], '.');
+			}
+			for (int i = 0; i < h; i++) {
+				for (int j = 0; j < w; j++) {
+					if (ans[i][j] == '#') {
+						tmp[i][j] = '#';
+						for (int k = 0; k < 8; k++) {
+							int nh = i + mh8[k];
+							int nw = j + mw8[k];
+							if (nh < 0 || nw < 0 || nh >= h || nw >= w) {
+								continue;
+							}
+							tmp[nh][nw] = '#';
+						}
+					}
+				}
+			}
+
+			for (int i = 0; i < h; i++) {
+				for (int j = 0; j < w; j++) {
+					if (s[i][j] == tmp[i][j]) {
+						continue;
+					} else {
+						out.println("impossible");
+						return;
+					}
+				}
+			}
+
+			out.println("possible");
+			for (int i = 0; i < h; i++) {
+				for (int j = 0; j < w; j++) {
+					out.print(ans[i][j]);
+				}
+				out.print("\n");
 			}
 		}
-		return l;
 	}
-
 
 	static class InputReader {
 		BufferedReader in;

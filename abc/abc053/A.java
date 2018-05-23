@@ -1,4 +1,4 @@
-package abc030;
+package abc053;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class C {
+public class A {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -29,56 +29,12 @@ public class C {
 	static class TaskX {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt(), m = in.nextInt();
-			long x = in.nextLong(), y = in.nextLong();
-			long[] a = in.nextLongArray(n);
-			long[] b = in.nextLongArray(m);
+			int x = in.nextInt();
 
-			long now = a[0];
-			now += x;
-			int t = lowerBound(b, now);
-			long ans = 0, count = 0;
-			count++;
+			out.println(x < 1200 ? "ABC" : "ARC");
 
-			if (t >= m) {
-				out.println(ans/2);
-				return;
-			}
-
-			while (true) {
-				if (count % 2 == 1) {
-					if (t >= m) {
-						break;
-					}
-					now = b[t] + y;
-					t = lowerBound(a, now);
-					count++; ans++;
-				} else {
-					if (t >= n) {
-						break;
-					}
-					now = a[t] + x;
-					t = lowerBound(b, now);
-					count++;
-				}
-			}
-
-			out.println(ans);
 		}
 	}
-	public static int lowerBound(long[] a, long obj) {
-		int l = 0,r = a.length - 1;
-		while (r - l >= 0) {
-			int c = (l + r) / 2;
-			if (obj <= a[c]) {
-				r = c - 1;
-			} else {
-				l = c + 1;
-			}
-		}
-		return l;
-	}
-
 
 	static class InputReader {
 		BufferedReader in;
