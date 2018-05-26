@@ -156,6 +156,28 @@ public class GraphUtils {
 		}
 	}
 
+	/**
+	 * 二部マッチング
+	 *
+	 * @param v :頂点数
+	 * @param c :色(1 または -1)
+	 * @param color :頂点がどの色で塗られているかを保持
+	 * @param g :グラフ
+	 * @return :二部グラフの場合は true,そうでない場合は false
+	 */
+	static boolean isBipartite(int v, int c, int[] color, List<Integer>[] g) {
+		color[v] = c;
+		for (int t : g[v]) {
+			if (color[t] == c) {
+				return false;
+			}
+			if (color[t] == 0 && !isBipartite(t, -c, color, g)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 
 	/**
 	 * 最大フロー
