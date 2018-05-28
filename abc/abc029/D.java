@@ -1,4 +1,6 @@
-package abc034;
+package abc029;
+
+import static java.lang.Math.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,11 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.InputMismatchException;
-import java.util.List;
 import java.util.StringTokenizer;
 
 public class D {
@@ -35,40 +33,14 @@ public class D {
 	static class TaskX {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt(), k = in.nextInt();
-			long[] w = new long[n], p = new long[n];
-			for (int i = 0; i < n; i++) {
-				w[i] = in.nextInt();
-				p[i] = in.nextInt();
-			}
+			long n = in.nextLong();
+			out.println(calc(n));
 
-			double l = -1, r = 100;
-			double m = -1;
-
-			for (int x = 0; x < 100; x++) {
-				m = (l+r)/2;
-				List<Double> list =new ArrayList<>();
-
-				for (int i = 0; i < n; i++) {
-					list.add(w[i]*(p[i]-m));
-				}
-
-				Collections.sort(list, Comparator.reverseOrder());
-
-				long tmp = 0;
-				for (int i = 0; i < k; i++) {
-					tmp += list.get(i);
-				}
-
-				if (tmp >= 0) {
-					l = m;
-				} else {
-					r = m;
-				}
-			}
-
-			out.println(r);
-
+		}
+		static long calc(long n) {
+			int k = String.valueOf(n).length();
+			long tmp = (long) (n / k*pow(10,k-1) * pow(10,k-2) + calc(n % (long)pow(10,k-1)));
+			return tmp;
 		}
 	}
 
