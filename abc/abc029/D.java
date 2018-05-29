@@ -34,13 +34,24 @@ public class D {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			long n = in.nextLong();
-			out.println(calc(n));
+			int keta = String.valueOf(n).length();
 
-		}
-		static long calc(long n) {
-			int k = String.valueOf(n).length();
-			long tmp = (long) (n / k*pow(10,k-1) * pow(10,k-2) + calc(n % (long)pow(10,k-1)));
-			return tmp;
+			long ans = 0;
+			for (int k = 1; k <= keta; k++) {
+				ans += (n/(long)pow(10,k))*(long)pow(10,k-1);
+
+				long mod = (long) (n % pow(10,k)) +1;
+				if (mod <= (long)pow(10,k-1)) {
+					ans += 0;
+				} else if ((long)pow(10,k-1) < mod && mod <= 2*(long)pow(10,k-1)) {
+					ans += mod - (long)pow(10,k-1);
+				} else if (2*(long)pow(10,k-1) < mod) {
+					ans += (long)pow(10,k-1);
+				}
+			}
+
+			out.println(ans);
+
 		}
 	}
 

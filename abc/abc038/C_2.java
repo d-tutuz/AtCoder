@@ -1,4 +1,4 @@
-package arc005;
+package abc038;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class A {
+public class C_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -32,25 +32,25 @@ public class A {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			int n = in.nextInt();
-			String[] s = new String[n];
-			for (int i = 0; i < n; i++) {
-				if (i == n-1) {
-					s[i] = in.nextString().replace(".", "");
-				} else {
-					s[i] = in.nextString();
-				}
+			int[] a = new int[n+1];
+			for (int i = 1; i < n+1; i++) {
+				a[i] = in.nextInt();
 			}
 
-			int count = 0;
-			for (String string : s) {
-				if (string.equals("TAKAHASHIKUN")
-						|| string.equals("Takahashikun")
-						|| string.equals("takahashikun")
-						) {
-					count++;
+			int ans = 0;
+			int r = 1;
+			for (int l = 0; l <= n; l++) {
+				while (r < n+1 && a[r-1] <= a[r]) {
+					r++;
 				}
+				if (r <= l) {
+					r++;
+					l = r;
+				}
+				ans += r-l+1;
 			}
-			out.println(count);
+
+			out.println(ans);
 
 		}
 	}
