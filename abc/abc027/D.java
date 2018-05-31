@@ -1,4 +1,4 @@
-package abc038;
+package abc027;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.StringTokenizer;
 
-public class C_2 {
+public class D {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -31,16 +35,43 @@ public class C_2 {
 	static class TaskX {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			int[] a = in.nextIntArray(n);
+			char[] s = in.nextString().toCharArray();
+			int n = s.length;
+			int[] add = new int[n];
+			int[] rem = new int[n];
+
+			int mc = 0;
+			for (int i = 0; i < n; i++) {
+				if (s[i] == '-') {
+					rem[i]++;
+				} else if (s[i] == '+') {
+					add[i]++;
+				} else {
+					mc++;
+				}
+			}
+
+			for (int i = n-2; i >= 0; i--) {
+				add[i] += add[i+1];
+				rem[i] += rem[i+1];
+			}
+
+			List<Integer> list = new ArrayList<>();
+			for (int i = 0; i < n; i++) {
+				if (s[i] == 'M') {
+					list.add(add[i] - rem[i]);
+				}
+			}
+
+			Collections.sort(list, Comparator.reverseOrder());
 
 			long ans = 0;
-			int r = 0;
-			for (int l = 0; l < n; l++) {
-				while (r < n && (r-l == 0 || a[r-1] < a[r])) {
-					r++;
+			for (int i = 0; i < mc; i++) {
+				if (i < mc/2) {
+					ans += list.get(i);
+				} else {
+					ans -= list.get(i);
 				}
-				ans += r - l;
 			}
 
 			out.println(ans);

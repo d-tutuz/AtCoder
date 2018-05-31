@@ -1,4 +1,4 @@
-package abc038;
+package arc055;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class C_2 {
+public class A {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -31,19 +32,16 @@ public class C_2 {
 	static class TaskX {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			int[] a = in.nextIntArray(n);
+			long n = in.nextLong();
 
-			long ans = 0;
-			int r = 0;
-			for (int l = 0; l < n; l++) {
-				while (r < n && (r-l == 0 || a[r-1] < a[r])) {
-					r++;
-				}
-				ans += r - l;
+			BigDecimal a = BigDecimal.valueOf(7);
+			BigDecimal b = BigDecimal.valueOf(1L);
+
+			for (int i = 0; i < n; i++) {
+				b = b.multiply(new BigDecimal(10));
 			}
 
-			out.println(ans);
+			out.println(a.add(b));
 
 		}
 	}

@@ -1,4 +1,4 @@
-package abc038;
+package abc032;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,19 +32,32 @@ public class C_2 {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			int n = in.nextInt();
-			int[] a = in.nextIntArray(n);
+			long k = in.nextInt();
+			long[] a = new long[n];
+			for (int i = 0; i < n; i++) {
+				a[i] = in.nextLong();
+
+				if (a[i] == 0) {
+					out.println(n);
+					return;
+				}
+			}
 
 			long ans = 0;
 			int r = 0;
+			long tmp = 1;
 			for (int l = 0; l < n; l++) {
-				while (r < n && (r-l == 0 || a[r-1] < a[r])) {
+				while (r < n && tmp*a[r] <= k) {
+					tmp *= a[r];
 					r++;
 				}
-				ans += r - l;
+				ans = Math.max(ans, r-l);
+				if (tmp % a[l] == 0) {
+					tmp /= a[l];
+				}
 			}
 
 			out.println(ans);
-
 		}
 	}
 

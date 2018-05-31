@@ -1,4 +1,4 @@
-package abc038;
+package abc037;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.InputMismatchException;
+import java.util.Queue;
 import java.util.StringTokenizer;
 
-public class C_2 {
+public class D {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -31,21 +34,54 @@ public class C_2 {
 	static class TaskX {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			int[] a = in.nextIntArray(n);
-
-			long ans = 0;
-			int r = 0;
-			for (int l = 0; l < n; l++) {
-				while (r < n && (r-l == 0 || a[r-1] < a[r])) {
-					r++;
+			int h = in.nextInt(), w = in.nextInt();
+			int[][] a = new int[h][w];
+			for (int i = 0; i < h; i++) {
+				for (int j = 0; j < w; j++) {
+					a[i][j] = in.nextInt();
 				}
-				ans += r - l;
 			}
 
-			out.println(ans);
+			int[][] dp = new int[h][w];
+			for (int i = 0; i < h; i++) {
+				Arrays.fill(dp[i], 1);
+			}
+
+			for (int i = 0; i < h; i++) {
+				for (int j = 0; j < w; j++) {
+					Queue<P> q = new ArrayDeque<>();
+					q.add(new P(i, j));
+
+					while (!q.isEmpty()) {
+
+						P p = q.remove();
+						int k = p.i;
+						int l = p.j;
+
+						for (int m = 0; m < 4; m++) {
+							if (k+mh4[m] < 0 || k+mh4[m] >= h || l+mw4[m] < 0 || l+mw4[m] >= w) {
+								continue;
+							}
+							if (a[k][l] < a[k+mh4[m]][l+mw4[m]]) {
+								dp[k+mh4[m]][l+mw4[m]] += dp[k][l];
+							}
+						}
+
+					}
+				}
+			}
 
 		}
+	}
+	static class P {
+		int i, j;
+
+		public P(int i, int j) {
+			super();
+			this.i = i;
+			this.j = j;
+		}
+
 	}
 
 	static class InputReader {
@@ -95,7 +131,19 @@ public class C_2 {
 			in = new BufferedReader(new InputStreamReader(inputStream));
 			tok = new StringTokenizer("");
 		}
+	}
 
+	static void print(int[][] dp) {
+		int n = dp.length;
+		int m = dp[0].length;
+
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < m; j++) {
+				System.out.print(dp[i][j] + " ");
+			}
+			System.out.print("\n");
+		}
+		System.out.print("\n");
 	}
 
 }

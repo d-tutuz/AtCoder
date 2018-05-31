@@ -1,4 +1,4 @@
-package abc038;
+package abc027;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class C_2 {
+public class D_3 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -28,23 +29,53 @@ public class C_2 {
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
+	static char[] s;
+	static int n, m;
+	static int[][] memo;
 	static class TaskX {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			int[] a = in.nextIntArray(n);
-
-			long ans = 0;
-			int r = 0;
-			for (int l = 0; l < n; l++) {
-				while (r < n && (r-l == 0 || a[r-1] < a[r])) {
-					r++;
-				}
-				ans += r - l;
+			s = in.nextString().toCharArray();
+			n = s.length;
+			m = 0;
+			for (char c : s) {
+				if (c == 'M') m++;
 			}
 
+			memo = new int[n][2*n];
+			for (int i = 0; i < n; i++) {
+				Arrays.fill(memo[i], -INF);
+			}
+
+			int ans = dfs(0, 0);
 			out.println(ans);
 
+		}
+
+		// i回目 場所j
+		int dfs(int i, int j) {
+
+			int ret = 0;
+			if (i == n) {
+				if (j == 0) {
+					return 0;
+				} else {
+					return -INF;
+				}
+			}
+			if (memo[i][j+n] != -INF) {
+				return memo[i][j+n];
+			}
+
+			if (s[i] == '+') {
+				ret = dfs(i+1, j) + j;
+			} else if (s[i] == '-') {
+				ret = dfs(i+1, j) - j;
+			} else if (s[i] == 'M') {
+				ret = Math.max(dfs(i+1, j+1), dfs(i+1, j-1));
+			}
+
+			return memo[i][j+n] = ret;
 		}
 	}
 
@@ -95,7 +126,19 @@ public class C_2 {
 			in = new BufferedReader(new InputStreamReader(inputStream));
 			tok = new StringTokenizer("");
 		}
+	}
 
+	static void print(int[][] dp) {
+		int n = dp.length;
+		int m = dp[0].length;
+
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < m; j++) {
+				System.out.print(dp[i][j] + " ");
+			}
+			System.out.print("\n");
+		}
+		System.out.print("\n");
 	}
 
 }

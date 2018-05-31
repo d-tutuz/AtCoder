@@ -1,4 +1,6 @@
-package abc038;
+package abc027;
+
+import static java.lang.Math.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +8,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class C_2 {
+public class D_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -31,20 +34,41 @@ public class C_2 {
 	static class TaskX {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			int[] a = in.nextIntArray(n);
-
-			long ans = 0;
-			int r = 0;
-			for (int l = 0; l < n; l++) {
-				while (r < n && (r-l == 0 || a[r-1] < a[r])) {
-					r++;
-				}
-				ans += r - l;
+			char[] s = in.nextString().toCharArray();
+			int n = s.length;
+			int m = 0;
+			for (char c : s) {
+				if (c == 'M') m++;
 			}
 
-			out.println(ans);
+			// dp[i][j] := [i番目の命令][jの位置]
+			int[][] dp = new int[n+1][m+1];
+			for (int i = 0; i < n+1; i++) {
+				Arrays.fill(dp[i], -INF);
+			}
 
+			dp[0][m/2] = 0;
+
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j <= m; j++) {
+					if (s[i] == '+') {
+						dp[i+1][j] = dp[i][j] + (j-m/2);
+					} else if (s[i] == '-') {
+						dp[i+1][j] = dp[i][j] - (j-m/2);
+					} else if (s[i] == 'M') {
+						if (j-1 >= 0 && j+1 <= m) {
+							dp[i+1][j] = max(dp[i+1][j], max(dp[i][j+1], dp[i][j-1]));
+						} else if (j-1 >= 0) {
+							dp[i+1][j] = max(dp[i+1][j], dp[i][j-1]);
+						} else if (j+1 <= m) {
+							dp[i+1][j] = max(dp[i+1][j], dp[i][j+1]);
+						}
+					}
+					print(dp);
+				}
+			}
+
+			out.println(dp[n][m/2]);
 		}
 	}
 
@@ -95,7 +119,19 @@ public class C_2 {
 			in = new BufferedReader(new InputStreamReader(inputStream));
 			tok = new StringTokenizer("");
 		}
+	}
 
+	static void print(int[][] dp) {
+		int n = dp.length;
+		int m = dp[0].length;
+
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < m; j++) {
+				System.out.print(dp[i][j]+" ");
+			}
+			System.out.print("\n");
+		}
+		System.out.print("\n");
 	}
 
 }
