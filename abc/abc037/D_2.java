@@ -6,13 +6,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.InputMismatchException;
-import java.util.Queue;
 import java.util.StringTokenizer;
 
-public class D {
+public class D_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -31,68 +29,58 @@ public class D {
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
+	static int h, w;
+	static long[][] a, memo;
 	static class TaskX {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int h = in.nextInt(), w = in.nextInt();
-			int[][] a = new int[h][w];
+			h = in.nextInt(); w = in.nextInt();
+			a = new long[h][w];
 			for (int i = 0; i < h; i++) {
 				for (int j = 0; j < w; j++) {
-					a[i][j] = in.nextInt();
+					a[i][j] = in.nextLong();
 				}
 			}
 
-			long[][] dp = new long[h][w];
+			memo = new long[h][w];
 			for (int i = 0; i < h; i++) {
-				Arrays.fill(dp[i], 1);
-			}
-
-			for (int i = 0; i < h; i++) {
-				for (int j = 0; j < w; j++) {
-					Queue<P> q = new ArrayDeque<>();
-					q.add(new P(i, j));
-
-					while (!q.isEmpty()) {
-
-						P p = q.remove();
-						int k = p.i;
-						int l = p.j;
-
-						for (int m = 0; m < 4; m++) {
-							int mk = k+mh4[m];
-							int ml = l+mw4[m];
-							if (mk < 0 || mk >= h || ml < 0 || ml >= w) {
-								continue;
-							}
-							if (a[k][l] < a[mk][ml]) {
-								dp[mk][ml]++;
-								q.add(new P(mk, ml));
-							}
-						}
-
-					}
-				}
+				Arrays.fill(memo[i], -INF);
 			}
 
 			long ans = 0;
 			for (int i = 0; i < h; i++) {
 				for (int j = 0; j < w; j++) {
-					ans = ans + dp[i][j] % MOD;
+					ans = ans % MOD + dfs(i, j);
 				}
 			}
+
 			out.println(ans);
 
 		}
-	}
-	static class P {
-		int i, j;
 
-		public P(int i, int j) {
-			super();
-			this.i = i;
-			this.j = j;
+		static long dfs(int i, int j) {
+
+			if (memo[i][j] != -INF) {
+				return memo[i][j];
+			}
+
+			long ret = 1;
+
+			if (i-1 >= 0 && a[i][j] < a[i-1][j]) {
+				ret += dfs(i-1, j) % MOD;
+			}
+			if (i+1 < h && a[i][j] < a[i+1][j]) {
+				ret += dfs(i+1, j) % MOD;
+			}
+			if (j-1 >= 0 && a[i][j] < a[i][j-1]) {
+				ret += dfs(i, j-1) % MOD;
+			}
+			if (j+1 < w && a[i][j] < a[i][j+1]) {
+				ret += dfs(i, j+1) % MOD;
+			}
+
+			return memo[i][j] = ret % MOD;
 		}
-
 	}
 
 	static class InputReader {

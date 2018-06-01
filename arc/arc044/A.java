@@ -1,4 +1,4 @@
-package abc037;
+package arc044;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,13 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.InputMismatchException;
-import java.util.Queue;
 import java.util.StringTokenizer;
 
-public class D {
+public class A {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -34,63 +31,23 @@ public class D {
 	static class TaskX {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int h = in.nextInt(), w = in.nextInt();
-			int[][] a = new int[h][w];
-			for (int i = 0; i < h; i++) {
-				for (int j = 0; j < w; j++) {
-					a[i][j] = in.nextInt();
-				}
+			char[] s = in.nextString().toCharArray();
+			int n = s.length;
+			long wa = 0;
+			for (char c : s) {
+				wa += (c - '0');
+			}
+			boolean isPrime = true;
+			if (n == 1 && s[0] == '1') {
+				isPrime = false;
+			} else if (n == 1 && (s[0] == '2' || s[0] == '3' || s[0] == '5')) {
+				isPrime = true;
+			} else if ((s[n-1]-'0') % 2 == 0 || s[n-1] == '5' || wa % 3 == 0) {
+				isPrime = false;
 			}
 
-			long[][] dp = new long[h][w];
-			for (int i = 0; i < h; i++) {
-				Arrays.fill(dp[i], 1);
-			}
+			out.println(isPrime ? "Prime" : "Not Prime");
 
-			for (int i = 0; i < h; i++) {
-				for (int j = 0; j < w; j++) {
-					Queue<P> q = new ArrayDeque<>();
-					q.add(new P(i, j));
-
-					while (!q.isEmpty()) {
-
-						P p = q.remove();
-						int k = p.i;
-						int l = p.j;
-
-						for (int m = 0; m < 4; m++) {
-							int mk = k+mh4[m];
-							int ml = l+mw4[m];
-							if (mk < 0 || mk >= h || ml < 0 || ml >= w) {
-								continue;
-							}
-							if (a[k][l] < a[mk][ml]) {
-								dp[mk][ml]++;
-								q.add(new P(mk, ml));
-							}
-						}
-
-					}
-				}
-			}
-
-			long ans = 0;
-			for (int i = 0; i < h; i++) {
-				for (int j = 0; j < w; j++) {
-					ans = ans + dp[i][j] % MOD;
-				}
-			}
-			out.println(ans);
-
-		}
-	}
-	static class P {
-		int i, j;
-
-		public P(int i, int j) {
-			super();
-			this.i = i;
-			this.j = j;
 		}
 
 	}
