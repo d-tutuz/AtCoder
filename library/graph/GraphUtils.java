@@ -93,13 +93,14 @@ public class GraphUtils {
 	/**
 	 * DisjointSet
 	 * */
-	public class DisjointSet {
+	public static class DisjointSet {
 
-		int[] p, rank;
+		int[] p, rank, cnt;
 
 		public DisjointSet(int size) {
 			p = new int[size];
 			rank = new int[size];
+			cnt = new int[size];
 
 			for (int j = 0; j < size; j++) {
 				makeSet(j);
@@ -109,6 +110,7 @@ public class GraphUtils {
 		private void makeSet(int x) {
 			p[x] = x;
 			rank[x] = 0;
+			cnt[x] = 1;
 		}
 
 		public int findSet(int x) {
@@ -124,6 +126,10 @@ public class GraphUtils {
 				p[x] = y;
 				rank[y]++;
 			}
+
+			if (x != y) {
+				cnt[x] = cnt[y] += cnt[x];
+			}
 		}
 
 		public void unite(int x, int y) {
@@ -132,6 +138,10 @@ public class GraphUtils {
 
 		public boolean same(int x, int y) {
 			return findSet(x) == findSet(y);
+		}
+
+		public int getSize(int x) {
+			return cnt[findSet(x)];
 		}
 	}
 
