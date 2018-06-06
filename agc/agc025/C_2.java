@@ -53,32 +53,43 @@ public class C_2 {
 
 			// 右 -> 左 -> 右 ...
 			long ans1 = 0;
-			long now1 = 0;
+			int now1 = 0;
 			boolean[] used = new boolean[n];
-			for (int i = 0; i < INF; i++) {
-				while (!ql1.isEmpty() || !qr1.isEmpty()) {
-					// 右
-					if (i % 2 == 0) {
-						Seg s = ql1.poll();
-						int idx = s.i;
-						int next = s.r;
-						if (next <= now1 || used[idx]) {
-							continue;
+			int i = 0;
+			for (int j = 0; j < n; j++) {
+				// 右
+				if (i % 2 == 0) {
+					while (true) {
+						if (!ql1.isEmpty()) {
+							Seg s = ql1.poll();
+							int idx = s.i;
+							if (used[idx]) {
+								continue;
+							}
+							int next = move(now1, s);
+							ans1 += abs(next - now1);
+							now1 = next;
+							used[idx] = true;
 						}
-						ans1 += abs(next - now1);
-						now1 = next;
-						used[idx] = true;
-					// 左
-					} else {
-						Seg s = qr1.poll();
-						int idx = s.i;
-						int next = s.l;
-						if (now1 <= next || used[idx]) {
-							continue;
+						i++;
+						break;
+					}
+				// 左
+				} else {
+					while (true) {
+						if (!qr1.isEmpty()) {
+							Seg s = qr1.poll();
+							int idx = s.i;
+							if (used[idx]) {
+								continue;
+							}
+							int next = move(now1, s);
+							ans1 += abs(now1 - next);
+							now1 = next;
+							used[idx] = true;
 						}
-						ans1 += abs(now1 - next);
-						now1 = next;
-						used[idx] = true;
+						i++;
+						break;
 					}
 				}
 			}
@@ -87,31 +98,44 @@ public class C_2 {
 
 			// 左 -> 右 -> 左 ...
 			long ans2 = 0;
-			long now2 = 0;
+			int now2 = 0;
 			used = new boolean[n];
-			for (int i = 0; i < n; i++) {
+			i = 0;
+			for (int j = 0; j < n; j++) {
 				// 左
 				if (i % 2 == 1) {
-					Seg s = ql2.poll();
-					int idx = s.i;
-					int next = s.l;
-					if (now2 <= next || used[idx]) {
-						continue;
+					while (true) {
+						if (!ql2.isEmpty()) {
+							Seg s = ql2.poll();
+							int idx = s.i;
+							if (used[idx]) {
+								continue;
+							}
+							int next = move(now2, s);
+							ans2 += abs(next - now2);
+							now2 = next;
+							used[idx] = true;
+						}
+						i++;
+						break;
 					}
-					ans2 += abs(next - now2);
-					now2 = next;
-					used[idx] = true;
 				// 右
 				} else {
-					Seg s = qr2.poll();
-					int idx = s.i;
-					int next = s.r;
-					if (next <= now2 || used[idx]) {
-						continue;
+					while (true) {
+						if (!qr2.isEmpty()) {
+							Seg s = qr2.poll();
+							int idx = s.i;
+							if (used[idx]) {
+								continue;
+							}
+							int next = move(now2, s);
+							ans2 += abs(now2 - next);
+							now2 = next;
+							used[idx] = true;
+						}
+						i++;
+						break;
 					}
-					ans2 += abs(now2 - next);
-					now2 = next;
-					used[idx] = true;
 				}
 			}
 			ans2 = abs(now2);
@@ -130,6 +154,15 @@ public class C_2 {
 			this.l = l;
 			this.r = r;
 		}
+	}
+
+	private static int move(int now, Seg seg) {
+		if (now < seg.l) {
+			return seg.l;
+		} else if (seg.r < now) {
+			return seg.r;
+		}
+		return now;
 	}
 
 	static class InputReader {
