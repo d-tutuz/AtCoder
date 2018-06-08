@@ -1,5 +1,7 @@
 package math;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class MathUtils {
 
@@ -17,32 +19,32 @@ public class MathUtils {
 		return a * b / gcd(a, b);
 	}
 
-//	/**
-//	 * エラトステネスの篩
-//	 *  => 遅いので元の数が大きい場合は使えないっぽい。
-//	 *
-//	 * @return 素数リスト
-//	 * */
-//	public static Integer[] getPrimes(int n) {
-//		boolean[] isPrime = new boolean[n + 1];
-//		Arrays.fill(isPrime, true);
-//		isPrime[0] = isPrime[1] = false;
-//		for (int i = 2; i < isPrime.length; i++) {
-//			if (!isPrime[i])
-//				continue;
-//			for (int j = i + i; j < isPrime.length; j += i) {
-//				isPrime[j] = false;
-//			}
-//		}
-//
-//		List<Integer> list = new ArrayList<>();
-//		for (int i = 1; i < isPrime.length; i++) {
-//			if (isPrime[i]) {
-//				list.add(i);
-//			}
-//		}
-//		return list.toArray(new Integer[list.size()]);
-//	}
+	/**
+	 * エラトステネスの篩
+	 *  => 遅いので元の数が大きい場合は使えないっぽい。
+	 *
+	 * @return 素数リスト
+	 * */
+	public static Integer[] getPrimes(int n) {
+		boolean[] isPrime = new boolean[n + 1];
+		Arrays.fill(isPrime, true);
+		isPrime[0] = isPrime[1] = false;
+		for (int i = 2; i < isPrime.length; i++) {
+			if (!isPrime[i])
+				continue;
+			for (int j = i + i; j < isPrime.length; j += i) {
+				isPrime[j] = false;
+			}
+		}
+
+		List<Integer> list = new ArrayList<>();
+		for (int i = 1; i < isPrime.length; i++) {
+			if (isPrime[i]) {
+				list.add(i);
+			}
+		}
+		return list.toArray(new Integer[list.size()]);
+	}
 
 	/**
 	 * エラトステネスの篩
