@@ -1,4 +1,5 @@
-package agc010;
+package abc044;
+import static java.lang.Math.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +10,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class B {
+public class D {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -21,51 +22,41 @@ public class B {
 		out.close();
 	}
 
-	static int INF = 1 << 30;
+	static int INF = 1 << 26;
 	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
+	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
+	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
 	static class TaskX {
+		long n, s;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			long[] a = new long[n];
-			long[] sa = new long[n];
-			long sum = 0;
-			for (int i = 0; i < n; i++) {
-				long t = in.nextLong();
-				a[i] = t;
-				sum += t;
-			}
+			n = in.nextLong();
+			s = in.nextLong();
 
-			long m = 0;
-			if (sum % ((long)n*(n+1)/2) == 0) {
-				m = sum / ((long)n*(n+1)/2);
-			} else {
-				out.println("NO");
+			if (s == 1) {
+				out.println(n);
 				return;
 			}
 
-			for (int i = 0; i < n; i++) {
-				sa[i] = a[(i+1)%n] - a[i];
-			}
-
-			for (int i = 0; i < n; i++) {
-				sa[i] -= m;
-			}
-
-			long k = 0;
-			for (int i = 0; i < n; i++) {
-				if (sa[i] <= 0 && sa[i] % n == 0) {
-					k -= sa[i] / n;
-				} else {
-					out.println("NO");
+			for (int b = 2; b < pow(10, 8); b++) {
+				if (func(b, n) == s) {
+					out.println(b);
 					return;
 				}
 			}
 
-			out.println(k == m ? "YES" : "NO");
+			out.println(-1);
+		}
+
+		long func(long b, long n) {
+			if (n < b) {
+				return n;
+			} else {
+				return func(b, n/b) + n%b;
+			}
 		}
 	}
 
@@ -116,7 +107,6 @@ public class B {
 			in = new BufferedReader(new InputStreamReader(inputStream));
 			tok = new StringTokenizer("");
 		}
-
 	}
 
 }

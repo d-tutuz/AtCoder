@@ -1,4 +1,4 @@
-package agc010;
+package abc018;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class B {
+public class C_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -25,47 +25,35 @@ public class B {
 	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
+	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
+	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
 	static class TaskX {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			long[] a = new long[n];
-			long[] sa = new long[n];
-			long sum = 0;
-			for (int i = 0; i < n; i++) {
-				long t = in.nextLong();
-				a[i] = t;
-				sum += t;
+			int r = in.nextInt(), c = in.nextInt(), k = in.nextInt();
+			char[][] s = new char[r][c];
+			for (int i = 0; i < r; i++) {
+				s[i] = in.nextString().toCharArray();
 			}
 
-			long m = 0;
-			if (sum % ((long)n*(n+1)/2) == 0) {
-				m = sum / ((long)n*(n+1)/2);
-			} else {
-				out.println("NO");
-				return;
-			}
-
-			for (int i = 0; i < n; i++) {
-				sa[i] = a[(i+1)%n] - a[i];
-			}
-
-			for (int i = 0; i < n; i++) {
-				sa[i] -= m;
-			}
-
-			long k = 0;
-			for (int i = 0; i < n; i++) {
-				if (sa[i] <= 0 && sa[i] % n == 0) {
-					k -= sa[i] / n;
-				} else {
-					out.println("NO");
-					return;
+			long ans = 0;
+			for (int i = k-1; i <= r-(k-1)-1; i++) {
+				for (int j = k-1; j <= c-(k-1)-1; j++) {
+					if (s[i][j] == 'x') continue;
+					boolean ok = true;
+					for (int mi = 0; mi < k; mi++) {
+						for (int mj = k-1-mi; mj >= 0; mj--) {
+							if (s[i+mi][j+mj] == 'x' || s[i-mi][j-mj] == 'x' || s[i+mi][j-mj] == 'x' || s[i-mi][j+mj] == 'x') {
+								ok = false;
+							}
+						}
+					}
+					if (ok) ans++;
 				}
 			}
+			out.println(ans);
 
-			out.println(k == m ? "YES" : "NO");
 		}
 	}
 
@@ -116,7 +104,6 @@ public class B {
 			in = new BufferedReader(new InputStreamReader(inputStream));
 			tok = new StringTokenizer("");
 		}
-
 	}
 
 }

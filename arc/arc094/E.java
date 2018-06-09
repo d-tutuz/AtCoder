@@ -1,4 +1,4 @@
-package agc010;
+package arc094;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class B {
+public class E {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -25,47 +25,33 @@ public class B {
 	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
+	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
+	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
 	static class TaskX {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			int n = in.nextInt();
-			long[] a = new long[n];
-			long[] sa = new long[n];
+			long[] a = new long[n], b = new long[n];
+			boolean isSame = true;
 			long sum = 0;
+			long min = Long.MAX_VALUE/2;
 			for (int i = 0; i < n; i++) {
-				long t = in.nextLong();
-				a[i] = t;
-				sum += t;
-			}
-
-			long m = 0;
-			if (sum % ((long)n*(n+1)/2) == 0) {
-				m = sum / ((long)n*(n+1)/2);
-			} else {
-				out.println("NO");
-				return;
-			}
-
-			for (int i = 0; i < n; i++) {
-				sa[i] = a[(i+1)%n] - a[i];
-			}
-
-			for (int i = 0; i < n; i++) {
-				sa[i] -= m;
-			}
-
-			long k = 0;
-			for (int i = 0; i < n; i++) {
-				if (sa[i] <= 0 && sa[i] % n == 0) {
-					k -= sa[i] / n;
-				} else {
-					out.println("NO");
-					return;
+				a[i] = in.nextLong();
+				b[i] = in.nextLong();
+				if (a[i] != b[i]) isSame = false;
+				sum += b[i];
+				if (a[i] > b[i]) {
+					min = Math.min(min, b[i]);
 				}
 			}
 
-			out.println(k == m ? "YES" : "NO");
+			if (isSame) {
+				out.println(0);
+				return;
+			}
+
+			out.println(sum-min);
 		}
 	}
 
@@ -116,7 +102,6 @@ public class B {
 			in = new BufferedReader(new InputStreamReader(inputStream));
 			tok = new StringTokenizer("");
 		}
-
 	}
 
 }

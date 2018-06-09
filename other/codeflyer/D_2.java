@@ -1,4 +1,6 @@
-package agc010;
+package codeflyer;
+
+import static java.lang.Math.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +11,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class B {
+public class D_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -25,47 +27,66 @@ public class B {
 	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
+	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
+	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
 	static class TaskX {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			long[] a = new long[n];
-			long[] sa = new long[n];
-			long sum = 0;
+			int h = in.nextInt(), w = in.nextInt();
+			int n = in.nextInt(), m = in.nextInt();
+			char[][] s = new char[n][m];
 			for (int i = 0; i < n; i++) {
-				long t = in.nextLong();
-				a[i] = t;
-				sum += t;
+				s[i] = in.nextString().toCharArray();
 			}
 
-			long m = 0;
-			if (sum % ((long)n*(n+1)/2) == 0) {
-				m = sum / ((long)n*(n+1)/2);
-			} else {
-				out.println("NO");
-				return;
-			}
+			int[][] imos = new int[min(h+1, 2*n+2)][min(w+1, 2*m+2)];
 
 			for (int i = 0; i < n; i++) {
-				sa[i] = a[(i+1)%n] - a[i];
-			}
-
-			for (int i = 0; i < n; i++) {
-				sa[i] -= m;
-			}
-
-			long k = 0;
-			for (int i = 0; i < n; i++) {
-				if (sa[i] <= 0 && sa[i] % n == 0) {
-					k -= sa[i] / n;
-				} else {
-					out.println("NO");
-					return;
+				for (int j = 0; j < m; j++) {
+					if (s[i][j] == '#') {
+						int lenH = imos.length-1;
+						int lenW = imos[0].length-1;
+						imos[i][j]++;
+						imos[i][j + lenW-m+1]--;
+						imos[i + lenH-n+1][j]--;
+						imos[i + lenH-n+1][j + lenW-m+1]++;
+					}
 				}
 			}
 
-			out.println(k == m ? "YES" : "NO");
+			for (int i = 0; i < imos.length; i++) {
+				for (int j = 1; j < imos[0].length; j++) {
+					imos[i][j] += imos[i][j-1];
+				}
+			}
+
+			for (int i = 1; i < imos.length; i++) {
+				for (int j = 0; j < imos[0].length; j++) {
+					imos[i][j] += imos[i-1][j];
+				}
+			}
+
+			long ans = 0;
+			for (int i = 0; i < imos.length-1; i++) {
+				for (int j = 0; j < imos[0].length-1; j++) {
+					if (imos[i][j] > 0) {
+						long p = 1;
+						long q = 1;
+
+						if (2*n < h && i == n) {
+							p = h - 2*n;
+						}
+						if (2*m < w && j == m) {
+							q = w - 2*m;
+						}
+
+						ans += p*q;
+					}
+				}
+			}
+
+			out.println(ans);
 		}
 	}
 
@@ -116,7 +137,6 @@ public class B {
 			in = new BufferedReader(new InputStreamReader(inputStream));
 			tok = new StringTokenizer("");
 		}
-
 	}
 
 }

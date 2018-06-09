@@ -1,4 +1,4 @@
-package agc010;
+package abc002;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.HashSet;
 import java.util.InputMismatchException;
+import java.util.Set;
 import java.util.StringTokenizer;
 
-public class B {
+public class D {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -25,47 +27,47 @@ public class B {
 	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
+	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
+	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
 	static class TaskX {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			long[] a = new long[n];
-			long[] sa = new long[n];
-			long sum = 0;
-			for (int i = 0; i < n; i++) {
-				long t = in.nextLong();
-				a[i] = t;
-				sum += t;
+			int n = in.nextInt(), m = in.nextInt();
+			Set<Long> info = new HashSet<>();
+			for (int i = 0; i < m; i++) {
+				int x = in.nextInt(), y = in.nextInt();
+				info.add((long)x << 32 | y);
+				info.add((long)y << 32 | x);
 			}
 
-			long m = 0;
-			if (sum % ((long)n*(n+1)/2) == 0) {
-				m = sum / ((long)n*(n+1)/2);
-			} else {
-				out.println("NO");
-				return;
-			}
+			int ans = -1;
 
-			for (int i = 0; i < n; i++) {
-				sa[i] = a[(i+1)%n] - a[i];
-			}
-
-			for (int i = 0; i < n; i++) {
-				sa[i] -= m;
-			}
-
-			long k = 0;
-			for (int i = 0; i < n; i++) {
-				if (sa[i] <= 0 && sa[i] % n == 0) {
-					k -= sa[i] / n;
-				} else {
-					out.println("NO");
-					return;
+			for (int i = 1; i <= n; i++) {
+				Set<Integer> set = new HashSet<>();
+				set.add(i);
+				for (int tar = 1; tar <= n; tar++) {
+					if (set.contains(tar)) {
+						continue;
+					}
+					boolean ok = true;
+					for (int num : set) {
+						long key = (long)tar << 32 | num;
+						if (info.contains(key)) {
+							continue;
+						} else {
+							ok = false;
+						}
+					}
+					if (ok) {
+						set.add(tar);
+					}
 				}
+				ans = Math.max(ans, set.size());
 			}
 
-			out.println(k == m ? "YES" : "NO");
+			out.println(ans);
+
 		}
 	}
 
@@ -116,7 +118,6 @@ public class B {
 			in = new BufferedReader(new InputStreamReader(inputStream));
 			tok = new StringTokenizer("");
 		}
-
 	}
 
 }
