@@ -1,5 +1,4 @@
-package abc044;
-import static java.lang.Math.*;
+package abc099;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,10 +6,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.StringTokenizer;
 
-public class D {
+public class C_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -30,46 +32,49 @@ public class D {
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
 	static class TaskX {
-		long n, s;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			n = in.nextLong();
-			s = in.nextLong();
+			int n = in.nextInt();
 
-			if (s == n) {
-				out.println(n+1);
-				return;
-			}
-
-			long ans = Long.MAX_VALUE;
-			// (1) b <= √n
-			for (long b = 2; b*b <= n; b++) {
-				if (func(b, n) == s) {
-					ans = b;
+			List<Integer> coins = new ArrayList<>();
+			coins.add(1);
+			for (int i = 0; i < 10; i++) {
+				int num = (int)Math.pow(6, i);
+				if (num <= 100000) {
+					coins.add(num);
+				} else {
 					break;
 				}
 			}
 
-			// (2) √n < b ⇔ p < √n
-			for (long p = 1; p*p < n; p++) {
-				long b = (n-s)/p + 1;
-				if (b < 2) {
-					continue;
-				}
-				if (func(b, n) == s) {
-					ans = min(ans, b);
+			for (int i = 0; i < 10; i++) {
+				int num = (int)Math.pow(9, i);
+				if (num <= 100000) {
+					coins.add(num);
+				} else {
+					break;
 				}
 			}
 
-			out.println(ans == Long.MAX_VALUE ? -1 : ans);
-		}
+			int[] dp = new int[100010];
+			Arrays.fill(dp, INF);
 
-		long func(long b, long n) {
-			if (n < b) {
-				return n;
-			} else {
-				return func(b, n/b) + n%b;
+			int m = coins.size();
+			for (int i = 0; i < m; i++) {
+				dp[coins.get(i)] = 1;
 			}
+
+			for (int i = 0; i < dp.length; i++) {
+				for (int j = 0; j < m; j++) {
+					if (i - coins.get(j) <= 0) continue;
+					int a = dp[i - 1] + 1;
+					int b = dp[i - coins.get(j)] + 1;
+					dp[i] = Math.min(dp[i], Math.min(a, b));
+				}
+			}
+
+			out.println(dp[n]);
+
 		}
 	}
 

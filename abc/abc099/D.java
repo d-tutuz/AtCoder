@@ -1,5 +1,4 @@
-package abc044;
-import static java.lang.Math.*;
+package abc099;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,7 +21,7 @@ public class D {
 		out.close();
 	}
 
-	static int INF = 1 << 26;
+	static int INF = 1 << 30;
 	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
@@ -30,46 +29,67 @@ public class D {
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
 	static class TaskX {
-		long n, s;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			n = in.nextLong();
-			s = in.nextLong();
+			int N = in.nextInt(), C = in.nextInt();
+			int[][] d = new int[C][C];
+			int[][] c = new int[C][C];
 
-			if (s == n) {
-				out.println(n+1);
-				return;
-			}
-
-			long ans = Long.MAX_VALUE;
-			// (1) b <= √n
-			for (long b = 2; b*b <= n; b++) {
-				if (func(b, n) == s) {
-					ans = b;
-					break;
+			for (int i = 0; i < C; i++) {
+				for (int j = 0; j < C; j++) {
+					d[i][j] = in.nextInt();
 				}
 			}
 
-			// (2) √n < b ⇔ p < √n
-			for (long p = 1; p*p < n; p++) {
-				long b = (n-s)/p + 1;
-				if (b < 2) {
-					continue;
-				}
-				if (func(b, n) == s) {
-					ans = min(ans, b);
+			for (int i = 0; i < N; i++) {
+				for (int j = 0; j < N; j++) {
+					c[i][j] = in.nextInt();
 				}
 			}
 
-			out.println(ans == Long.MAX_VALUE ? -1 : ans);
-		}
+			long c1 = Long.MAX_VALUE/2;
+			long c2 = Long.MAX_VALUE/2;
+			long c3 = Long.MAX_VALUE/2;
 
-		long func(long b, long n) {
-			if (n < b) {
-				return n;
-			} else {
-				return func(b, n/b) + n%b;
+			for (int k = 1; k <= C; k++) {
+				long tmp1 = 0;
+				for (int i = 0; i < N; i++) {
+					for (int j = 0; j < N; j++) {
+						if ((i+j)%3==0) {
+							tmp1 += d[c[i][j]-1][k-1];
+						}
+					}
+				}
+				c1 = Math.min(c1, tmp1);
 			}
+
+			for (int k = 1; k <= C; k++) {
+				long tmp2 = 0;
+				for (int i = 0; i < N; i++) {
+					for (int j = 0; j < N; j++) {
+						if ((i+j)%3==1) {
+							tmp2 += d[c[i][j]-1][k-1];
+						}
+					}
+				}
+				c2 = Math.min(c2, tmp2);
+			}
+
+			for (int k = 1; k <= C; k++) {
+				long tmp3 = 0;
+				for (int i = 0; i < N; i++) {
+					for (int j = 0; j < N; j++) {
+						if ((i+j)%3==2) {
+							tmp3 += d[c[i][j]-1][k-1];
+						}
+					}
+				}
+				c3 = Math.min(c3, tmp3);
+			}
+
+
+			out.println(c1+c2+c3);
+
 		}
 	}
 

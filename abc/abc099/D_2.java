@@ -1,5 +1,4 @@
-package abc044;
-import static java.lang.Math.*;
+package abc099;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,10 +6,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class D {
+public class D_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -22,7 +22,7 @@ public class D {
 		out.close();
 	}
 
-	static int INF = 1 << 26;
+	static int INF = 1 << 30;
 	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
@@ -30,46 +30,64 @@ public class D {
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
 	static class TaskX {
-		long n, s;
+		long[][] memo;
+		int N, C;
+		int[][] d,c;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			n = in.nextLong();
-			s = in.nextLong();
+			N = in.nextInt(); C = in.nextInt();
+			d = new int[C][C];
+			c = new int[N][N];
 
-			if (s == n) {
-				out.println(n+1);
-				return;
-			}
-
-			long ans = Long.MAX_VALUE;
-			// (1) b <= √n
-			for (long b = 2; b*b <= n; b++) {
-				if (func(b, n) == s) {
-					ans = b;
-					break;
+			for (int i = 0; i < C; i++) {
+				for (int j = 0; j < C; j++) {
+					d[i][j] = in.nextInt();
 				}
 			}
 
-			// (2) √n < b ⇔ p < √n
-			for (long p = 1; p*p < n; p++) {
-				long b = (n-s)/p + 1;
-				if (b < 2) {
-					continue;
-				}
-				if (func(b, n) == s) {
-					ans = min(ans, b);
+			for (int i = 0; i < N; i++) {
+				for (int j = 0; j < N; j++) {
+					c[i][j] = in.nextInt();
 				}
 			}
 
-			out.println(ans == Long.MAX_VALUE ? -1 : ans);
+			memo = new long[3][C+1];
+			for (int i = 0; i < 3; i++) {
+				Arrays.fill(memo[i], -1);
+			}
+
+			long ans = Long.MAX_VALUE/2;
+			for (int i = 1; i <= C; i++) {
+				for (int j = 1; j <= C; j++) {
+					for (int k = 1; k <= C; k++) {
+						if (i == j || j == k || k == i) {
+							continue;
+						}
+						ans = Math.min(ans, dfs(0, i) + dfs(1, j) + dfs(2, k));
+					}
+				}
+			}
+
+			out.println(ans);
+
 		}
 
-		long func(long b, long n) {
-			if (n < b) {
-				return n;
-			} else {
-				return func(b, n/b) + n%b;
+		long dfs(int mod, int to) {
+
+			if (memo[mod][to] > 0) {
+				return memo[mod][to];
 			}
+
+			int ret = 0;
+			for (int i = 0; i < N; i++) {
+				for (int j = 0; j < N; j++) {
+					if ((i+1 + j+1) % 3 == mod) {
+						ret += d[c[i][j]-1][to-1];
+					}
+				}
+			}
+
+			return memo[mod][to] = ret;
 		}
 	}
 

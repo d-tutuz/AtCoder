@@ -1,5 +1,4 @@
-package abc044;
-import static java.lang.Math.*;
+package abc099;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,10 +6,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.StringTokenizer;
 
-public class D {
+public class C {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -22,7 +25,7 @@ public class D {
 		out.close();
 	}
 
-	static int INF = 1 << 26;
+	static int INF = 1 << 30;
 	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
@@ -30,46 +33,42 @@ public class D {
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
 	static class TaskX {
-		long n, s;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			n = in.nextLong();
-			s = in.nextLong();
+			long n = in.nextLong();
 
-			if (s == n) {
-				out.println(n+1);
-				return;
-			}
-
-			long ans = Long.MAX_VALUE;
-			// (1) b <= √n
-			for (long b = 2; b*b <= n; b++) {
-				if (func(b, n) == s) {
-					ans = b;
+			List<Long> list = new ArrayList<>();
+			list.add(1L);
+			for (int i = 0; i < 10; i++) {
+				long num = (long)Math.pow(6, i);
+				if (num <= 100000) {
+					list.add(num);
+				} else {
 					break;
 				}
 			}
 
-			// (2) √n < b ⇔ p < √n
-			for (long p = 1; p*p < n; p++) {
-				long b = (n-s)/p + 1;
-				if (b < 2) {
-					continue;
-				}
-				if (func(b, n) == s) {
-					ans = min(ans, b);
+			for (int i = 0; i < 10; i++) {
+				long num = (long)Math.pow(9, i);
+				if (num <= 100000) {
+					list.add(num);
+				} else {
+					break;
 				}
 			}
 
-			out.println(ans == Long.MAX_VALUE ? -1 : ans);
-		}
+			Collections.sort(list, Comparator.reverseOrder());
 
-		long func(long b, long n) {
-			if (n < b) {
-				return n;
-			} else {
-				return func(b, n/b) + n%b;
+			long ans = 0;
+			for (int i = 0; i < list.size(); i++) {
+				while (n - list.get(i) >= 0) {
+					n -= list.get(i);
+					ans++;
+				}
 			}
+
+			out.println(ans);
+
 		}
 	}
 
@@ -121,5 +120,4 @@ public class D {
 			tok = new StringTokenizer("");
 		}
 	}
-
 }
