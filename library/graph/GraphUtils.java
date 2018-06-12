@@ -4,31 +4,10 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 
 
 public class GraphUtils {
-
-	/**
-	 * ワーシャルフロイド法
-	 * @input d[][] は、i＝jのとき0、i≠jのときINFで初期化した2次元配列
-	 *
-	 * @return d[i][j]は i->jの最短経路が格納された配列
-	 * */
-	void warshallFloyd(int[][] d) {
-		int INF = Integer.MAX_VALUE;
-		int len = d.length;
-		for (int i = 0; i < len; i++) {
-			for (int j = 0; j < len; j++) {
-				if (d[j][i] == INF) continue;
-				for (int k = 0; k < len; k++) {
-					if (d[i][k] == INF) continue;
-					d[j][k] = Math.min(d[j][k], d[j][i] + d[i][k]);
-				}
-			}
-		}
-	}
 
 	/**
 	 * ベルマンフォード法
@@ -280,67 +259,144 @@ public class GraphUtils {
 		}
 	}
 
-
-
 	/**
-	 * 最大フロー
-	 * @input N ノード数
+	 * 根付き木
+	 *
+	 * 計算量：
+	 * 　構築　：O(NlogN)
+	 * 　クエリ：O(logN)
+	 *
 	 * */
-	static class Flow {
+	public static class LCA {
 
-		static int INF = 1 << 30;
+		private final int logN;
+		private final int n;
+		private final List<Integer>[] graph;
+		private final int[][] par;
+		public final int[] depth;
 
-		boolean[] used;
-		List<Edge>[] G;
-		int V;
+		public LCA(List<Integer>[] g, int root) {
+			this.graph = g;
+			this.n = g.length;
+			this.logN = Integer.numberOfTrailingZeros(Integer.highestOneBit(n - 1)) + 1;
+			this.par = new int[logN][n];
+			this.depth = new int[n];
 
-		@SuppressWarnings("unchecked")
-		public Flow(int V) {
-			G = Stream.generate(ArrayList::new).limit(V).toArray(List[]::new);
-			used = new boolean[V];
-			this.V = V;
+			init(root);
 		}
 
-		static class Edge {
-			int to, cap, rev;
-			public Edge(int to, int cap, int rev) {
-				this.to = to;
-				this.cap = cap;
-				this.rev = rev;
+		private void init(int root) {
+			bfs(root);
+			for (int k = 0; k < logN - 1; k++) {
+				for (int v = 0; v < n; v++) {
+					if (par[k][v] < 0)
+						par[k + 1][v] = -1;
+					else
+						par[k + 1][v] = par[k][par[k][v]];
+				}
 			}
 		}
 
-		void addEdge(int u, int v, int c, List<Edge>[] G) {
-			G[u].add(new Edge(v, c, G[v].size()));
-			G[v].add(new Edge(u, c, G[u].size() - 1));
-		}
-
-		private int dfs(int u, int v, int f) {
-			if (u == v) return f;
-			used[u] = true;
-			for (Edge e : G[u]) {
-				if (!used[e.to] && e.cap > 0) {
-					int d = dfs(e.to, v, Math.min(f, e.cap));
-					if (d > 0) {
-						e.cap -= d;
-						G[e.to].get(e.rev).cap += d;
-						return d;
+		private void bfs(int v) {
+			Arrays.fill(depth, Integer.MAX_VALUE);
+			ArrayDeque<Integer> queue = new ArrayDeque<Integer>();
+			queue.add(v);
+			depth[v] = 0;
+			par[0][v] = -1;
+			while (!queue.isEmpty()) {
+				int now = queue.poll();
+				for (int p : graph[now]) {
+					if (depth[p] > depth[now] + 1) {
+						depth[p] = depth[now] + 1;
+						queue.add(p);
+						par[0][p] = now;
 					}
 				}
 			}
-			return 0;
 		}
 
-		int maxFlow(int s, int t) {
-			int flow = 0;
-			while (true) {
-				used = new boolean[V];
-				int f = dfs(s, t, INF);
-				if (f == 0) break;
-				flow += f;
+		public int lca(int u, int v) {
+			if (depth[u] > depth[v]) {
+				int tmp = u;
+				u = v;
+				v = tmp;
 			}
-			return flow;
+			for (int k = 0; k < logN; k++) {
+				if (((depth[v] - depth[u]) >> k & 1) == 1)
+					v = par[k][v];
+			}
+			if (u == v)
+				return u;
+
+			for (int k = logN - 1; k >= 0; k--) {
+				if (par[k][u] != par[k][v]) {
+					u = par[k][u];
+					v = par[k][v];
+				}
+			}
+			return par[0][u];
 		}
 	}
+
+//	/**
+//	 * 最大フロー
+//	 * @input N ノード数
+//	 * */
+//	static class Flow {
+//
+//		static int INF = 1 << 30;
+//
+//		boolean[] used;
+//		List<Edge>[] G;
+//		int V;
+//
+//		@SuppressWarnings("unchecked")
+//		public Flow(int V) {
+//			G = Stream.generate(ArrayList::new).limit(V).toArray(List[]::new);
+//			used = new boolean[V];
+//			this.V = V;
+//		}
+//
+//		static class Edge {
+//			int to, cap, rev;
+//			public Edge(int to, int cap, int rev) {
+//				this.to = to;
+//				this.cap = cap;
+//				this.rev = rev;
+//			}
+//		}
+//
+//		void addEdge(int u, int v, int c, List<Edge>[] G) {
+//			G[u].add(new Edge(v, c, G[v].size()));
+//			G[v].add(new Edge(u, c, G[u].size() - 1));
+//		}
+//
+//		private int dfs(int u, int v, int f) {
+//			if (u == v) return f;
+//			used[u] = true;
+//			for (Edge e : G[u]) {
+//				if (!used[e.to] && e.cap > 0) {
+//					int d = dfs(e.to, v, Math.min(f, e.cap));
+//					if (d > 0) {
+//						e.cap -= d;
+//						G[e.to].get(e.rev).cap += d;
+//						return d;
+//					}
+//				}
+//			}
+//			return 0;
+//		}
+//
+//		int maxFlow(int s, int t) {
+//			int flow = 0;
+//			while (true) {
+//				used = new boolean[V];
+//				int f = dfs(s, t, INF);
+//				if (f == 0) break;
+//				flow += f;
+//			}
+//			return flow;
+//		}
+//	}
 
 }
