@@ -7,7 +7,7 @@ public class B {
 		Scanner in = new Scanner(System.in);
 
 //		char[] s = in.nextLine().toCharArray();
-		char[] s = "12".toCharArray();
+		char[] s = "823".toCharArray();
 		int len = s.length;
 
 		int[][] dp = new int[len+1][2];
@@ -17,13 +17,14 @@ public class B {
 			// 確定させようとしている桁の数
 			int D = s[i]-'0';
 
-			// j -> 0：未満でない、1：未満
+			// j -> 0：未満でない(同じ)、1：未満
 			for (int j = 0; j < 2; j++) {
-				
+
 				// インクリメントで参照する桁の数。
 				// すでにN未満が確定していれば常に9まで参照可能
 				// 未確定の場合は、s[i]まで参照可能。
-				for (int d = 0; d <= (j == 1 ? 9 : D); d++) {
+				int m = (j == 1 ? 9 : D);
+				for (int d = 0; d <= m; d++) {
 					dp[i+1][j | (d < D ? 1 : 0)] += dp[i][j];
 				}
 			}
