@@ -8,10 +8,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class D {
+public class D_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -25,51 +26,88 @@ public class D {
 
 	static int INF = 1 << 30;
 	static int MOD = 1000000007;
+	static int[] mh4 = { 0, -1, 1, 0 };
+	static int[] mw4 = { -1, 0, 0, 1 };
+	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
+	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
 	static class TaskX {
 
 		char[] s;
-		long ans = Long.MAX_VALUE/10;
-		int K;
+		int k;
+		long[][][][] memo = new long[2][20][1 << 10][2];
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			s = in.nextString().toCharArray();
-			K = in.nextInt();
-			int l = s.length;
+			k = in.nextInt();
+			int n = s.length;
 
-			dfs(0, 0, 0, 0, "");
+			for (long[][][] i : memo)
+				for (long[][] j : i)
+					for (long[] k : j)
+						Arrays.fill(k, -1);
 
-			out.println(ans);
+			long src = Long.parseLong(String.valueOf(new String(s)));
+			long min = abs(src - recMin(0, 0, 1));
+			long max = abs(src - recMax(0, 0, 1));
 
+			out.println(min(min, max));
 		}
 
-		void dfs(int i, int set, int gt, int lt, String now) {
+		long recMin(int i, int used, int tight) {
 
-			if (i == s.length) {
-				ans = Math.min(ans, abs(Long.parseLong(new String(s)) - Long.parseLong(now)));
-				return;
+			if (i == s.length) return 0;
+			if (memo[0][i][used][tight] >= 0) return memo[0][i][used][tight];
+
+			int cnt = Integer.bitCount(used);
+
+			long ret = Long.MAX_VALUE;
+
+			long dd = 1;
+			for (int j = 0; j < s.length-1-i; j++) {
+				dd *= 10;
 			}
 
 			int d = s[i]-'0';
-			if (gt == 0 && lt == 0) {
-				for (int e = 0; e <= 9 ; e++) {
-					if (Integer.bitCount(set) > K) continue;
-					dfs(i+1, set | (1 << e), e > d ? 1 : 0, e < d ? 1 : 0, now+e);
-				}
-			} else if (lt == 1) {
-				for (int e = 9; e >= 0 ; e--) {
-					if (Integer.bitCount(set) > K) continue;
-					dfs(i+1, set | (1 << e), 0, 1, now+e);
-					break;
-				}
-			} else if (gt == 1) {
-				for (int e = 0; e <= 9 ; e++) {
-					if (Integer.bitCount(set) > K) continue;
-					dfs(i+1, set | (1 << e), 1, 0, now+e);
-					break;
+			for (int e = 0; e < 10; e++) {
+				if (cnt < k || (used & (1 << e)) != 0) {
+					long v = recMin(i+1, used | (1 << e), tight == 1 && d == e ? 1 : 0);
+					if (v < Long.MAX_VALUE) {
+						ret = Math.min(v + d * dd, ret);
+					}
 				}
 			}
+
+			return memo[0][i][used][tight] = ret;
+		}
+
+		long recMax(int i, int used, int tight) {
+
+			if (i == s.length) return 0;
+			if (memo[1][i][used][tight] >= -1) return memo[1][i][used][tight];
+
+			int cnt = Integer.bitCount(used);
+			long ret = -1;
+
+			long dd = 1;
+			for (int j = 0; j < s.length-1-i; j++) {
+				dd *= 10;
+			}
+
+			int d = s[i]-'0';
+			for (int e = 0; e < 10; e++) {
+				if (cnt < k || ((used & (1 << d)) != 0)) {
+					if (tight == 0 || d >= e) {
+						long v = recMax(i+1, used | (1 << d), tight == 1 && d == e ? 1 : 0);
+						if (v >= 0) {
+							ret = Math.max(v + d * dd, ret);
+						}
+					}
+				}
+			}
+
+			return memo[1][i][used][tight] = ret;
 
 		}
 	}

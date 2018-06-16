@@ -1,6 +1,4 @@
-package codefestival2014quala;
-
-import static java.lang.Math.*;
+package abc076;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,10 +6,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class D {
+public class D_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -25,52 +24,48 @@ public class D {
 
 	static int INF = 1 << 30;
 	static int MOD = 1000000007;
+	static int[] mh4 = { 0, -1, 1, 0 };
+	static int[] mw4 = { -1, 0, 0, 1 };
+	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
+	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
 	static class TaskX {
 
-		char[] s;
-		long ans = Long.MAX_VALUE/10;
-		int K;
-
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			s = in.nextString().toCharArray();
-			K = in.nextInt();
-			int l = s.length;
+			int n = in.nextInt();
+			int[] t = in.nextIntArray(n);
+			int[] v = in.nextIntArray(n);
 
-			dfs(0, 0, 0, 0, "");
+			int m = Arrays.stream(t).sum() * 2 + 1;
 
+			double[] maxV = new double[m];
+			Arrays.fill(maxV, INF);
+
+			int prt = 0;
+			for (int i = 0; i < n; i++) {
+				for (int k = 0; k <= 2 * t[i]; k++, prt++) {
+					maxV[prt] = Math.min(v[i], maxV[prt]);
+				}
+				prt--;
+			}
+			
+			maxV[0] = 0;
+			for (int i = 0; i < m-1; i++) {
+				maxV[i+1] = Math.min(maxV[i]+0.5, maxV[i+1]);
+			}
+
+			maxV[m-1] = 0;
+			for (int i = m-1; i > 0; i--) {
+				maxV[i-1] = Math.min(maxV[i]+0.5, maxV[i-1]);
+			}
+
+			double ans = 0;
+			for (int i = 0; i < m-1; i++) {
+				ans += (maxV[i+1] + maxV[i]) * 0.5 / 2;
+			}
+			
 			out.println(ans);
-
-		}
-
-		void dfs(int i, int set, int gt, int lt, String now) {
-
-			if (i == s.length) {
-				ans = Math.min(ans, abs(Long.parseLong(new String(s)) - Long.parseLong(now)));
-				return;
-			}
-
-			int d = s[i]-'0';
-			if (gt == 0 && lt == 0) {
-				for (int e = 0; e <= 9 ; e++) {
-					if (Integer.bitCount(set) > K) continue;
-					dfs(i+1, set | (1 << e), e > d ? 1 : 0, e < d ? 1 : 0, now+e);
-				}
-			} else if (lt == 1) {
-				for (int e = 9; e >= 0 ; e--) {
-					if (Integer.bitCount(set) > K) continue;
-					dfs(i+1, set | (1 << e), 0, 1, now+e);
-					break;
-				}
-			} else if (gt == 1) {
-				for (int e = 0; e <= 9 ; e++) {
-					if (Integer.bitCount(set) > K) continue;
-					dfs(i+1, set | (1 << e), 1, 0, now+e);
-					break;
-				}
-			}
-
 		}
 	}
 

@@ -11,7 +11,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class D {
+public class D_4 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -25,52 +25,82 @@ public class D {
 
 	static int INF = 1 << 30;
 	static int MOD = 1000000007;
+	static int[] mh4 = { 0, -1, 1, 0 };
+	static int[] mw4 = { -1, 0, 0, 1 };
+	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
+	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
 	static class TaskX {
 
 		char[] s;
 		long ans = Long.MAX_VALUE/10;
-		int K;
+		int k;
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			s = in.nextString().toCharArray();
-			K = in.nextInt();
-			int l = s.length;
+			k = in.nextInt();
 
 			dfs(0, 0, 0, 0, "");
 
-			out.println(ans);
+			long tmp = 0;
+			for (int i = 0; i < s.length-1; i++) {
+				tmp *= 10;
+				tmp += 9;
+			}
+
+			out.println(min(ans, Long.parseLong(new String(s)) - tmp));
 
 		}
 
 		void dfs(int i, int set, int gt, int lt, String now) {
 
 			if (i == s.length) {
-				ans = Math.min(ans, abs(Long.parseLong(new String(s)) - Long.parseLong(now)));
+				long src = Long.parseLong(String.valueOf(new String(s)));
+				long tar = Long.parseLong(now);
+				ans = min(ans, abs(src - tar));
 				return;
 			}
 
 			int d = s[i]-'0';
+
 			if (gt == 0 && lt == 0) {
-				for (int e = 0; e <= 9 ; e++) {
-					if (Integer.bitCount(set) > K) continue;
-					dfs(i+1, set | (1 << e), e > d ? 1 : 0, e < d ? 1 : 0, now+e);
+				for (int e = 0; e <= 9; e++) {
+
+					int nextSet = set | (1 << e);
+					int cnt = Integer.bitCount(nextSet);
+					if (cnt > k) continue;
+
+					gt = d < e ? 1 : 0;
+					lt = d > e ? 1 : 0;
+					String next = now + String.valueOf(e);
+
+					dfs(i+1, nextSet, gt, lt, next);
 				}
 			} else if (lt == 1) {
-				for (int e = 9; e >= 0 ; e--) {
-					if (Integer.bitCount(set) > K) continue;
-					dfs(i+1, set | (1 << e), 0, 1, now+e);
+				for (int e = 9; e >= 0; e--) {
+
+					int nextSet = set | (1 << e);
+					int cnt = Integer.bitCount(nextSet);
+					if (cnt > k) continue;
+
+					String next = now + String.valueOf(e);
+
+					dfs(i+1, nextSet, 0, 1, next);
 					break;
 				}
 			} else if (gt == 1) {
-				for (int e = 0; e <= 9 ; e++) {
-					if (Integer.bitCount(set) > K) continue;
-					dfs(i+1, set | (1 << e), 1, 0, now+e);
+				for (int e = 0; e <= 9; e++) {
+					int nextSet = set | (1 << e);
+					int cnt = Integer.bitCount(nextSet);
+					if (cnt > k) continue;
+
+					String next = now + String.valueOf(e);
+
+					dfs(i+1, nextSet, 1, 0, next);
 					break;
 				}
 			}
-
 		}
 	}
 

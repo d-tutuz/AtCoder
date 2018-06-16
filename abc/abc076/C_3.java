@@ -1,6 +1,4 @@
-package codefestival2014quala;
-
-import static java.lang.Math.*;
+package abc076;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,10 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.StringTokenizer;
 
-public class D {
+public class C_3 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -25,52 +25,51 @@ public class D {
 
 	static int INF = 1 << 30;
 	static int MOD = 1000000007;
+	static int[] mh4 = { 0, -1, 1, 0 };
+	static int[] mw4 = { -1, 0, 0, 1 };
+	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
+	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
 	static class TaskX {
 
-		char[] s;
-		long ans = Long.MAX_VALUE/10;
-		int K;
-
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			s = in.nextString().toCharArray();
-			K = in.nextInt();
-			int l = s.length;
+			char[] s = in.nextString().toCharArray();
+			char[] t = in.nextString().toCharArray();
+			int n = s.length, m = t.length;
 
-			dfs(0, 0, 0, 0, "");
+			List<String> list = new ArrayList<>();
 
-			out.println(ans);
-
-		}
-
-		void dfs(int i, int set, int gt, int lt, String now) {
-
-			if (i == s.length) {
-				ans = Math.min(ans, abs(Long.parseLong(new String(s)) - Long.parseLong(now)));
-				return;
-			}
-
-			int d = s[i]-'0';
-			if (gt == 0 && lt == 0) {
-				for (int e = 0; e <= 9 ; e++) {
-					if (Integer.bitCount(set) > K) continue;
-					dfs(i+1, set | (1 << e), e > d ? 1 : 0, e < d ? 1 : 0, now+e);
+			int found = -1;
+			for (int i = 0; i < n-m+1; i++) {
+				int idx = i;
+				boolean ok = true;
+				for (int j = 0; j < m; j++, idx++) {
+					if (s[idx] == '?') {
+						continue;
+					}
+					if (s[idx+j] != t[j]) {
+						ok = false;
+						break;
+					}
 				}
-			} else if (lt == 1) {
-				for (int e = 9; e >= 0 ; e--) {
-					if (Integer.bitCount(set) > K) continue;
-					dfs(i+1, set | (1 << e), 0, 1, now+e);
-					break;
-				}
-			} else if (gt == 1) {
-				for (int e = 0; e <= 9 ; e++) {
-					if (Integer.bitCount(set) > K) continue;
-					dfs(i+1, set | (1 << e), 1, 0, now+e);
-					break;
+				if (ok) {
+					found = i;
 				}
 			}
 
+			if (found >= 0) {
+				char[] ans = s.clone();
+				for (int i = 0; i < m; i++) {
+					ans[i+found] = t[i];
+				}
+				for (int i = 0; i < n; i++) {
+					if (ans[i] == '?') ans[i] = 'a';
+				}
+				out.print(ans);
+			} else {
+				out.println("UNRESTORABLE");
+			}
 		}
 	}
 

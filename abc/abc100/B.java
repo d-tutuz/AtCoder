@@ -1,6 +1,4 @@
-package codefestival2014quala;
-
-import static java.lang.Math.*;
+package abc100;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,10 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.StringTokenizer;
 
-public class D {
+public class B {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -25,51 +25,44 @@ public class D {
 
 	static int INF = 1 << 30;
 	static int MOD = 1000000007;
+	static int[] mh4 = { 0, -1, 1, 0 };
+	static int[] mw4 = { -1, 0, 0, 1 };
+	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
+	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
 	static class TaskX {
 
-		char[] s;
-		long ans = Long.MAX_VALUE/10;
-		int K;
-
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			s = in.nextString().toCharArray();
-			K = in.nextInt();
-			int l = s.length;
+			int d = in.nextInt();
+			int n = in.nextInt();
 
-			dfs(0, 0, 0, 0, "");
+			List<Integer> list = new ArrayList<>();
+			int ans = 0;
+			if (d == 0) {
+				for (int i = 1; i <= 110; i++) {
+					if (i % 100 != 0) {
+						list.add(i);
+					}
+				}
+				ans = list.get(n-1);
+			} else if (d == 1) {
+				for (int i = 1; i <= 20000; i++) {
+					if (i % 100 == 0 && i % 10000 != 0) {
+						list.add(i);
+					}
+				}
+				ans = list.get(n-1);
+			} else if (d == 2) {
+				for (int i = 1; i <= 2000000; i++) {
+					if (i % 10000 == 0 && i % 1000000 != 0) {
+						list.add(i);
+					}
+				}
+				ans = list.get(n-1);
+			}
 
 			out.println(ans);
-
-		}
-
-		void dfs(int i, int set, int gt, int lt, String now) {
-
-			if (i == s.length) {
-				ans = Math.min(ans, abs(Long.parseLong(new String(s)) - Long.parseLong(now)));
-				return;
-			}
-
-			int d = s[i]-'0';
-			if (gt == 0 && lt == 0) {
-				for (int e = 0; e <= 9 ; e++) {
-					if (Integer.bitCount(set) > K) continue;
-					dfs(i+1, set | (1 << e), e > d ? 1 : 0, e < d ? 1 : 0, now+e);
-				}
-			} else if (lt == 1) {
-				for (int e = 9; e >= 0 ; e--) {
-					if (Integer.bitCount(set) > K) continue;
-					dfs(i+1, set | (1 << e), 0, 1, now+e);
-					break;
-				}
-			} else if (gt == 1) {
-				for (int e = 0; e <= 9 ; e++) {
-					if (Integer.bitCount(set) > K) continue;
-					dfs(i+1, set | (1 << e), 1, 0, now+e);
-					break;
-				}
-			}
 
 		}
 	}
