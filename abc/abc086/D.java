@@ -74,15 +74,15 @@ public class D {
 			out.println(ans);
 		}
 
-	}
-	static int get(int x1, int y1, int x2, int y2, int[][] sum) {
+		int get(int x1, int y1, int x2, int y2, int[][] sum) {
 
-		int res = sum[x2][y2];
-		if (x1 > 0) res -= sum[x1-1][y2];
-		if (y1 > 0) res -= sum[x2][y1-1];
-		if (x1 > 0 && y1 > 0) res += sum[x1-1][y1-1];
+			int res = sum[x2][y2];
+			if (x1 > 0) res -= sum[x1-1][y2];
+			if (y1 > 0) res -= sum[x2][y1-1];
+			if (x1 > 0 && y1 > 0) res += sum[x1-1][y1-1];
 
-		return res;
+			return res;
+		}
 	}
 
 	static class InputReader {
