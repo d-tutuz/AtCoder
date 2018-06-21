@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -35,7 +36,8 @@ public class D {
 
 		int n;
 		List<Integer>[] g;
-		int[][] memo;
+		long[][] memo;
+		boolean[] used;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			n = in.nextInt();
@@ -48,27 +50,49 @@ public class D {
 				g[b].add(a);
 			}
 
-			memo = new int[n][2];
+			memo = new long[2][n];
+			for (int i = 0; i < 2; i++) {
+				Arrays.fill(memo[i], -1);
+			}
 
-			out.println(dfs(0, 1) + dfs(0, -1));
+			out.println(f(0, -1) % MOD);
 
 		}
 
-		int dfs(int f, int state) {
-			if (memo[f][state] >= 0) {
-				return memo[f][state];
+		long f(int now, int from) {
+			if (memo[1][now] >= 0) {
+				return memo[1][now];
 			}
 
-			int ret = 0;
-			for (int to : g[f]) {
-				if (state == 1) {
-					ret += dfs(to, 1) + dfs(to, -1);
-				} else {
-					ret += dfs(to, 1);
-				}
+			long white = g(now, from) % MOD;
+			long black = 1;
+
+			for (int to : g[now]) {
+				if (to == from) continue;
+
+				black *= g(to, now) % MOD;
+				black %= MOD;
 			}
 
-			return memo[f][state] = ret;
+			return memo[1][now] = (white + black) % MOD;
+		}
+
+		long g(int now, int from) {
+			if (memo[0][now] >= 0) {
+				return memo[0][now];
+			}
+
+			long count = 1;
+
+			for (int to : g[now]) {
+				if (to == from) continue;
+
+				count *= f(to, now) % MOD;
+				count %= MOD;
+			}
+
+			return memo[0][now] = count % MOD;
+
 		}
 	}
 
