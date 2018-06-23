@@ -1,4 +1,6 @@
-package abc036;
+package arc086;
+
+import static java.lang.Math.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,13 +8,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
-import java.util.Map;
+import java.util.List;
 import java.util.StringTokenizer;
-import java.util.TreeSet;
 
-public class C_2 {
+public class D {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -33,24 +34,96 @@ public class C_2 {
 
 	static class TaskX {
 
+		long[] a;
+		int n;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			int[] a = in.nextIntArray(n);
-			TreeSet<Integer> set = new TreeSet<>();
+			n = in.nextInt();
+			a = new long[n];
+			long min = INF;
+			long max = -INF;
+			int min_idx = -1;
+			int max_idx = -1;
+
 			for (int i = 0; i < n; i++) {
-				set.add(a[i]);
+				long ai = in.nextLong();
+				if (ai < min) {
+					min = ai;
+					min_idx = i;
+				}
+				if (max < ai) {
+					max = ai;
+					max_idx = i;
+				}
+				a[i] = ai;
 			}
 
-			Map<Integer, Integer> map = new HashMap<>();
-			int i = 0;
-			for (int num : set) {
-				map.put(num, i++);
+			if (isAllZero()) {
+				out.println(0);
+				return;
 			}
 
-			for (int num : a) {
-				out.println(map.get(num));
+			boolean pos = false;
+			boolean neg = false;
+
+			List<Integer> from = new ArrayList<>();
+			List<Integer> to = new ArrayList<>();
+
+			if (max * min <= 0) {
+				if (abs(min) <= abs(max)) {
+					pos = true;
+					for (int i = 0; i < n; i++) {
+						from.add(max_idx);
+						to.add(i);
+//						out.printf("%d %d\n", max_idx, i);
+					}
+				} else {
+					neg = true;
+					for (int i = 0; i < n; i++) {
+						from.add(min_idx);
+						to.add(i);
+//						out.printf("%d %d\n", min_idx, i);
+					}
+				}
+			} else {
+				if (0 < min) {
+					pos = true;
+				} else if (max < 0) {
+					neg = true;
+				}
 			}
+
+			if (pos) {
+				for (int i = 1; i < n; i++) {
+//					out.printf("%d %d\n", i-1, i);
+					from.add(i-1);
+					to.add(i);
+				}
+			}
+
+			if (neg) {
+				for (int i = n-2; i >= 0; i--) {
+//					out.printf("%d %d\n", i+1, i);
+					from.add(i+1);
+					to.add(i);
+				}
+			}
+
+			out.println(from.size());
+			for (int i = 0; i < from.size(); i++) {
+				out.printf("%d %d\n", from.get(i)+1, to.get(i)+1);
+			}
+		}
+
+		boolean isAllZero() {
+			boolean same = true;
+			for (long i : a) {
+				if (i != 0) {
+					same = false;
+					break;
+				}
+			}
+			return same;
 		}
 	}
 

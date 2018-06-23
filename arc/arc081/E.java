@@ -1,4 +1,4 @@
-package abc036;
+package arc081;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,13 +6,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
-import java.util.Map;
+import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
+import java.util.stream.Stream;
 
-public class C_2 {
+public class E {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -31,25 +33,57 @@ public class C_2 {
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
+	@SuppressWarnings("unchecked")
 	static class TaskX {
 
+		Set<String> set;
+		List<Integer>[] g;
+		char[] s;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			int[] a = in.nextIntArray(n);
-			TreeSet<Integer> set = new TreeSet<>();
+			s = in.nextString().toCharArray();
+			int n = s.length;
+
+			g = new ArrayList[n];
+			g = Stream.generate(ArrayList::new).limit(n).toArray(List[]::new);
+
+			// 手前から奥への有向辺
+			for (int i = 1; i < n; i++) {
+				g[i-1].add(i);
+			}
+
+			int[] used = new int[26];
+
 			for (int i = 0; i < n; i++) {
-				set.add(a[i]);
+				if (used[s[i]-'a'] <= 2) {
+					for (int j = i+1; j < n; j++) {
+						g[i].add(j);
+					}
+					used[s[i]-'a']++;
+				}
 			}
 
-			Map<Integer, Integer> map = new HashMap<>();
-			int i = 0;
-			for (int num : set) {
-				map.put(num, i++);
+			set = new TreeSet<>();
+
+			for (int i = 0; i < n; i++) {
+				dfs(i, 0, "");
 			}
 
-			for (int num : a) {
-				out.println(map.get(num));
+			for (String str : set) {
+				out.println(str);
+			}
+
+		}
+
+		void dfs(int cur, int count, String str) {
+			if (count >= 4) {
+				return;
+			}
+
+			set.add(str+s[cur]);
+
+			for (int next : g[cur]) {
+				dfs(next, count+1, str+s[cur]);
 			}
 		}
 	}

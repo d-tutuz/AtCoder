@@ -1,4 +1,4 @@
-package abc036;
+package arc054;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,13 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.HashMap;
 import java.util.InputMismatchException;
-import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.TreeSet;
 
-public class C_2 {
+public class A {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -24,7 +21,7 @@ public class C_2 {
 		out.close();
 	}
 
-	static int INF = 1 << 30;
+	static double INF = Double.MAX_VALUE/3;
 	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
@@ -35,22 +32,27 @@ public class C_2 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			int[] a = in.nextIntArray(n);
-			TreeSet<Integer> set = new TreeSet<>();
-			for (int i = 0; i < n; i++) {
-				set.add(a[i]);
+			int l = in.nextInt();
+			double x = in.nextDouble(), y = in.nextDouble(), s = in.nextDouble(), d = in.nextDouble();
+
+			double asc = INF, desc = INF;
+
+			if (s == d) {
+				out.println(0);
+				return;
+			}
+			if (s < d) {
+				asc = (d-s)/(x+y);
+				desc = (l+s-d)/(y-x);
+				if (desc < 0) desc = INF;
+			} else {
+				asc = (l+d-s)/(x+y);
+				desc = (s-d)/(y-x);
+				if (desc < 0) desc = INF;
 			}
 
-			Map<Integer, Integer> map = new HashMap<>();
-			int i = 0;
-			for (int num : set) {
-				map.put(num, i++);
-			}
+			out.println(Math.min(asc, desc));
 
-			for (int num : a) {
-				out.println(map.get(num));
-			}
 		}
 	}
 

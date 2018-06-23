@@ -1,4 +1,4 @@
-package abc036;
+package arc081;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,13 +6,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.InputMismatchException;
-import java.util.Map;
+import java.util.List;
+import java.util.Map.Entry;
 import java.util.StringTokenizer;
-import java.util.TreeSet;
+import java.util.TreeMap;
 
-public class C_2 {
+public class C {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -36,20 +38,33 @@ public class C_2 {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			int n = in.nextInt();
-			int[] a = in.nextIntArray(n);
-			TreeSet<Integer> set = new TreeSet<>();
+			TreeMap<Long, Integer> map = new TreeMap<>(
+					new Comparator<Long>() {
+						public int compare(Long m, Long n) {
+							return ((Long)m).compareTo(n)*(-1);
+						}
+					});
 			for (int i = 0; i < n; i++) {
-				set.add(a[i]);
+				long ai = in.nextLong();
+				map.merge(ai, 1, Integer::sum);
 			}
 
-			Map<Integer, Integer> map = new HashMap<>();
-			int i = 0;
-			for (int num : set) {
-				map.put(num, i++);
+			List<Long> list = new ArrayList<>();
+			for (Entry<Long, Integer> e : map.entrySet()) {
+				long k = e.getKey();
+				int v = e.getValue()/2;
+				if (v == 1) {
+					list.add(k);
+				} else if (v >= 2) {
+					list.add(k);
+					list.add(k);
+				}
 			}
 
-			for (int num : a) {
-				out.println(map.get(num));
+			if (list.size() < 2) {
+				out.println(0);
+			} else {
+				out.println(list.get(0) * list.get(1));
 			}
 		}
 	}

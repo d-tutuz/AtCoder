@@ -1,4 +1,6 @@
-package abc036;
+package abc101;
+
+import static java.lang.Math.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,13 +8,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.HashMap;
 import java.util.InputMismatchException;
-import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.TreeSet;
 
-public class C_2 {
+public class D {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -24,7 +23,9 @@ public class C_2 {
 		out.close();
 	}
 
-	static int INF = 1 << 30;
+	static long INF = Long.MAX_VALUE/3;
+	static long MK = (long)pow(10, 15);
+
 	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
@@ -35,22 +36,48 @@ public class C_2 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			int[] a = in.nextIntArray(n);
-			TreeSet<Integer> set = new TreeSet<>();
-			for (int i = 0; i < n; i++) {
-				set.add(a[i]);
+			long k = in.nextLong();
+
+			long count = 0;
+			if (k >= 9) {
+				out.println(1);
+				out.println(2);
+				out.println(3);
+				out.println(4);
+				out.println(5);
+				out.println(6);
+				out.println(7);
+				out.println(8);
+				out.println(9);
+			}
+			for (long n = 19; n <= MK; n += 10) {
+
+				if (n*S(n+1) <= (n+1)*S(n)
+						&& n*S(n+1) <= (n+1)*S(n)
+						&& n*S(n+10) <= (n+10)*S(n)
+						&& n*S(n+100) <= (n+100)*S(n)
+						&& n*S(n+1000) <= (n+1000)*S(n)
+						&& n*S(n+10000) <= (n+10000)*S(n)
+						&& n*S(n+100000) <= (n+100000)*S(n)
+						&& n*S(n+1000000) <= (n+1000000)*S(n)
+						) {
+					if (++count <= k-9) {
+						out.println(n);
+					} else {
+						break;
+					}
+				}
 			}
 
-			Map<Integer, Integer> map = new HashMap<>();
-			int i = 0;
-			for (int num : set) {
-				map.put(num, i++);
-			}
+		}
 
-			for (int num : a) {
-				out.println(map.get(num));
+		long S(long num) {
+			long ret = 0;
+			while (num > 0) {
+				ret += num % 10;
+				num /= 10;
 			}
+			return ret;
 		}
 	}
 

@@ -1,4 +1,4 @@
-package abc036;
+package abc071;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,13 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.HashMap;
 import java.util.InputMismatchException;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.StringTokenizer;
-import java.util.TreeSet;
+import java.util.TreeMap;
 
-public class C_2 {
+public class B {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -35,22 +34,25 @@ public class C_2 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			int[] a = in.nextIntArray(n);
-			TreeSet<Integer> set = new TreeSet<>();
-			for (int i = 0; i < n; i++) {
-				set.add(a[i]);
+			TreeMap<Character, Integer> map = new TreeMap<>();
+			for (char c = 'a'; c <= 'z'; c++) {
+				map.merge(c, 1, Integer::sum);
 			}
 
-			Map<Integer, Integer> map = new HashMap<>();
-			int i = 0;
-			for (int num : set) {
-				map.put(num, i++);
+			char[] s = in.nextString().toCharArray();
+			for (char c : s) {
+				map.merge(c, 1, Integer::sum);
 			}
 
-			for (int num : a) {
-				out.println(map.get(num));
+			for (Entry<Character, Integer> e : map.entrySet()) {
+				if (e.getValue() == 1) {
+					out.println(e.getKey());
+					return;
+				}
 			}
+
+			out.println("None");
+
 		}
 	}
 

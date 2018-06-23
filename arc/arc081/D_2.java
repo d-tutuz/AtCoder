@@ -1,4 +1,4 @@
-package abc036;
+package arc081;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,13 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
-import java.util.Map;
+import java.util.List;
 import java.util.StringTokenizer;
-import java.util.TreeSet;
 
-public class C_2 {
+public class D_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -36,21 +35,40 @@ public class C_2 {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			int n = in.nextInt();
-			int[] a = in.nextIntArray(n);
-			TreeSet<Integer> set = new TreeSet<>();
+			char[] s1 = in.nextString().toCharArray();
+			char[] s2 = in.nextString().toCharArray();
+
+
+			List<Integer> tmp = new ArrayList<>();
 			for (int i = 0; i < n; i++) {
-				set.add(a[i]);
+				if (s1[i] == s2[i]) {
+					tmp.add(1);
+				} else {
+					tmp.add(2);
+					i++;
+				}
 			}
+			Integer[] a = tmp.toArray(new Integer[0]);
+			int len = a.length;
 
-			Map<Integer, Integer> map = new HashMap<>();
-			int i = 0;
-			for (int num : set) {
-				map.put(num, i++);
+			long ans = a[0] == 1 ? 3 : 6;
+			for (int i = 1; i < len; i++) {
+				if (a[i-1] == 1 && a[i] == 1) {
+					ans *= 2;
+					ans %= MOD;
+				} else if (a[i-1] == 1 && a[i] == 2) {
+					ans *= 2;
+					ans %= MOD;
+				} else if (a[i-1] == 2 && a[i] == 1) {
+					ans *= 1;
+					ans %= MOD;
+				} else if (a[i-1] == 2 && a[i] == 2) {
+					ans *= 3;
+					ans %= MOD;
+				}
 			}
+			out.println(ans % MOD);
 
-			for (int num : a) {
-				out.println(map.get(num));
-			}
 		}
 	}
 
