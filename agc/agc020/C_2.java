@@ -6,13 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.InputMismatchException;
-import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.TreeSet;
 
-public class C {
+public class C_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -33,31 +32,23 @@ public class C {
 
 	static class TaskX {
 
-		boolean isDebug = true;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			int n = in.nextInt();
-			long[] a = in.nextLongArray(n);
-			Arrays.sort(a);
-			long[] rui = new long[n];
-			rui[0] = a[0];
+			int[] a = in.nextIntArray(n);
+			int sum = Arrays.stream(a).sum();
+
+			BigInteger now = BigInteger.ONE;
+			now = now.or(BigInteger.ONE.shiftLeft(a[0]));
 			for (int i = 1; i < n; i++) {
-				rui[i] += rui[i-1] + a[i];
+				now = now.or(now.shiftLeft(a[i]));
 			}
 
-			Set<Long> set = new TreeSet<>();
-			for (int i = 1; i < (1 << n); i++) {
-				long tmp = 0;
-				for (int j = 0; j < n; j++) {
-					if (((i >> j) & 1) == 1) {
-						tmp += a[j];
-					}
+			for (int i = sum/2 + (sum & 1); i <= sum; i++) {
+				if (!BigInteger.ONE.shiftLeft(i).and(now).equals(BigInteger.ZERO)) {
+					out.println(i);
+					return;
 				}
-				set.add(tmp);
-			}
-
-			for (long l : set) {
-			if (isDebug) out.print(l + " ");
 			}
 
 		}
