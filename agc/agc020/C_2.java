@@ -44,8 +44,8 @@ public class C_2 {
 				now = now.or(now.shiftLeft(a[i]));
 			}
 
-			for (int i = sum/2 + (sum & 1); i <= sum; i++) {
-				if (!BigInteger.ONE.shiftLeft(i).and(now).equals(BigInteger.ZERO)) {
+			for (int i = (sum+1)/2; i <= sum; i++) {
+				if (now.testBit(i)) {
 					out.println(i);
 					return;
 				}

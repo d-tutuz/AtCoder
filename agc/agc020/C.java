@@ -46,7 +46,7 @@ public class C {
 			}
 
 			Set<Long> set = new TreeSet<>();
-			for (int i = 1; i < (1 << n); i++) {
+			for (int i = 0; i < (1 << n); i++) {
 				long tmp = 0;
 				for (int j = 0; j < n; j++) {
 					if (((i >> j) & 1) == 1) {
