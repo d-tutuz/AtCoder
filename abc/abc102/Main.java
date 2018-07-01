@@ -6,7 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.InputMismatchException;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 public class Main {
@@ -30,29 +32,48 @@ public class Main {
 
 	static class TaskX {
 
+		long[] a;
+		Map<Double, Double> memo = new HashMap<>();
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			int n = in.nextInt();
-			long[] a = new long[n];
-			long sum = 0;
+			a = new long[n];
 			for (int i = 0; i < n; i++) {
 				a[i] = in.nextLong()-(i+1);
-				sum += a[i];
 			}
 
-			long avg = sum / (long)n;
-
-			long ans = Long.MAX_VALUE/2;
-			for (long b = avg-100; b <= avg+100; b++) {
-				long tmp = 0;
-				for (int i = 0; i < n; i++) {
-					tmp += Math.abs(a[i]-b);
-				}
-				ans = Math.min(ans, tmp);
-			}
+			double ans = Long.MAX_VALUE/2;
+			ans = ternarySearch(-INF, INF);
 			out.println(ans);
 
 		}
+
+		double f(double b) {
+
+			if (memo.containsKey(b)) {
+				return memo.get(b);
+			}
+
+			double ret = 0;
+			for (long l : a) {
+				ret += Math.abs(l - b);
+			}
+			memo.put(b, ret);
+			return ret;
+		}
+
+		double ternarySearch(double l, double r) {
+			for (int i = 0; i < 200; i++) {
+				double a = (l + l + r) / 3;
+				double b = (l + r + r) / 3;
+				if (f(a) > f(b))
+					l = a;
+				else
+					r = b;
+			}
+			return l;
+		}
+
 	}
 
 	static class InputReader {
