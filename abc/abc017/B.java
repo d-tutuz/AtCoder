@@ -1,4 +1,4 @@
-package abc030;
+package abc017;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.HashSet;
 import java.util.InputMismatchException;
+import java.util.Set;
 import java.util.StringTokenizer;
 
-public class D {
+public class B {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -28,14 +30,30 @@ public class D {
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
-	@SuppressWarnings("unchecked")
 	static class TaskX {
 
+		Set<String> memo = new HashSet<>();
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt(), a = in.nextInt()-1;
-			String k = in.nextString();
-			int[] b = in.nextIntArray(n);
+			char[] s = in.nextString().toCharArray();
+
+			int idx = s.length-1;
+			while (idx >= 0) {
+				if (s[idx] == 'o' || s[idx] == 'k' || s[idx] == 'u') {
+					idx--;
+				} else if (idx >= 1 && s[idx] == 'h' && s[idx-1] == 'c') {
+					idx -= 2;
+				} else {
+					break;
+				}
+			}
+
+			if (idx < 0) {
+				out.println("YES");
+			} else {
+				out.println("NO");
+			}
+
 
 		}
 	}
@@ -70,7 +88,7 @@ public class D {
 		public int[] nextIntArray(int n) {
 			int[] res = new int[n];
 			for (int i = 0; i < n; i++) {
-				res[i] = nextInt()-1;
+				res[i] = nextInt();
 			}
 			return res;
 		}
