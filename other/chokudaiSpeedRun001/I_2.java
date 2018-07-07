@@ -1,4 +1,4 @@
-package soundhoundinc.programmingcontest;
+package chokudaiSpeedRun001;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class C {
+public class I_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -22,46 +22,33 @@ public class C {
 	}
 
 	static int INF = 1 << 30;
-	static int modP = 1000000007;
+	static int MOD = 1000000007;
+	static int[] mh4 = { 0, -1, 1, 0 };
+	static int[] mw4 = { -1, 0, 0, 1 };
+	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
+	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
 	static class TaskX {
+
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int r = in.nextInt(), c = in.nextInt();
-			char[][] map1 = new char[r][c];
-			for (int i = 0; i < r; i++) {
-				map1[i] = in.nextString().toCharArray();
-			}
+			int n = in.nextInt();
+			long[] a = in.nextLongArray(n);
 
-			long c1 = 0;
-			// #.#.#
-			// .#.#.
-			// #.#.#
-			for (int i = 0; i < r; i++) {
-				for (int j = 0; j < c; j++) {
-					if (i % 2 == 0 && j % 2 == 0) {
-						if (map1[i][j] == '.') c1++;
-					} else if (i % 2 == 1 && j % 2 == 1) {
-						if (map1[i][j] == '.') c1++;
-					}
+			long ans = 0;
+			long now = 0;
+			for (int l = 0, r = 0; l < n; l++) {
+				while (r < n && now + a[r] <= n) {
+					now += a[r];
+					r++;
 				}
-			}
-
-			long c2 = 0;
-			// .#.#.
-			// #.#.#
-			// .#.#.
-			for (int i = 0; i < r; i++) {
-				for (int j = 0; j < c; j++) {
-					if (i % 2 == 0 && j % 2 == 1) {
-						if (map1[i][j] == '.') c2++;
-					} else if (i % 2 == 1 && j % 2 == 0) {
-						if (map1[i][j] == '.') c2++;
-					}
+				if (now == n) {
+					ans++;
 				}
+				now -= a[l];
 			}
 
-			out.println(Math.max(c1, c2));
+			out.println(ans);
 
 		}
 	}
@@ -113,7 +100,6 @@ public class C {
 			in = new BufferedReader(new InputStreamReader(inputStream));
 			tok = new StringTokenizer("");
 		}
-
 	}
 
 }

@@ -1,4 +1,4 @@
-package arc073;
+package soundhoundinc_programmingcontest_2018;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,12 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.HashMap;
 import java.util.InputMismatchException;
-import java.util.Map;
 import java.util.StringTokenizer;
 
-public class D_3 {
+public class D {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -24,54 +22,18 @@ public class D_3 {
 	}
 
 	static int INF = 1 << 30;
-	static int modP = 1000000007;
+	static int MOD = 1000000007;
+	static int[] mh4 = { 0, -1, 1, 0 };
+	static int[] mw4 = { -1, 0, 0, 1 };
+	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
+	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
-	static P[] p;
-	static Map<Long, Long> memo = new HashMap<>();
-	static int N, W;
 	static class TaskX {
+
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			N = in.nextInt();
-			W = in.nextInt();
-			p = new P[N];
-			for (int i = 0; i < N; i++) {
-				int w = in.nextInt(), v = in.nextInt();
-				p[i] = new P(w, v);
-			}
+			
 
-			out.println(func(0, 0));
-
-		}
-	}
-
-	static long func(int d, int j) {
-		long key = (long)d << 32 | j;
-		if (d == N) {
-			memo.put(key, 0L);
-			return 0;
-		}
-
-		if (memo.containsKey(key)) {
-			return memo.get(key);
-		}
-
-		long ret = 0;
-
-		if (j + p[d].w <= W) {
-			ret = Math.max(func(d + 1, j), func(d + 1, j + p[d].w) + p[d].v);
-		} else {
-			ret = func(d + 1, j);
-		}
-		memo.put(key, ret);
-		return ret;
-	}
-
-	static class P {
-		int w,v;
-		P (int w, int v) {
-			this.w = w;
-			this.v = v;
 		}
 	}
 
@@ -122,7 +84,6 @@ public class D_3 {
 			in = new BufferedReader(new InputStreamReader(inputStream));
 			tok = new StringTokenizer("");
 		}
-
 	}
-
+	
 }

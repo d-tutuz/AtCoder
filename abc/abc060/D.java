@@ -1,4 +1,4 @@
-package soundhoundinc.programmingcontest;
+package abc060;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.InputMismatchException;
+import java.util.Map;
 import java.util.StringTokenizer;
 
-public class A {
+public class D {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -29,18 +31,46 @@ public class A {
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
 	static class TaskX {
+
+		long[] w, v;
+		long W;
+		int n;
+		Map<Long, Long> memo = new HashMap<>();
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			char[] s = in.nextString().toCharArray();
-			char[] t = in.nextString().toCharArray();
-
-			if (s[0] == 'S' && t[0] == 'H') {
-				out.println("YES");
-			} else {
-				out.println("NO");
+			n = in.nextInt();
+			W = in.nextLong();
+			w = new long[n];
+			v = new long[n];
+			for (int i = 0; i < n; i++) {
+				w[i] = in.nextLong();
+				v[i] = in.nextLong();
 			}
 
+			long ans = func(0, 0);
+			out.println(ans);
+		}
 
+		long func(int d, long now) {
+
+			long key = (long)d<<32 | now;
+
+			if (memo.containsKey(key)) {
+				return memo.get(key);
+			}
+
+			if (d == n) {
+				return 0;
+			}
+
+			long ret = 0;
+			if (now + w[d] <= W) {
+				ret += Math.max(func(d+1, now+w[d]) + v[d], func(d+1, now));
+			} else {
+				ret += func(d+1, now);
+			}
+			memo.put(key, ret);
+			return ret;
 		}
 	}
 
@@ -91,7 +121,6 @@ public class A {
 			in = new BufferedReader(new InputStreamReader(inputStream));
 			tok = new StringTokenizer("");
 		}
-
 	}
 
 }
