@@ -6,16 +6,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.List;
-import java.util.Queue;
+import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 import java.util.stream.Stream;
 
-public class D {
+public class D_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -28,7 +26,7 @@ public class D {
 	}
 
 	static int INF = 1 << 30;
-	static long LINF = 1L << 50;
+	static long LINF = 1L << 55;
 	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
@@ -40,19 +38,18 @@ public class D {
 		@SuppressWarnings("unchecked")
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt(), m = in.nextInt();
+			int n = in.nextInt();
+			long m = in.nextLong();
 			int s = in.nextInt()-1, t = in.nextInt()-1;
-
-			List<P>[] gs = new ArrayList[n], gy = new ArrayList[n];;
-			gs = Stream.generate(ArrayList::new).limit(n).toArray(List[]::new);
+			List<P>[] gy = new ArrayList[n], gs = new ArrayList[n];
 			gy = Stream.generate(ArrayList::new).limit(n).toArray(List[]::new);
+			gs = Stream.generate(ArrayList::new).limit(n).toArray(List[]::new);
 
 			for (int i = 0; i < m; i++) {
 				int u = in.nextInt()-1;
 				int v = in.nextInt()-1;
 				long a = in.nextLong();
 				long b = in.nextLong();
-
 				gy[u].add(new P(v, a));
 				gy[v].add(new P(u, a));
 
@@ -60,68 +57,83 @@ public class D {
 				gs[v].add(new P(u, b));
 			}
 
+			PriorityQueue<P> q = new PriorityQueue<>();
 
 			// スタートから円についてのダイクストラ
-			Queue<Integer> q = new ArrayDeque<>();
-			long[] costYen = new long[n];
-			Arrays.fill(costYen, LINF);
-
-			q.add(s);
-			costYen[s] = 0;
+			P[] costYen = new P[n];
+			for (int i = 0; i < n; i++) {
+				costYen[i] = new P(i, LINF);
+			}
+			costYen[s].cost = 0;
+			q.add(costYen[s]);
 
 			while (!q.isEmpty()) {
-				int from = q.remove();
-				for (P p : gy[from]) {
-					if (costYen[from] + p.cost < costYen[p.node]) {
-						costYen[p.node] = costYen[from] + p.cost;
-						q.add(p.node);
+
+				P p = q.remove();
+				int now = p.to;
+
+				for (P pt : gy[now]) {
+					if (costYen[now].cost + pt.cost < costYen[pt.to].cost) {
+						costYen[pt.to].cost = costYen[now].cost + pt.cost;
+						q.add(costYen[pt.to]);
 					}
 				}
 			}
+
 
 			// ゴールからスヌーケについてのダイクストラ
-			q = new ArrayDeque<>();
-			long[] costSnuke = new long[n];
-			Arrays.fill(costSnuke, LINF);
-
-			q.add(t);
-			costSnuke[t] = 0;
+			q = new PriorityQueue<>();
+			P[] costSnuke = new P[n];
+			for (int i = 0; i < n; i++) {
+				costSnuke[i] = new P(i, LINF);
+			}
+			costSnuke[t].cost = 0;
+			q.add(costSnuke[t]);
 
 			while (!q.isEmpty()) {
-				int from = q.remove();
-				for (P p : gs[from]) {
-					if (costSnuke[from] + p.cost < costSnuke[p.node]) {
-						costSnuke[p.node] = costSnuke[from] + p.cost;
-						q.add(p.node);
+
+				P p = q.remove();
+				int now = p.to;
+
+				for (P pt : gs[now]) {
+					if (costSnuke[now].cost + pt.cost < costSnuke[pt.to].cost) {
+						costSnuke[pt.to].cost = costSnuke[now].cost + pt.cost;
+						q.add(costSnuke[pt.to]);
 					}
 				}
 			}
 
-			long min = LINF;
-
+			// i-1 年から順番に s -> i-1 -> t のコストを求める
 			long[] ans = new long[n];
+			long min = LINF;
 			for (int i = n-1; i >= 0; i--) {
 				long tmp = 0;
-				tmp += costYen[i];
-				tmp += costSnuke[i];
+				tmp += costYen[i].cost;
+				tmp += costSnuke[i].cost;
 				min = Math.min(min, tmp);
-				ans[i] = (long)Math.pow(10, 15)-min;
+				ans[i] = min;
 			}
 
 			for (long l : ans) {
-				out.println(l);
+				out.println((long)Math.pow(10, 15) - l);
 			}
+
 
 		}
 
-		class P {
-			int node;
+		class P implements Comparable<P> {
+			int to;
 			long cost;
 
-			public P(int node, long cost) {
+			public P(int to, long cost) {
 				super();
-				this.node = node;
+				this.to = to;
 				this.cost = cost;
+			}
+
+			@Override
+			public int compareTo(P o) {
+				return (int)(this.cost - o.cost);
 			}
 		}
 	}

@@ -1,4 +1,6 @@
-package soundhoundinc_programmingcontest_2018;
+package agc024;
+
+import static java.lang.Math.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +11,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class C {
+public class B_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -32,19 +34,19 @@ public class C {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			double n = in.nextDouble();
-			double m = in.nextDouble();
-			double d = in.nextDouble();
+			int n = in.nextInt();
+			int[] p = in.nextIntArray(n);
+			int[] dp = new int[n+1];
 
-			if (d == 0) {
-				out.println(n*(m-1)/(n*n));
-			} else {
-				out.println(2*(n-d)*(m-1)/(n*n));
+			int max = -INF;
+			for (int i = 0; i < n; i++) {
+				dp[p[i]] = dp[p[i]-1] + 1;
+				max = max(max, dp[p[i]]);
 			}
 
+			out.println(n-max);
+
 		}
-
-
 	}
 
 	static class InputReader {
