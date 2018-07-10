@@ -1,4 +1,4 @@
-package abc092;
+package arc092;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -38,56 +38,35 @@ public class D_2 {
 			long[] A = in.nextLongArray(n);
 			long[] B = in.nextLongArray(n);
 
-			long[][] modB = new long[30][n];
-			for (int k = 0; k < 30; k++) {
-				for (int j = 0; j < n; j++) {
-					modB[k][j] = B[j] % (1<<(k+1));
-				}
-				Arrays.sort(modB[k]);
-			}
-
 			long ans = 0;
 
-			// a[i]を固定して、範囲に含まれるb[i]の含まれる個数を数え上げる
-			for (int i = 0; i < n; i++) {
+			// k bit目に着目
+			for (int i = 0; i < 30; i++) {
 
-				// k bit目に着目
-				for (int k = 0; k < 30; k++) {
-					long tmp = 0;
-					long a = A[i] % (1<<(k+1));
-
-					// a[i]のk bit目が0の場合
-					if ((a & (1>>k)) == 0) {
-						tmp += lowerBound(modB[k], 1<<(k+1) - a) - lowerBound(modB[k], 1<<k - a);
-
-					// a[i]のk bit目が1の場合
-					} else {
-						tmp += lowerBound(modB[k], 1<<(k+1) - a) - lowerBound(modB[k], 1<<k - a);
-						tmp += lowerBound(modB[k], 1<<(k+2) - a) - lowerBound(modB[k], 1<<(k+1) - a);
-					}
-					if (tmp % 2 == 1) {
-						ans |= 1 << k;
-					}
+				long[] a = new long[n];
+				long[] b = new long[n];
+				long T = 1<<i;
+				for (int j = 0; j < n; j++) {
+					a[j] = A[j] % (2*T);
+					b[j] = B[j] % (2*T);
 				}
+				Arrays.sort(b);
 
+				long tmp = 0;
+				// a[i]を固定して、範囲に含まれるb[i]の含まれる個数を数え上げる
+				for (int ai = 0; ai < n; ai++) {
+
+					tmp += lowerBound(b, 2*T - a[ai]) - lowerBound(b, 1*T - a[ai]);
+					tmp += lowerBound(b, 4*T - a[ai]) - lowerBound(b, 3*T - a[ai]);
+
+				}
+				if (tmp % 2 == 1) {
+					ans |= 1 << i;
+				}
 			}
 
 			out.println(ans);
 
-
-		}
-
-		public static int upperBound(long[] a, long obj) {
-			int l = 0, r = a.length - 1;
-			while (r - l >= 0) {
-				int c = (l + r) / 2;
-				if (a[c] <= obj) {
-					l = c + 1;
-				} else {
-					r = c - 1;
-				}
-			}
-			return l;
 		}
 
 		public static int lowerBound(long[] a, long obj) {
