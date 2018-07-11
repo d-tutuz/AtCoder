@@ -65,6 +65,19 @@ public class MathUtils {
 	}
 
 	/**
+	 * 二項係数：パスカルの三角形
+	 * 計算量：O(N^2)
+	 * r * nCr = n * n-1Cr-1
+	 * */
+	static long ncr(int a, int b) {
+		if (b == 0) return 1;
+		long res = ncr(a - 1, b - 1);
+		res *= a;
+		res /= b;
+		return res;
+	}
+
+	/**
 	 * 累乗[a^e (mod modP)]
 	 *
 	 * @param a : 被累乗数
