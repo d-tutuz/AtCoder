@@ -43,9 +43,40 @@ public class B_4 {
 
 				boolean ok = true;
 
+				long sa = d-b;
+
+				if (a-b < 0) {
+					ok = false;
+				}
+
+				if (sa < 0) {
+					ok = false;
+				}
+
+				if (sa == 0 && (a-b < 0 || a-b > c)) {
+					ok =  false;
+				}
+
 				long l = -1, r = (long)Math.pow(10, 18);
+				long tar = 0;
 				while (r-l > 1) {
 					long k = (r+l)/2;
+
+					if (a - k*b + (k-1)*d <= c) {
+						tar = a - k*+b + k*d;
+					} else {
+						tar = a - k*+b;
+					}
+
+					if (tar - b < c) {
+						l = k;
+					} else {
+						r = k;
+					}
+				}
+
+				if (a - (r+1)*b + r*d < 0) {
+					ok = false;
 				}
 
 				out.println(ok ? "Yes" : "No");
