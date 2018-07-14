@@ -1,4 +1,4 @@
-package abc019;
+package agc026;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,13 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.InputMismatchException;
-import java.util.List;
 import java.util.StringTokenizer;
-import java.util.stream.Stream;
 
-public class D {
+public class A {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -34,29 +31,23 @@ public class D {
 
 	static class TaskX {
 
-		@SuppressWarnings("unchecked")
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			int n = in.nextInt();
-			List<P>[] g = new ArrayList[n];
-			g = Stream.generate(ArrayList::new).limit(n).toArray(List[]::new);
-			for (int i = 0; i < n-1; i++) {
-				
+			int[] a = in.nextIntArray(n);
+
+			int count = 0;
+
+			for (int l = 0, r = 0; l < n; l = r) {
+				while (r < n && a[l] == a[r]) {
+					r++;
+				}
+				int len = r-l;
+				count += len/2;
 			}
 
+			out.println(count);
 		}
-
-		class P {
-			int to;
-			long weight;
-
-			public P(int to, long weight) {
-				super();
-				this.to = to;
-				this.weight = weight;
-			}
-		}
-
 	}
 
 	static class InputReader {

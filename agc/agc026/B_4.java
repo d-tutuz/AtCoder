@@ -1,4 +1,4 @@
-package abc019;
+package agc026;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,13 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.InputMismatchException;
-import java.util.List;
 import java.util.StringTokenizer;
-import java.util.stream.Stream;
 
-public class D {
+public class B_4 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -34,29 +31,27 @@ public class D {
 
 	static class TaskX {
 
-		@SuppressWarnings("unchecked")
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			List<P>[] g = new ArrayList[n];
-			g = Stream.generate(ArrayList::new).limit(n).toArray(List[]::new);
-			for (int i = 0; i < n-1; i++) {
-				
+			int t = in.nextInt();
+
+			for (int i = 0; i < t; i++) {
+				long a = in.nextLong();
+				long b = in.nextLong();
+				long c = in.nextLong();
+				long d = in.nextLong();
+
+				boolean ok = true;
+
+				long l = -1, r = (long)Math.pow(10, 18);
+				while (r-l > 1) {
+					long k = (r+l)/2;
+				}
+
+				out.println(ok ? "Yes" : "No");
 			}
 
 		}
-
-		class P {
-			int to;
-			long weight;
-
-			public P(int to, long weight) {
-				super();
-				this.to = to;
-				this.weight = weight;
-			}
-		}
-
 	}
 
 	static class InputReader {
