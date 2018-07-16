@@ -1,4 +1,4 @@
-package agc005;
+package agc026;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,11 +6,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.StringTokenizer;
-import java.util.TreeSet;
+import java.util.TreeMap;
 
-public class B {
+public class C {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -23,27 +25,74 @@ public class B {
 	}
 
 	static int INF = 1 << 30;
-	static int modP = 1000000007;
+	static long LINF = 1L << 55;
+	static int MOD = 1000000007;
+	static int[] mh4 = { 0, -1, 1, 0 };
+	static int[] mw4 = { -1, 0, 0, 1 };
+	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
+	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
 	static class TaskX {
+
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
+			int k = in.nextInt();
+			char[] s = in.nextString().toCharArray();
 
-			int[] m = new int[n];
-			for (int i = 0; i < n; i++) {
-				int idx = in.nextInt()-1;
-				m[idx] = i;
+
+			TreeMap<String, Integer> mapRightRed = new TreeMap<>();
+			TreeMap<String, Integer> mapRightBlue = new TreeMap<>();
+
+			// 右側の半分全列挙を逆順で個数を保存しておく
+			for (int i = 0; i < (1 << k); i++) {
+				StringBuffer red = new StringBuffer();
+				StringBuffer blue = new StringBuffer();
+
+				for (int j = 0; j < k; j++) {
+					if (((i >> j) & 1) == 1) {
+						red.append(s[k+j]);
+					} else {
+						blue.append(s[k+j]);
+					}
+				}
+				mapRightRed.merge(red.reverse().toString(), 1, Integer::sum);
+				mapRightBlue.merge(blue.reverse().toString(), 1, Integer::sum);
+
 			}
 
 			long ans = 0;
-			TreeSet<Integer> set = new TreeSet<>();
-			set.add(-1);
-			set.add(n);
-			for (int i = 0; i < n; i++) {
-				int idx = m[i];
-				ans += (long)(idx-set.lower(idx)) * (long)(set.higher(idx)-idx) * (i+1);
-				set.add(idx);
+
+			List<String> list = new ArrayList<>();
+
+			// 左側を半分全列挙
+			for (int i = 0; i < (1 << k); i++) {
+				StringBuffer red = new StringBuffer();
+				StringBuffer blue = new StringBuffer();
+
+				for (int j = 0; j < k; j++) {
+					if (((i >> j) & 1) == 1) {
+						red.append(s[j]);
+					} else {
+						blue.append(s[j]);
+					}
+				}
+
+				long cr = 0, cb = 0;
+				if (mapRightBlue.containsKey(red.toString())) {
+					cr += mapRightBlue.get(red.toString());
+				}
+				if (mapRightRed.containsKey(blue.toString())) {
+					cb += mapRightRed.get(blue.toString());
+				}
+
+				if (cr * cb > 0) {
+					list.add(red.toString());
+				}
+				ans += cr * cb;
+			}
+
+			for (String string : list) {
+				out.println(string);
 			}
 
 			out.println(ans);
@@ -98,7 +147,6 @@ public class B {
 			in = new BufferedReader(new InputStreamReader(inputStream));
 			tok = new StringTokenizer("");
 		}
-
 	}
 
 }

@@ -10,7 +10,7 @@ import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
-public class B {
+public class B_3 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -23,26 +23,34 @@ public class B {
 	}
 
 	static int INF = 1 << 30;
-	static int modP = 1000000007;
+	static long LINF = 1L << 55;
+	static int MOD = 1000000007;
+	static int[] mh4 = { 0, -1, 1, 0 };
+	static int[] mw4 = { -1, 0, 0, 1 };
+	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
+	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
 	static class TaskX {
+
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			int n = in.nextInt();
-
 			int[] m = new int[n];
-			for (int i = 0; i < n; i++) {
-				int idx = in.nextInt()-1;
-				m[idx] = i;
+			for (int idx = 0; idx < n; idx++) {
+				int i = in.nextInt()-1;
+				m[i] = idx;
 			}
 
-			long ans = 0;
 			TreeSet<Integer> set = new TreeSet<>();
 			set.add(-1);
 			set.add(n);
+
+			long ans = 0;
 			for (int i = 0; i < n; i++) {
 				int idx = m[i];
-				ans += (long)(idx-set.lower(idx)) * (long)(set.higher(idx)-idx) * (i+1);
+				long l = idx - set.lower(idx);
+				long r = set.higher(idx) - idx;
+				ans += l * r * (i+1);
 				set.add(idx);
 			}
 
@@ -98,7 +106,6 @@ public class B {
 			in = new BufferedReader(new InputStreamReader(inputStream));
 			tok = new StringTokenizer("");
 		}
-
 	}
 
 }

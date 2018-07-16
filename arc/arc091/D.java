@@ -1,4 +1,6 @@
-package agc005;
+package arc091;
+
+import static java.lang.Math.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,9 +10,8 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
-import java.util.TreeSet;
 
-public class B {
+public class D {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -23,31 +24,25 @@ public class B {
 	}
 
 	static int INF = 1 << 30;
-	static int modP = 1000000007;
+	static long LINF = 1L << 55;
+	static int MOD = 1000000007;
+	static int[] mh4 = { 0, -1, 1, 0 };
+	static int[] mw4 = { -1, 0, 0, 1 };
+	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
+	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
 	static class TaskX {
+
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
+			long n = in.nextLong(), k = in.nextLong();
+			long sum = 0;
 
-			int[] m = new int[n];
-			for (int i = 0; i < n; i++) {
-				int idx = in.nextInt()-1;
-				m[idx] = i;
+			for (int b = 1; b <= n; b++) {
+				sum += max(0, b-k)*(n/b) + max(0, n%b-k+1);
 			}
-
-			long ans = 0;
-			TreeSet<Integer> set = new TreeSet<>();
-			set.add(-1);
-			set.add(n);
-			for (int i = 0; i < n; i++) {
-				int idx = m[i];
-				ans += (long)(idx-set.lower(idx)) * (long)(set.higher(idx)-idx) * (i+1);
-				set.add(idx);
-			}
-
-			out.println(ans);
-
+			if (k == 0) sum = n*n;
+			out.println(sum);
 		}
 	}
 
@@ -98,7 +93,6 @@ public class B {
 			in = new BufferedReader(new InputStreamReader(inputStream));
 			tok = new StringTokenizer("");
 		}
-
 	}
 
 }

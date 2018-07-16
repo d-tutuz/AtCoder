@@ -6,11 +6,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
-import java.util.TreeSet;
 
-public class B {
+public class B_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -23,31 +23,48 @@ public class B {
 	}
 
 	static int INF = 1 << 30;
-	static int modP = 1000000007;
+	static long LINF = 1L << 55;
+	static int MOD = 1000000007;
+	static int[] mh4 = { 0, -1, 1, 0 };
+	static int[] mw4 = { -1, 0, 0, 1 };
+	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
+	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
 	static class TaskX {
+
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
 
-			int[] m = new int[n];
-			for (int i = 0; i < n; i++) {
-				int idx = in.nextInt()-1;
-				m[idx] = i;
-			}
+			int n = in.nextInt();
+			long[] a = in.nextLongArray(n);
 
 			long ans = 0;
-			TreeSet<Integer> set = new TreeSet<>();
-			set.add(-1);
-			set.add(n);
+
 			for (int i = 0; i < n; i++) {
-				int idx = m[i];
-				ans += (long)(idx-set.lower(idx)) * (long)(set.higher(idx)-idx) * (i+1);
-				set.add(idx);
+				long[] l = Arrays.copyOfRange(a, 0, i+1);
+				long[] r = Arrays.copyOfRange(a, i, n);
+
+				int idxL = upperBound(l, a[i]);
+				int idxR = upperBound(r, a[i]);
+
+				ans += (idxL) * (idxR);
 			}
 
 			out.println(ans);
 
+		}
+
+		public static int upperBound(long[] a, long obj) {
+			int l = 0, r = a.length - 1;
+			while (r - l >= 0) {
+				int c = (l + r) / 2;
+				if (a[c] <= obj) {
+					l = c + 1;
+				} else {
+					r = c - 1;
+				}
+			}
+			return l;
 		}
 	}
 
@@ -89,7 +106,7 @@ public class B {
 		public long[] nextLongArray(int n) {
 			long[] res = new long[n];
 			for (int i = 0; i < n; i++) {
-				res[i] = nextLong();
+				res[i] = -nextLong();
 			}
 			return res;
 		}
@@ -98,7 +115,6 @@ public class B {
 			in = new BufferedReader(new InputStreamReader(inputStream));
 			tok = new StringTokenizer("");
 		}
-
 	}
 
 }
