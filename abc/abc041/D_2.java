@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class D {
+public class D_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -39,30 +39,36 @@ public class D {
 			n = in.nextInt();
 			m = in.nextInt();
 			mat = new boolean[n][n];
-
-			// x から ｙ への有向辺
 			for (int i = 0; i < m; i++) {
 				int x = in.nextInt()-1, y = in.nextInt()-1;
 				mat[x][y] = true;
 			}
 
-			long ans = 0;
+			long[] dp = new long[1<<n];
+			dp[0] = 1;
+			for (int state = 0; state < 1<<n; state++) {
+				for (int i = 0; i < n; i++) {
 
-			ans = rec(1<<n);
+					// i ビット目(0-indexed)が未訪問
+					if (((state >> i) & 1) == 0) {
+						boolean ok = true;
 
-			out.println(ans);
-		}
+						// 訪問済の頂点へ辺がある場合は false.
+						for (int j = 0; j < n; j++) {
+							if (((state >> j) & 1) == 1 && mat[i][j]) {
+								ok = false;
+							}
+						}
 
-		long rec(int state) {
+						if (ok) dp[state | 1<<i] += dp[state];
+					}
 
-			long ret = 0;
-			if (Integer.bitCount(state) == 0) {
-				return 1;
+//					out.printf("%s:%d\n", Integer.toBinaryString(state), dp[state]);
+				}
 			}
-			for (int i = 0; i < n; i++) {
 
-			}
-			return 0;
+			out.println(dp[(1<<n)-1]);
+
 		}
 	}
 
