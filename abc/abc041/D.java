@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
@@ -34,35 +35,55 @@ public class D {
 		int n, m;
 		long[] s = new long[1<<n];
 		boolean[][] mat;
+		long[] memo;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			n = in.nextInt();
 			m = in.nextInt();
 			mat = new boolean[n][n];
+			memo = new long[1<<n];
+			Arrays.fill(memo, -1);
 
-			// x から ｙ への有向辺
 			for (int i = 0; i < m; i++) {
 				int x = in.nextInt()-1, y = in.nextInt()-1;
 				mat[x][y] = true;
 			}
 
-			long ans = 0;
-
-			ans = rec(1<<n);
-
+			long ans = rec((1<<n) - 1);
 			out.println(ans);
 		}
 
 		long rec(int state) {
 
-			long ret = 0;
+			if (memo[state] != -1) {
+				return memo[state];
+			}
+
 			if (Integer.bitCount(state) == 0) {
 				return 1;
 			}
-			for (int i = 0; i < n; i++) {
 
+			long ret = 0;
+
+			for (int i = 0; i < n; i++) {
+				if (((state >> i) & 1) == 1) {
+					boolean ok = true;
+					for (int j = 0; j < n; j++) {
+
+						if (i == j) continue;
+						if (((state >> j) & 1) == 1) {
+							if (mat[i][j]) {
+								ok = false;
+							}
+						}
+					}
+
+					if (ok) {
+						ret += rec(state - (1<<i));
+					}
+				}
 			}
-			return 0;
+			return memo[state] = ret;
 		}
 	}
 
