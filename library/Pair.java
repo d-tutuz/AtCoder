@@ -47,5 +47,4 @@ public class Pair<U, V> implements Comparable<Pair<U, V>> {
 		return ((Comparable<V>) second).compareTo(o.second);
 	}
 
-
 }
