@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
@@ -40,9 +41,11 @@ public class D_2 {
 				ps[i] = new P(a, b);
 			}
 
+			Arrays.sort(ps);
+
 			int s = 0, count = 0;;
-			for (int i = 0; i < n; i++) {
-				if (ps[i].a <= s) continue;
+			for (int i = 0; i < m; i++) {
+				if (ps[i].a < s) continue;
 				if (s < ps[i].b) {
 					s = ps[i].b;
 					count++;
@@ -64,9 +67,12 @@ public class D_2 {
 
 			@Override
 			public int compareTo(P o) {
-				return this.b - o.b;
+				if (this.b == o.b) {
+					return this.a - o.a;
+				} else {
+					return this.b - o.b;
+				}
 			}
-
 		}
 	}
 
