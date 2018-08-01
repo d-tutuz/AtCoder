@@ -1,4 +1,4 @@
-package abc029;
+package abc066;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,11 +6,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.InputMismatchException;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
 
-public class D_4 {
+public class D_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -32,45 +34,20 @@ public class D_4 {
 
 	static class TaskX {
 
-		char[] s;
-		long[][][] memo;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			s = in.nextString().toCharArray();
-			int n = s.length;
-			memo = new long[n+1][n+1][2];
-			for (int i = 0; i < n+1; i++) {
-				for (int j = 0; j < n+1; j++) {
-					Arrays.fill(memo[i][j], -1);
-				}
+			int n = in.nextInt();
+			int[] a = in.nextIntArray(n+1);
+
+			Map<Integer, Integer> map = new TreeMap<>();
+			for (int i : a) {
+				map.merge(i, 1, Integer::sum);
 			}
 
-			long ans = rec(0, 0, 1);
-
-			out.println(ans);
-
-		}
-
-		long rec(int now, int count, int tight) {
-
-
-			if (memo[now][count][tight] >= 0) {
-				return memo[now][count][tight];
+			for (Entry<Integer, Integer> e : map.entrySet()) {
+				out.println(e.getKey() +":" + e.getValue());
 			}
 
-			if (now == s.length) {
-				return count;
-			}
-
-			long ret = 0;
-			int d = s[now]-'0';
-			for (int e = 0; e <= (tight == 1 ? d : 9); e++) {
-
-				System.out.printf("(%d,%d,%d)\n", now+1, e == 1 ? count+1 : count, tight == 1 && e == d ? 1 : 0);
-				ret += rec(now+1, e == 1 ? count+1 : count, tight == 1 && e == d ? 1 : 0);
-			}
-
-			return memo[now][count][tight] = ret;
 		}
 	}
 

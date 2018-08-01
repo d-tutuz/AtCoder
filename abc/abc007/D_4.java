@@ -1,4 +1,4 @@
-package abc029;
+package abc007;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,45 +32,55 @@ public class D_4 {
 
 	static class TaskX {
 
-		char[] s;
-		long[][][] memo;
+		char[] a, b;
+		long memo[][][];
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			s = in.nextString().toCharArray();
-			int n = s.length;
-			memo = new long[n+1][n+1][2];
-			for (int i = 0; i < n+1; i++) {
-				for (int j = 0; j < n+1; j++) {
+			a = String.valueOf(in.nextLong()-1).toCharArray();
+			b = in.nextString().toCharArray();
+
+			memo = new long[a.length+1][2][2];
+			for (int i = 0; i < a.length+1; i++) {
+				for (int j = 0; j < 2; j++) {
 					Arrays.fill(memo[i][j], -1);
 				}
 			}
+			long a1 = rec(0, 0, 1, a);
 
-			long ans = rec(0, 0, 1);
+			memo = new long[b.length+1][2][2];
+			for (int i = 0; i < b.length+1; i++) {
+				for (int j = 0; j < 2; j++) {
+					Arrays.fill(memo[i][j], -1);
+				}
+			}
+			long b1 = rec(0, 0, 1, b);
 
-			out.println(ans);
+			out.println(b1 - a1);
+
 
 		}
 
-		long rec(int now, int count, int tight) {
+		long rec(int now, int used, int tight, char[] s) {
 
-
-			if (memo[now][count][tight] >= 0) {
-				return memo[now][count][tight];
+			if (memo[now][used][tight] >= 0) {
+				return memo[now][used][tight];
 			}
 
 			if (now == s.length) {
-				return count;
+				return used == 1 ? 1 : 0;
 			}
 
-			long ret = 0;
 			int d = s[now]-'0';
+			long ret = 0;
 			for (int e = 0; e <= (tight == 1 ? d : 9); e++) {
 
-				System.out.printf("(%d,%d,%d)\n", now+1, e == 1 ? count+1 : count, tight == 1 && e == d ? 1 : 0);
-				ret += rec(now+1, e == 1 ? count+1 : count, tight == 1 && e == d ? 1 : 0);
+				int bool = e == 4 || e == 9 || used == 1 ? 1 : 0;
+				ret += rec(now+1, bool, tight == 1 && e == d ? 1 : 0, s);
+
 			}
 
-			return memo[now][count][tight] = ret;
+			return memo[now][used][tight] = ret;
+
 		}
 	}
 
