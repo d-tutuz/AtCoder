@@ -1,21 +1,24 @@
 package abc066;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.HashSet;
 import java.util.InputMismatchException;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.TreeMap;
 
 public class D_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
+		inputStream = new FileInputStream(new File("/workspace/Atcoder/abc/abc066/input.txt"));
+
 		OutputStream outputStream = System.out;
 		InputReader in = new InputReader(inputStream);
 		PrintWriter out = new PrintWriter(outputStream);
@@ -38,17 +41,95 @@ public class D_2 {
 
 			int n = in.nextInt();
 			int[] a = in.nextIntArray(n+1);
-
-			Map<Integer, Integer> map = new TreeMap<>();
-			for (int i : a) {
-				map.merge(i, 1, Integer::sum);
+			int idx = -1;
+			Set<Integer> set = new HashSet<>();
+			for (int i = 0; i < n+1; i++) {
+				if (set.contains(a[i])) {
+					idx = i;
+				} else {
+					set.add(a[i]);
+				}
 			}
 
-			for (Entry<Integer, Integer> e : map.entrySet()) {
-				out.println(e.getKey() +":" + e.getValue());
+			for (int k = 1; k <= n; k++) {
+				if (k == 1) {
+					out.println(n);
+				} else if (k == 2) {
+					long ret = 0;
+					ret += comb(n+1-2, k);
+					ret += comb(n+1-2, k-1) * 2 - comb(n-idx, k-1) * 2;
+					ret += comb(n-2, k-2) * 2;
+					out.println(ret);
+				} else {
+					long ret = 0;
+					if (n+1-2-k >= 0) ret += comb(n+1-2, k);
+					if (n-idx - (k-1) >= 0) ret += comb(n+1-2, k-1) * 2 - comb(n-idx, k-1) * 2;
+					ret += comb(n-2, k-2) * 2;
+					out.println(ret);
+				}
+
 			}
+
+//			int k = 1;
+//			long ans = comb(n+1-2, k);
+//			if (k-1 >= 0) ans += comb(n+1-2, k-1);
+//			if (k-2 >= 0) ans += comb(n+1-2, k-2);
+
+//			System.out.println(ans);
 
 		}
+
+
+	}
+
+	/**
+	 * 二項係数
+	 * 前提 n < modP
+	 * nCr = n!/(r!*(n-r)!)である。この時分子分母にMODが来る場合は以下のように使用する
+	 * */
+	public static long comb(int n, int r) {
+		return fact[n] % MOD * factInv[r] % MOD * factInv[n - r] % MOD;
+	}
+
+	/**
+	 * 階乗数の逆元
+	 *
+	 * */
+	public static int MAXN = 200000;
+
+	static long[] fact = factorialArray(MAXN, MOD);
+	static long[] factInv = factorialInverseArray(MAXN, MOD,
+			inverseArray(MAXN, MOD));
+
+	// 階乗の mod P テーブル
+	public static long[] factorialArray(int maxN, long mod) {
+		long[] fact = new long[maxN + 1];
+		fact[0] = 1 % mod;
+		for (int i = 1; i <= maxN; i++) {
+			fact[i] = fact[i - 1] * i % mod;
+		}
+		return fact;
+	}
+
+	// 数 i に対する mod P での逆元テーブル
+	public static long[] inverseArray(int maxN, long modP) {
+		long[] inv = new long[maxN + 1];
+		inv[1] = 1;
+		for (int i = 2; i <= maxN; i++) {
+			inv[i] = modP - (modP / i) * inv[(int) (modP % i)] % modP;
+		}
+		return inv;
+	}
+
+	// 階乗の逆元テーブル
+	public static long[] factorialInverseArray(int maxN, long modP,
+			long[] inverseArray) {
+		long[] factInv = new long[maxN + 1];
+		factInv[0] = 1;
+		for (int i = 1; i <= maxN; i++) {
+			factInv[i] = factInv[i - 1] * inverseArray[i] % modP;
+		}
+		return factInv;
 	}
 
 	static class InputReader {
