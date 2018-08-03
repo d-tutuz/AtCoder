@@ -41,41 +41,36 @@ public class D_2 {
 
 			int n = in.nextInt();
 			int[] a = in.nextIntArray(n+1);
-			int idx = -1;
+			int l = -1, r = -1, num = -1;
 			Set<Integer> set = new HashSet<>();
 			for (int i = 0; i < n+1; i++) {
 				if (set.contains(a[i])) {
-					idx = i;
+					num = a[i];
+					break;
 				} else {
 					set.add(a[i]);
 				}
 			}
 
-			for (int k = 1; k <= n; k++) {
-				if (k == 1) {
-					out.println(n);
-				} else if (k == 2) {
-					long ret = 0;
-					ret += comb(n+1-2, k);
-					ret += comb(n+1-2, k-1) * 2 - comb(n-idx, k-1) * 2;
-					ret += comb(n-2, k-2) * 2;
-					out.println(ret);
-				} else {
-					long ret = 0;
-					if (n+1-2-k >= 0) ret += comb(n+1-2, k);
-					if (n-idx - (k-1) >= 0) ret += comb(n+1-2, k-1) * 2 - comb(n-idx, k-1) * 2;
-					ret += comb(n-2, k-2) * 2;
-					out.println(ret);
+			boolean isFirst = true;
+			for (int i = 0; i < n+1; i++) {
+				if (a[i] == num && isFirst) {
+					l = i+1;
+					isFirst = false;
+				} else if (a[i] == num && !isFirst) {
+					r = i+1;
 				}
-
 			}
 
-//			int k = 1;
-//			long ans = comb(n+1-2, k);
-//			if (k-1 >= 0) ans += comb(n+1-2, k-1);
-//			if (k-2 >= 0) ans += comb(n+1-2, k-2);
-
-//			System.out.println(ans);
+			for (int k = 1; k <= n+1; k++) {
+				long ans = 0;
+				if (l-1+n-r - k+1 > 0) {
+					ans = comb(n+1, k) - comb(l-1+n-r, k-1);
+				} else {
+					ans = comb(n+1, k) - 1;
+				}
+				out.println(ans);
+			}
 
 		}
 
