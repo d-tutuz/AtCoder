@@ -45,20 +45,21 @@ public class D {
 					int tx = x;
 					int ty = y;
 
+					if (set.contains((long)x << 32 | y)) {
+						ans++;
+						continue;
+					}
+
 					int count = 0;
 					while (!(tx == 0 || ty == 0)) {
 
-						int btx = tx;
-						int bty = ty;
-
-						if (set.contains((long)tx << 32 | ty)) {
-							ans++;
-							break;
-						}
 
 						if (count >= 1000) {
 							ans++;
+							set.add((long)x << 32 | y);
+							set.add((long)y << 32 | x);
 							set.add((long)tx << 32 | ty);
+							set.add((long)ty << 32 | tx);
 							break;
 						}
 
@@ -76,12 +77,6 @@ public class D {
 							tx = tx - ty;
 						}
 
-						if (tx != 1 && tx != 1 && btx == tx && bty == ty) {
-							ans++;
-							set.add((long)tx << 32 | ty);
-							break;
-						}
-
 						out.println("-> " + tx +":" + ty);
 
 						count++;
@@ -89,6 +84,10 @@ public class D {
 
 				}
 			}
+
+	        for (long entry : set) {
+	            out.println("("+(entry >> 32)+","+ (entry & ((long)1<<32)-1)+")");
+	        }
 
 			out.println(ans);
 
