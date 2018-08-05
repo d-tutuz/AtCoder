@@ -34,46 +34,57 @@ public class D {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			char[] s = in.nextString().toCharArray();
-			int Acount = 0;
-			int Bcount = 0;
-			int Ccount = 0;
-			int Xcount = 0;
-			for (char c : s) {
-				if (c == '?') {
-					Xcount++;
-				} else if (c == 'A') {
-					Acount++;
-				} else if (c == 'B') {
-					Bcount++;
-				} else if (c == 'C') {
-					Ccount++;
-				}
+			int n = s.length;
+			long[] ac = new long[n+1];
+			long[] bc = new long[n+1];
+			long[] cc = new long[n+1];
+			long[] xc = new long[n+1];
+			for (int i = 0; i < n; i++) {
+				ac[i+1] += ac[i];
+				bc[i+1] += bc[i];
+				cc[i+1] += cc[i];
+				xc[i+1] += xc[i];
+				if (s[i] == 'A') ac[i+1]++;
+				if (s[i] == 'B') bc[i+1]++;
+				if (s[i] == 'C') cc[i+1]++;
+				if (s[i] == '?') xc[i+1]++;
 			}
-
-			int Anow = 0;
-			int Bnow = 0;
-			int Cnow = 0;
-			int Xnow = 0;
 
 			long ans = 0;
-			for (int i = 0; i < s.length; i++) {
-				if (s[i] == '?') {
-					ans += (Xnow + Anow) * ((Ccount - Cnow + Xcount-1-Xnow));
-					Xnow++;
-				} else if (s[i] == 'A') {
-					ans += (Xnow + Anow) * ((Ccount - Cnow + Xcount-Xnow));
-					Anow++;
-				} else if (s[i] == 'B') {
-					ans += (Xnow + Anow) * ((Ccount - Cnow + Xcount-Xnow));
-					Bnow++;
-				} else if (s[i] == 'C') {
-					ans += (Xnow + Anow) * ((Ccount - Cnow + Xcount-Xnow));
-					Cnow++;
+			for (int i = 0; i < n; i++) {
+				if (s[i] == 'B' || s[i] == '?') {
+					long a = ac[i] - ac[0];
+					long l = xc[i] - xc[0];
+					long c = cc[n] - cc[i+1];
+					long r = xc[n] - xc[i+1];
+
+					ans += power(3, l+r, MOD) * a % MOD * c % MOD;
+					ans += power(3, l+r-1, MOD) * a % MOD * r % MOD;
+					ans += power(3, l+r-1, MOD) * l % MOD * c % MOD;
+					ans += power(3, l+r-2, MOD) * l % MOD * r % MOD;
 				}
 			}
 
-			out.println(ans);
+			out.println(ans % MOD);
 
+		}
+
+		/**
+		 * 累乗[a^e (mod modP)]
+		 *
+		 * @param a : 被累乗数
+		 * @param e : 累乗数
+		 * @param modP : mod数
+		 * */
+		static long power(long a, long e, long modP) {
+			long ret = 1;
+			for (; e > 0; e /= 2) {
+				if (e % 2 != 0) {
+					ret = (ret * a) % modP;
+				}
+				a = (a * a) % modP;
+			}
+			return ret;
 		}
 	}
 

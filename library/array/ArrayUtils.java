@@ -1,21 +1,7 @@
 package array;
 
-import java.util.Map;
-import java.util.TreeMap;
 
 public class ArrayUtils {
-
-	/**
-	 * 要素の個数を集計する
-	 *
-	 * @output map キー、個数が入ったmap
-	 * */
-	public static Map<Integer, Integer> getCountMap(int[] array) {
-		Map<Integer, Integer> map = new TreeMap<>();
-		for (int x : array)
-			map.merge(x, 1, Integer::sum);
-		return map;
-	}
 
 	/**
 	 * 指定された要素以上の値が現れる最初の位置のイテレータを取得する
