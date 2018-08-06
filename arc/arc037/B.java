@@ -1,4 +1,4 @@
-package mujinprogrammingchallenge2018;
+package arc037;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,12 +6,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Arrays;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
-import java.util.PriorityQueue;
+import java.util.List;
+import java.util.Queue;
 import java.util.StringTokenizer;
+import java.util.stream.Stream;
 
-public class E {
+public class B {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -26,105 +29,69 @@ public class E {
 	static int INF = 1 << 30;
 	static long LINF = 1L << 55;
 	static int MOD = 1000000007;
-	static int[] mh4 = {-1, 1, 0, 0 };
-	static int[] mw4 = { 0, 0, -1, 1 };
+	static int[] mh4 = { 0, -1, 1, 0 };
+	static int[] mw4 = { -1, 0, 0, 1 };
+	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
+	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
 	static class TaskX {
 
+		@SuppressWarnings("unchecked")
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt(), m = in.nextInt(), k = in.nextInt();
-			char[] d = in.nextString().toCharArray();
+			int n = in.nextInt(), m = in.nextInt();
+			List<Integer>[] g = new ArrayList[n];
+			g = Stream.generate(ArrayList::new).limit(n).toArray(List[]::new);
 
-			char[][] s = new char[n][m];
+			for (int i = 0; i < m; i++) {
+				int u = in.nextInt()-1, v = in.nextInt()-1;
+				g[u].add(v);
+				g[v].add(u);
+			}
+
+			int count = 0;
+			boolean[] used = new boolean[n];
+
 			for (int i = 0; i < n; i++) {
-				s[i] = in.nextString().toCharArray();
-			}
+				if (used[i]) {
+					continue;
+				}
 
-			int sh = -1, sw = -1;
-			int gh = -1, gw = -1;
+				Queue<P> q = new ArrayDeque<>();
+				q.add(new P(-1, i));
+				used[i] = true;
+				boolean cycle = false;
 
-			for (int i = 0; i < n; i++) {
-				for (int j = 0; j < m; j++) {
-					if (s[i][j] == 'S') {
-						sh = i; sw = j;
-					} else if (s[i][j] == 'G') {
-						gh = i; gw = j;
+				top:
+				while (!q.isEmpty()) {
+					P p = q.remove();
+					int cur = p.t;
+
+					for (int to : g[cur]) {
+						if (to == p.f) continue;
+						if (to != p.f && used[to] && p.f != -1) {
+							cycle = true;
+							break top;
+						} else {
+							q.add(new P(cur, to));
+							used[to] = true;
+						}
 					}
 				}
+
+				if (!cycle) count++;
 			}
 
-			long[][] weight = new long[4][2*k];
-			for (int i = 0; i < 4; i++) {
-				Arrays.fill(weight[i], LINF);
-			}
-
-			for (int i = 0; i < 2*k; i++) {
-				if (d[i%k] == 'U') {
-					weight[0][i] = 0;
-				} else if (d[i%k] == 'D') {
-					weight[1][i] = 0;
-				} else if (d[i%k] == 'L') {
-					weight[2][i] = 0;
-				} else if (d[i%k] == 'R') {
-					weight[3][i] = 0;
-				}
-			}
-			for (int i = 2*k-1; i > 0; i--) {
-				for (int j = 0; j < 4; j++) {
-					if (weight[j][i-1] != 0) {
-						weight[j][i-1] = weight[j][i] + 1;
-					}
-				}
-			}
-
-			long[][] cost = new long[n][m];
-			for (int i = 0; i < n; i++) {
-				Arrays.fill(cost[i], LINF);
-			}
-			cost[sh][sw] = 0;
-			PriorityQueue<P> pq = new PriorityQueue<>();
-			pq.add(new P(sh, sw, 0));
-
-			while (!pq.isEmpty()) {
-				P p = pq.remove();
-
-				for (int i = 0; i < 4; i++) {
-					int mh = p.h + mh4[i];
-					int mw = p.w + mw4[i];
-
-					if (mh < 0 || mh >= n || mw < 0 || mw >= m || s[mh][mw] == '#') {
-						continue;
-					}
-
-					long mc = p.c + weight[i][(int)(p.c%k)] + 1;
-					if (mc < cost[mh][mw]) {
-						cost[mh][mw] = mc;
-						pq.add(new P(mh, mw, mc));
-					}
-				}
-			}
-
-			long ans = cost[gh][gw];
-
-			out.println(ans == LINF ? -1 : ans);
-
+			out.println(count);
 		}
 
-		class P implements Comparable<P> {
-			int h, w;
-			long c;
+		class P {
+			int f, t;
 
-			public P(int h, int w, long c) {
+			public P(int f, int t) {
 				super();
-				this.h = h;
-				this.w = w;
-				this.c = c;
-			}
-
-			@Override
-			public int compareTo(P o) {
-				return (int)(this.c - o.c);
+				this.f = f;
+				this.t = t;
 			}
 
 		}
