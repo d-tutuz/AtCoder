@@ -6,14 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.InputMismatchException;
-import java.util.List;
 import java.util.StringTokenizer;
 
-public class Main {
+public class D_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -37,59 +33,44 @@ public class Main {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int d = in.nextInt(), g = in.nextInt();
+			long a = 0;
+			long ab = 0;
+			long abc = 0;
+			long all = 1;
 
+			char[] s = in.nextString().toCharArray();
 
-			int[] p = new int[d], c = new int[d];
-			for (int i = 0; i < d; i++) {
-				p[i] = in.nextInt();
-				c[i] = in.nextInt();
+			for (char c : s) {
+				if (c == 'A') {
+					a += all;
+				}
 
+				if (c == 'B') {
+					ab += a;
+				}
+
+				if (c == 'C') {
+					abc += ab;
+				}
+
+				if (c == '?') {
+					long da = all;
+					long dab = a;
+					long dabc = ab;
+					a *= 3;
+					ab *= 3;
+					abc *= 3;
+					all *= 3;
+					a += da;
+					ab += dab;
+					abc += dabc;
+				}
+				a %= MOD;
+				ab %= MOD;
+				abc %= MOD;
+				all %= MOD;
 			}
-
-			int ans = INF;
-			for (int i = 0; i < (1 << d); i++) {
-				int count = 0;
-				int sum = 0;
-				for (int j = 0; j < d; j++) {
-					if (((i >> j) & 1) == 1) {
-						sum += c[j];
-						count += p[j];
-						sum += p[j] * (j+1) *100;
-					}
-				}
-
-				if (g <= sum) {
-					ans = Math.min(ans, count);
-					break;
-				}
-
-				List<Integer> list = new ArrayList<>();
-				for (int j = 0; j < d; j++) {
-					if (((i >> j) & 1) == 0) {
-						for (int k = 0; k < p[j]; k++) {
-							list.add((j+1)*100);
-						}
-					}
-				}
-
-				Collections.sort(list, Comparator.reverseOrder());
-
-				for (int j = 0; j < list.size(); j++) {
-					if (sum >= g) {
-						ans = Math.min(ans, count);
-						break;
-					}
-
-					sum += list.get(j);
-					count++;
-				}
-				ans = Math.min(ans, count);
-
-			}
-
-			out.println(ans);
-
+			out.println(abc % MOD);
 		}
 	}
 
