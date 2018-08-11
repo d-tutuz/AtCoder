@@ -1,7 +1,5 @@
 package abc105;
 
-import static java.lang.Math.*;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,9 +40,18 @@ public class C {
 
 		String keta(long num, long mod) {
 
-			StringBuffer sb = new StringBuffer();
+			if (num == 0) {
+				return "0";
+			}
+
+			StringBuilder sb = new StringBuilder();
 			while (num != 0) {
-				sb.append(abs(num % mod));
+				if (num % mod == 0) {
+					sb.append('0');
+				} else {
+					sb.append('1');
+					num -= 1;
+				}
 				num /= mod;
 			}
 
