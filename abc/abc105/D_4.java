@@ -1,4 +1,4 @@
-package abc044;
+package abc105;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.InputMismatchException;
+import java.util.Map;
 import java.util.StringTokenizer;
 
-public class D_2 {
+public class D_4 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -33,47 +35,28 @@ public class D_2 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			long n = in.nextLong();
-			long s = in.nextLong();
-
-			if (s == n) {
-				out.println(n+1);
-				return;
+			int n = in.nextInt();
+			long m = in.nextLong();
+			long[] a = new long[n+1];
+			long[] sum = new long[n+1];
+			Map<Long, Long> map = new HashMap<>();
+			for (int i = 1; i < n+1; i++) {
+				a[i] = in.nextLong();
+				sum[i] = sum[i-1] + a[i];
+				sum[i] %= m;
 			}
-			if (s > n) {
-				out.println(-1);
-				return;
+			for (long l : sum) {
+				map.merge(l, 1L, Long::sum);
 			}
 
-			// b <= √n
-			for (int b = 2; b <= (int)Math.sqrt(n); b++) {
-				if (f(n, b) == s) {
-					out.println(b);
-					return;
+			long ans = 0;
+			for (long l : map.keySet()) {
+				long v = map.get(l);
+				if (v >= 2) {
+					ans += v * (v-1) / 2;
 				}
 			}
-
-			// b > √n
-			long ans = LINF;
-			for (int p = 1; p < Math.sqrt(n); p++) {
-				if ((n-s) % p == 0) {
-					long b = (n-s) / p + 1;
-					if (f(n, b) == s) {
-						ans = Math.min(b, ans);
-					}
-				}
-			}
-
-			out.println(ans == LINF ? -1 : ans);
-		}
-
-		long f(long n, long mod) {
-			long ret = 0;
-			while (n > 0) {
-				ret += n % mod;
-				n /= mod;
-			}
-			return ret;
+			out.println(ans);
 		}
 	}
 

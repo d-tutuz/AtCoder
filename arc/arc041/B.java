@@ -1,4 +1,4 @@
-package abc044;
+package arc041;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class D_2 {
+public class B {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -31,49 +31,80 @@ public class D_2 {
 
 	static class TaskX {
 
+		int[][] ans;
+		int[][] s;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			long n = in.nextLong();
-			long s = in.nextLong();
-
-			if (s == n) {
-				out.println(n+1);
-				return;
-			}
-			if (s > n) {
-				out.println(-1);
-				return;
-			}
-
-			// b <= √n
-			for (int b = 2; b <= (int)Math.sqrt(n); b++) {
-				if (f(n, b) == s) {
-					out.println(b);
-					return;
+			int n = in.nextInt(), m = in.nextInt();
+			s = new int[n][m];
+			for (int i = 0; i < n; i++) {
+				char[] tmp = in.nextString().toCharArray();
+				for (int j = 0; j < tmp.length; j++) {
+					s[i][j] = tmp[j] - '0';
 				}
 			}
 
-			// b > √n
-			long ans = LINF;
-			for (int p = 1; p < Math.sqrt(n); p++) {
-				if ((n-s) % p == 0) {
-					long b = (n-s) / p + 1;
-					if (f(n, b) == s) {
-						ans = Math.min(b, ans);
-					}
+			ans = new int[n][m];
+
+			calc(0, 0, n-1, m-1);
+
+			for (int i = 0; i < n; i++) {
+				StringBuilder sb = new StringBuilder();
+				for (int j = 0; j < m; j++) {
+					sb.append(ans[i][j]);
 				}
+				out.println(sb.toString());
 			}
 
-			out.println(ans == LINF ? -1 : ans);
 		}
 
-		long f(long n, long mod) {
-			long ret = 0;
-			while (n > 0) {
-				ret += n % mod;
-				n /= mod;
+		void calc(int sh, int sw, int gh, int gw) {
+
+			if (sh == gh || sw == gw || gh - sh == 1 || gw - sw == 1) {
+				return;
 			}
-			return ret;
+
+			// 上
+			for (int i = sw; i <= gw; i++) {
+				if (s[sh][i] > 0) {
+					ans[sh+1][i] += s[sh][i];
+					s[sh+2][i] -= s[sh][i];
+					s[sh+1][i-1] -= s[sh][i];
+					s[sh+1][i+1] -= s[sh][i];
+				}
+			}
+
+			// 右
+			for (int i = sh; i <= gh; i++) {
+				if (s[i][gw] > 0) {
+					ans[i][gw-1] += s[i][gw];
+					s[i+1][gw-1] -= s[i][gw];
+					s[i-1][gw-1] -= s[i][gw];
+					s[i][gw-2] -= s[i][gw];
+				}
+			}
+
+			// 下
+			for (int i = sw; i <= gw; i++) {
+				if (s[gh][i] > 0) {
+					ans[gh-1][i] += s[gh][i];
+					s[gh-2][i] -= s[gh][i];
+					s[gh-1][i-1] -= s[gh][i];
+					s[gh-1][i+1] -= s[gh][i];
+				}
+			}
+
+			// 左
+			for (int i = sh; i <= gh; i++) {
+				if (s[i][sw] > 0) {
+					ans[i][sw+1] += s[i][sw];
+					s[i+1][sw+1] -= s[i][sw];
+					s[i-1][sw+1] -= s[i][sw];
+					s[i][sw+2] -= s[i][sw];
+				}
+			}
+
+			calc(sh+1, sw+1, gh-1, gw-1);
 		}
 	}
 

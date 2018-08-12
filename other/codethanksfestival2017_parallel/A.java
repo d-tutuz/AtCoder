@@ -1,4 +1,4 @@
-package abc044;
+package codethanksfestival2017_parallel;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class D_2 {
+public class A {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -33,47 +34,10 @@ public class D_2 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			long n = in.nextLong();
-			long s = in.nextLong();
+			int[] a = in.nextIntArray(8);
+			Arrays.sort(a);
+			out.println(a[7]);
 
-			if (s == n) {
-				out.println(n+1);
-				return;
-			}
-			if (s > n) {
-				out.println(-1);
-				return;
-			}
-
-			// b <= √n
-			for (int b = 2; b <= (int)Math.sqrt(n); b++) {
-				if (f(n, b) == s) {
-					out.println(b);
-					return;
-				}
-			}
-
-			// b > √n
-			long ans = LINF;
-			for (int p = 1; p < Math.sqrt(n); p++) {
-				if ((n-s) % p == 0) {
-					long b = (n-s) / p + 1;
-					if (f(n, b) == s) {
-						ans = Math.min(b, ans);
-					}
-				}
-			}
-
-			out.println(ans == LINF ? -1 : ans);
-		}
-
-		long f(long n, long mod) {
-			long ret = 0;
-			while (n > 0) {
-				ret += n % mod;
-				n /= mod;
-			}
-			return ret;
 		}
 	}
 

@@ -1,4 +1,4 @@
-package abc044;
+package codethanksfestival2017_parallel;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,9 +7,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.InputMismatchException;
+import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
-public class D_2 {
+public class C {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -33,47 +34,45 @@ public class D_2 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			long n = in.nextLong();
-			long s = in.nextLong();
-
-			if (s == n) {
-				out.println(n+1);
-				return;
-			}
-			if (s > n) {
-				out.println(-1);
-				return;
-			}
-
-			// b <= √n
-			for (int b = 2; b <= (int)Math.sqrt(n); b++) {
-				if (f(n, b) == s) {
-					out.println(b);
-					return;
-				}
+			PriorityQueue<P> pq = new PriorityQueue<>();
+			int n = in.nextInt(), k = in.nextInt();
+			P[] p = new P[n];
+			for (int i = 0; i < n; i++) {
+				long a = in.nextLong();
+				long b = in.nextLong();
+				long t = a;
+				p[i] = new P(a, b, t);
+				pq.add(p[i]);
 			}
 
-			// b > √n
-			long ans = LINF;
-			for (int p = 1; p < Math.sqrt(n); p++) {
-				if ((n-s) % p == 0) {
-					long b = (n-s) / p + 1;
-					if (f(n, b) == s) {
-						ans = Math.min(b, ans);
-					}
-				}
+			long ans = 0;
+			int i = 0;
+			while (i++ < k) {
+				P pp = pq.remove();
+				ans += pp.t;
+				pp.t += pp.b;
+				pq.add(pp);
 			}
 
-			out.println(ans == LINF ? -1 : ans);
+			out.println(ans);
+
 		}
 
-		long f(long n, long mod) {
-			long ret = 0;
-			while (n > 0) {
-				ret += n % mod;
-				n /= mod;
+		class P implements Comparable<P> {
+			long a, b, t;
+
+			public P(long a, long b, long t) {
+				super();
+				this.a = a;
+				this.b = b;
+				this.t = t;
 			}
-			return ret;
+
+			@Override
+			public int compareTo(P o) {
+				return (int)(this.t - o.t);
+			}
+
 		}
 	}
 

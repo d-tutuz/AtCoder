@@ -1,4 +1,6 @@
-package abc044;
+package abc026;
+
+import static java.lang.Math.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +8,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.StringTokenizer;
 
-public class D_2 {
+public class B {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -33,47 +38,22 @@ public class D_2 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			long n = in.nextLong();
-			long s = in.nextLong();
-
-			if (s == n) {
-				out.println(n+1);
-				return;
-			}
-			if (s > n) {
-				out.println(-1);
-				return;
+			int n = in.nextInt();
+			List<Double> list = new ArrayList<>();
+			for (int i = 0; i < n; i++) {
+				list.add(in.nextDouble());
 			}
 
-			// b <= √n
-			for (int b = 2; b <= (int)Math.sqrt(n); b++) {
-				if (f(n, b) == s) {
-					out.println(b);
-					return;
-				}
+			if (n % 2 == 1) list.add(0.0);
+
+			Collections.sort(list);
+
+			double area = 0.0;
+			for (int i = list.size()-1; i >= 1; i -= 2) {
+				area += Math.PI * (pow(list.get(i), 2) - pow(list.get(i-1), 2));
 			}
 
-			// b > √n
-			long ans = LINF;
-			for (int p = 1; p < Math.sqrt(n); p++) {
-				if ((n-s) % p == 0) {
-					long b = (n-s) / p + 1;
-					if (f(n, b) == s) {
-						ans = Math.min(b, ans);
-					}
-				}
-			}
-
-			out.println(ans == LINF ? -1 : ans);
-		}
-
-		long f(long n, long mod) {
-			long ret = 0;
-			while (n > 0) {
-				ret += n % mod;
-				n /= mod;
-			}
-			return ret;
+			out.println(area);
 		}
 	}
 
@@ -141,5 +121,4 @@ public class D_2 {
 			tok = new StringTokenizer("");
 		}
 	}
-
 }
