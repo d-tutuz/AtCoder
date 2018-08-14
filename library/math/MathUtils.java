@@ -194,7 +194,7 @@ public class MathUtils {
 	/**
 	 * 順列(N!)
 	 *
-	 * @input {0 ～ n-1}の数が入った配列
+	 * @input {0 ～ n-1}の数が入った配列 ※配列は sort 済であること！！
 	 * @output 順列に並びられた1回分の配列 a[]
 	 *         配列 a[] の中の値が順列される。(次の順列になる)
 	 *
@@ -205,6 +205,8 @@ public class MathUtils {
 	 *
 	 * */
 	static class Permutation {
+
+		// 数列 ver
 		public static boolean next(int[] a) {
 			int n = a.length;
 
@@ -228,6 +230,34 @@ public class MathUtils {
 
 		private static void swap(int[] a, int i, int j) {
 			int tmp = a[i];
+			a[i] = a[j];
+			a[j] = tmp;
+		}
+
+		// 文字列 ver
+		public static boolean next(char[] a) {
+			int n = a.length;
+
+			int i = n - 1;
+			while (i > 0 && a[i - 1] >= a[i])
+				i--;
+			if (i <= 0)
+				return false;
+
+			int j = n - 1;
+			while (a[j] <= a[i - 1])
+				j--;
+			swap(a, i - 1, j);
+
+			int k = n - 1;
+			while (i < k)
+				swap(a, i++, k--);
+
+			return true;
+		}
+
+		private static void swap(char[] a, int i, int j) {
+			char tmp = a[i];
 			a[i] = a[j];
 			a[j] = tmp;
 		}
