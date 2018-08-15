@@ -148,7 +148,7 @@ public class GraphUtils {
 	}
 
 	/**
-	 * 二部マッチング
+	 * 二部グラフ判定
 	 *
 	 * @param v :頂点数
 	 * @param c :色(1 または -1)
@@ -180,10 +180,16 @@ public class GraphUtils {
 	 * @param: rev:逆辺
 	 *
 	 * @return: flow:最大フロー数
+	 *
 	 */
 
 	// 辺を構築する際の g.get(to).size() はすでに存在する辺を数えることで
 	// 逆辺の index を構築している。
+
+
+	// new Dinic(n) で初期化
+	// addEdge(from, to, cost) で辺を構築
+	// maxFlow(from, to) で from -> to のmaxFlow を計算
 
 	static class Dinic {
 
