@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class D_3 {
+public class D_4 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -33,46 +33,47 @@ public class D_3 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int N = in.nextInt();
-			int M = in.nextInt();
-			int Q = in.nextInt();
-
-			int[][] mat = new int[N+1][N+1];
-			int[][] sum = new int[N+1][N+1];
-
+			int N = in.nextInt(), M = in.nextInt(), Q = in.nextInt();
+			P[] sec = new P[M+Q];
+			
 			for (int i = 0; i < M; i++) {
 				int l = in.nextInt();
 				int r = in.nextInt();
-				mat[l][r]++;
+				sec[i] = new P(l, r, 0, i);
 			}
-
-			for (int i = 0; i < N+1; i++) {
-				for (int j = 0; j < N+1; j++) {
-					sum[i][j] = mat[i][j];
-					if (j-1 >= 0) sum[i][j] += sum[i][j-1];
-					if (i-1 >= 0) sum[i][j] += sum[i-1][j];
-					if (i-1 >= 0 && j-1 >= 0) sum[i][j] -= sum[i-1][j-1];
-				}
-			}
-
+			
 			for (int i = 0; i < Q; i++) {
 				int p = in.nextInt();
 				int q = in.nextInt();
-
-				int count = get(p, p, q, q, sum);
-				out.println(count);
+				sec[i] = new P(p, q, 1, i);
 			}
+			
+			
 
 		}
 
-		int get(int x1, int y1, int x2, int y2, int[][] sum) {
+		class P implements Comparable<P> {
 
-			int res = sum[x2][y2];
-			if (x1 > 0) res -= sum[x1-1][y2];
-			if (y1 > 0) res -= sum[x2][y1-1];
-			if (x1 > 0 && y1 > 0) res += sum[x1-1][y1-1];
+			int l, r, flag, idx;
 
-			return res;
+			public P(int l, int r, int flag, int idx) {
+				super();
+				this.l = l;
+				this.r = r;
+				this.flag = flag;
+				this.idx = idx;
+			}
+
+			@Override
+			public int compareTo(P o) {
+				
+				if (this.r == o.r) {
+					return this.flag - o.flag;
+				} else {
+					return this.r - o.r;
+				}
+			}
+
 		}
 	}
 
