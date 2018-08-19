@@ -1,6 +1,4 @@
-package abc004;
-
-import static java.lang.Math.*;
+package abc003;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,7 +6,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
@@ -34,120 +31,79 @@ public class D {
 
 	static class TaskX {
 
-		int p = 1000;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int R = in.nextInt(), G = in.nextInt(), B = in.nextInt();
+			long r = in.nextLong(), c = in.nextLong(), x = in.nextLong(), y = in.nextLong();
+			long d = in.nextLong(), l = in.nextLong();
 
-			long ans = INF;
+			long com = calc(x, y, d, l);
 
-			for (int i = -150; i <= 150; i++) {
-				ans = min(ans, calc(i, R, G, B));
-			}
+			long ans = (r-x+1) % MOD * (c-y+1) % MOD * com;
 
-			out.println(ans);
-
+			out.println(ans % MOD);
 		}
 
-		long calc(int pos, int R, int G, int B) {
+		long calc(long x, long y, long d, long l) {
+			long ret = 0;
 
-			char[] s = new char[2000];
-			Arrays.fill(s, 'x');
-
-			int l = pos+p;
-			int r = pos+p;
-			while (G > 0) {
-				if (s[l] == 'x') {
-					s[l] = 'G';
-					G--;
-				}
-				l--;
-
-				if (G <= 0) break;
-
-				if (s[r] == 'x') {
-					s[r] = 'G';
-					G--;
-				}
-				++r;
+			if (x * y == d + l) {
+				ret = comb(d, l, x, y)	;
+			} else {
+				ret = comb(d, l, x, y);
+				ret -= (comb(d, l, x, (y-1)) * 2L + comb(d, l, (x-1), y) * 2L) % MOD;
+				ret += (comb(d, l, (x-1), (y-1)) * 4L + comb(d, l, (x-2), y) + comb(d, l, x, (y-2))) % MOD;
+				ret -= (comb(d, l, (x-1), (y-2)) * 2L + comb(d, l, (x-2), (y-1)) * 2L) % MOD;
+				ret += comb(d, l, (x-2), (y-2));
 			}
-
-			l = -100+p;
-			r = -100+p;
-			while (R > 0) {
-				if (s[l] == 'x') {
-					s[l] = 'R';
-					R--;
-				}
-				l--;
-
-				if (R <= 0) break;
-
-				if (s[r] == 'G') continue;
-				if (s[r] == 'x') {
-					s[r] = 'R';
-					R--;
-				}
-				++r;
-			}
-
-			l = 100+p;
-			r = 100+p;
-			while (B > 0) {
-				if (s[r] == 'x') {
-					s[r] = 'B';
-					B--;
-				}
-				++r;
-
-				if (B <= 0) break;
-
-				if (s[l] == 'G') continue;
-				if (s[l] == 'x') {
-					s[l] = 'B';
-					B--;
-				}
-				l--;
-			}
-
-			long ans = 0;
-			int gr = -100 + p;
-			int gg = 0 + p;
-			int gb = 100 + p;
-
-			int Rl = INF, Rr = -INF, Gl = INF, Gr = -INF, Bl = INF, Br = -INF;
-			for (int i = 0; i < s.length; i++) {
-				if (s[i] == 'R') {
-					Rl = min(Rl, i);
-					Rr = max(Rr, i);
-				}
-
-				if (s[i] == 'G') {
-					Gl = min(Gl, i);
-					Gr = max(Gr, i);
-				}
-
-				if (s[i] == 'B') {
-					Bl = min(Bl, i);
-					Br = max(Br, i);
-				}
-			}
-
-			for (int i = 0; i < s.length; i++) {
-				if (s[i] == 'R') {
-					ans += abs(i - gr);
-				}
-
-				if (s[i] == 'G') {
-					ans += abs(i - gg);
-				}
-
-				if (s[i] == 'B') {
-					ans += abs(i - gb);
-				}
-			}
-			return ans;
+			return ret % MOD;
 		}
+
+		long comb(long d, long l, long x, long y) {
+
+			if (x < 0 || y < 0 || x * y < d || x * y - d < l || x * y - d < 0) {
+				return 0L;
+			}
+
+			long z = x*y - (d+l);
+			return fact[(int)(d+l+z)] % MOD * factInv[(int)d] % MOD * factInv[(int)l] % MOD * factInv[(int)z] % MOD;
+		}
+
+	}
+
+	public static int MAXN = 1000000;
+
+	static long[] fact = factorialArray(MAXN, MOD);
+	static long[] factInv = factorialInverseArray(MAXN, MOD, inverseArray(MAXN, MOD));
+
+	// 階乗の mod P テーブル
+	public static long[] factorialArray(int maxN, long mod) {
+		long[] fact = new long[maxN + 1];
+		fact[0] = 1 % mod;
+		for (int i = 1; i <= maxN; i++) {
+			fact[i] = fact[i - 1] * i % mod;
+		}
+		return fact;
+	}
+
+	// 数 i に対する mod P での逆元テーブル
+	public static long[] inverseArray(int maxN, long modP) {
+		long[] inv = new long[maxN + 1];
+		inv[1] = 1;
+		for (int i = 2; i <= maxN; i++) {
+			inv[i] = modP - (modP / i) * inv[(int) (modP % i)] % modP;
+		}
+		return inv;
+	}
+
+	// 階乗の逆元テーブル
+	public static long[] factorialInverseArray(int maxN, long modP,
+			long[] inverseArray) {
+		long[] factInv = new long[maxN + 1];
+		factInv[0] = 1;
+		for (int i = 1; i <= maxN; i++) {
+			factInv[i] = factInv[i - 1] * inverseArray[i] % modP;
+		}
+		return factInv;
 	}
 
 	static class InputReader {
