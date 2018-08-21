@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class D {
+public class D_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -33,8 +33,8 @@ public class D {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			long r = in.nextLong(), c = in.nextLong(), x = in.nextLong(), y = in.nextLong();
-			long d = in.nextLong(), l = in.nextLong();
+			int r = in.nextInt(), c = in.nextInt(), x = in.nextInt(), y = in.nextInt();
+			int d = in.nextInt(), l = in.nextInt();
 
 			long com = calc(x, y, d, l);
 
@@ -43,37 +43,62 @@ public class D {
 			out.println(ans % MOD);
 		}
 
-		long calc(long x, long y, long d, long l) {
+		long calc(int x, int y, int d, int l) {
 			long ret = 0;
 
 			if (x * y == d + l) {
-				ret = comb(d, l, x, y);
+				ret = comb(x * y, d);
 			} else {
-				ret = comb(d, l, x, y);
-				ret -= (comb(d, l, x, (y-1)) * 2L + comb(d, l, (x-1), y) * 2L) % MOD;
-				ret += (comb(d, l, (x-1), (y-1)) * 4L + comb(d, l, (x-2), y) + comb(d, l, x, (y-2))) % MOD;
-				ret -= (comb(d, l, (x-1), (y-2)) * 2L + comb(d, l, (x-2), (y-1)) * 2L) % MOD;
-				ret += comb(d, l, (x-2), (y-2));
+				for (int i = 0; i < 1 << 4; i++) {
+					int tx = x;
+					int ty = y;
+					if ((i & 1) > 0) {
+						tx--;
+					}
+					if ((i & 2) > 0) {
+						tx--;
+					}
+					if ((i & 4) > 0) {
+						ty--;
+					}
+					if ((i & 8) > 0) {
+						ty--;
+					}
+					if (tx < 0 || ty < 0) {
+						continue;
+					}
+					if (Integer.bitCount(i) % 2 == 0) {
+						ret += comb(tx * ty, d + l) * comb(d + l, d);
+					} else {
+						ret -= comb(tx * ty, d + l) * comb(d + l, d);
+					}
+					ret = (ret + MOD) % MOD;
+		        }
 			}
 			return ret % MOD;
 		}
 
-		long comb(long d, long l, long x, long y) {
-
-			if (x < 0 || y < 0 || x * y < d || x * y - d < l || x * y - d < 0) {
-				return 0L;
-			}
-
-			long z = x*y - (d+l);
-			return fact[(int)(d+l+z)] % MOD * factInv[(int)d] % MOD * factInv[(int)l] % MOD * factInv[(int)z] % MOD;
-		}
-
 	}
 
-	public static int MAXN = 1000000;
+	/**
+	 * 二項係数
+	 * 前提 n < modP
+	 * nCr = n!/(r!*(n-r)!)である。この時分子分母にMODが来る場合は以下のように使用する
+	 * */
+	public static long comb(int n, int r) {
+		if (r < 0 || r > n) return 0L;
+		return fact[n] % MOD * factInv[r] % MOD * factInv[n - r] % MOD;
+	}
+
+	/**
+	 * 階乗数の逆元
+	 *
+	 * */
+	public static int MAXN = 200000;
 
 	static long[] fact = factorialArray(MAXN, MOD);
-	static long[] factInv = factorialInverseArray(MAXN, MOD, inverseArray(MAXN, MOD));
+	static long[] factInv = factorialInverseArray(MAXN, MOD,
+			inverseArray(MAXN, MOD));
 
 	// 階乗の mod P テーブル
 	public static long[] factorialArray(int maxN, long mod) {
