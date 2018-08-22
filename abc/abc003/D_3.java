@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class D_2 {
+public class D_3 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -36,46 +36,38 @@ public class D_2 {
 			int r = in.nextInt(), c = in.nextInt(), x = in.nextInt(), y = in.nextInt();
 			int d = in.nextInt(), l = in.nextInt();
 
-			long com = calc(x, y, d, l);
+			long sum = 0;
+			for (int i = 0; i < 1 << 4; i++) {
+				int tx = x;
+				int ty = y;
 
-			long ans = (r-x+1) % MOD * (c-y+1) % MOD * com;
+				if ((i >> 0 & 1) == 1) {
+					tx--;
+				}
+				if ((i >> 1 & 1) == 1) {
+					tx--;
+				}
+				if ((i >> 2 & 1) == 1) {
+					ty--;
+				}
+				if ((i >> 3 & 1) == 1) {
+					ty--;
+				}
 
-			out.println(ans % MOD);
-		}
+				if (tx < 0 || ty < 0) continue;
 
-		long calc(int x, int y, int d, int l) {
-			long ret = 0;
-
-			if (x * y == d + l) {
-				ret = comb(x * y, d);
-			} else {
-				for (int i = 0; i < 1 << 4; i++) {
-					int tx = x;
-					int ty = y;
-					if ((i & 1) > 0) {
-						tx--;
-					}
-					if ((i & 2) > 0) {
-						tx--;
-					}
-					if ((i & 4) > 0) {
-						ty--;
-					}
-					if ((i & 8) > 0) {
-						ty--;
-					}
-					if (tx < 0 || ty < 0) {
-						continue;
-					}	
-					if (Integer.bitCount(i) % 2 == 0) {
-						ret += comb(tx * ty, d + l) * comb(d + l, d);
-					} else {
-						ret -= comb(tx * ty, d + l) * comb(d + l, d);
-					}
-					ret = (ret + MOD) % MOD;
-		        }
+				if (Integer.bitCount(i) % 2 == 0) {
+					sum += comb(tx * ty, d + l) * comb(d + l, d);
+				} else {
+					sum -= comb(tx * ty, d + l) * comb(d + l, d) % MOD;
+				}
+				sum = (sum + MOD) % MOD;
 			}
-			return ret % MOD;
+
+			sum *= (r - x + 1) * (c - y + 1);
+
+			out.println(sum % MOD);
+
 		}
 
 	}

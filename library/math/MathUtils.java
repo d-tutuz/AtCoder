@@ -121,6 +121,7 @@ public class MathUtils {
 	 * nCr = n!/(r!*(n-r)!)である。この時分子分母にMODが来る場合は以下のように使用する
 	 * */
 	public static long comb(int n,int r) {
+		if (r < 0 || r > n) return 0L;
 		return fact[n] % MOD * factInv[r] % MOD * factInv[n-r] % MOD;
 	}
 
