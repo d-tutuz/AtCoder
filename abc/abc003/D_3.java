@@ -41,18 +41,10 @@ public class D_3 {
 				int tx = x;
 				int ty = y;
 
-				if ((i >> 0 & 1) == 1) {
-					tx--;
-				}
-				if ((i >> 1 & 1) == 1) {
-					tx--;
-				}
-				if ((i >> 2 & 1) == 1) {
-					ty--;
-				}
-				if ((i >> 3 & 1) == 1) {
-					ty--;
-				}
+				if ((i >> 0 & 1) == 1) ty--;
+				if ((i >> 1 & 1) == 1) ty--;
+				if ((i >> 2 & 1) == 1) tx--;
+				if ((i >> 3 & 1) == 1) tx--;
 
 				if (tx < 0 || ty < 0) continue;
 
