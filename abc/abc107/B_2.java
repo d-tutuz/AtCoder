@@ -1,18 +1,15 @@
 package abc107;
 
-import static java.lang.Math.*;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class C_2 {
+public class B_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -36,70 +33,35 @@ public class C_2 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt(), k = in.nextInt();
-			long[] x = new long[n];
+			int h = in.nextInt(), w = in.nextInt();
+			char[][] s = new char[h][w];
+			boolean[] hh = new boolean[h];
+			boolean[] ww = new boolean[w];
 
-			for (int i = 0; i < n; i++) {
-				long t = in.nextLong();
-				x[i] = t;
-			}
-
-			long ans = LINF;
-			for (int i = 0; i < n && i+k-1 < n; i++) {
-				long tmp = 0;
-				if (x[i] < 0 && x[i+k-1] < 0) {
-					tmp = abs(x[i]);
-				} else if (x[i] < 0 && x[i+k-1] >= 0) {
-					long min = min(abs(x[i]), abs(x[i+k-1]));
-					long max = max(abs(x[i]), abs(x[i+k-1]));
-					tmp = min*2 + max;
-				} else if (x[i] >= 0) {
-					tmp = x[i+k-1];
+			for (int i = 0; i < h; i++) {
+				String str = in.nextString();
+				for (int j = 0; j < w; j++) {
+					char c = str.charAt(j);
+					s[i][j] = c;
+					if (c == '#') {
+						hh[i] = true;
+						ww[j] = true;
+					}
 				}
-				ans = min(ans, tmp);
 			}
 
-			out.println(ans);
+			for (int i = 0; i < h; i++) {
+				if (!hh[i]) continue;
+				for (int j = 0; j < w; j++) {
+					if (!ww[j]) continue;
+					out.print(s[i][j]);
+				}
+				out.print("\n");
+			}
 
 		}
 	}
 
-	// other template
-	static int min(int a, int b) {
-		return Math.min(a, b);
-	}
-
-	static long min(long a, long b) {
-		return Math.min(a, b);
-	}
-
-	static void fill(int[][] a, int value) {
-		for (int i = 0; i < a.length; i++) {
-			Arrays.fill(a[i], value);
-		}
-	}
-
-	static void fill(long[][] a, int value) {
-		for (int i = 0; i < a.length; i++) {
-			Arrays.fill(a[i], value);
-		}
-	}
-
-	static void fill(char[][] a, char c) {
-		for (int i = 0; i < a.length; i++) {
-			Arrays.fill(a[i], c);
-		}
-	}
-
-	static int max(int a, int b) {
-		return Math.max(a, b);
-	}
-
-	static long max(long a, long b) {
-		return Math.max(a, b);
-	}
-
-	// faster input template
 	static class InputReader {
 		BufferedReader in;
 		StringTokenizer tok;
