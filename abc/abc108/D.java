@@ -1,15 +1,19 @@
 package abc108;
 
+import static java.lang.Math.*;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.StringTokenizer;
 
-public class C_2 {
+public class D {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -33,16 +37,76 @@ public class C_2 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			long n = in.nextLong(), k = in.nextLong();
+			int l = in.nextInt();
 
-			long x = n / k;
-			if (k % 2 == 1) {
-				out.println(x * x * x);
-			} else {
-				long y = (n + k/2) / k;
-				out.println(x * x * x + y * y * y);
+			// l 以下の最大の2べきの整数 r を求める
+			int r = f(l);
+
+			// 追加するパスの経路数
+			int x = l - (int)pow(2, r);
+
+			// 基準のグラフを構築
+			List<P> list = new ArrayList<>();
+			for (int i = 1; i <= r; i++) {
+				list.add(new P(i, i+1, 0));
+				list.add(new P(i, i+1, (int)pow(2, i-1)));
 			}
+
+			// 値の最大値と構築するノードの情報をもとに辺を構築
+			int max = l;
+			char[] info = g(r, x).toCharArray();
+			for (int i = r; i >= 0; i--) {
+				if (info[i] == '0') continue;
+				max--;
+				int cost = max - ((int)pow(2, i) - 1);
+				list.add(new P(i+1, r+1, cost));
+				max = cost;
+			}
+
+			out.printf("%d %d\n", r+1, list.size());
+			for (P p : list) {
+				out.println(p);
+			}
+
 		}
+	}
+
+	static class P {
+		int l, r, c;
+
+		public P(int l, int r, int c) {
+			super();
+			this.l = l;
+			this.r = r;
+			this.c = c;
+		}
+
+		@Override
+		public String toString() {
+			return l + " " + r + " " + c;
+		}
+	}
+
+	static int f(int l) {
+		int ret = 0;
+		int num = 1;
+		while (num * 2 <= l) {
+			ret++;
+			num *= 2;
+		}
+		return ret;
+	}
+
+	static String g(int r, int x) {
+		String str = Integer.toBinaryString(x);
+		str = String.format("%"+(r+1)+"s", str).replace(" ", "0");
+		return reverse(str);
+	}
+
+	static String reverse(String str) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(str);
+		return sb.reverse().toString();
 	}
 
 	static class InputReader {

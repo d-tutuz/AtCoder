@@ -1,4 +1,4 @@
-package abc108;
+package abc103;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class C_2 {
+public class D_3 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -33,15 +34,40 @@ public class C_2 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			long n = in.nextLong(), k = in.nextLong();
+			int n = in.nextInt(), m = in.nextInt();
 
-			long x = n / k;
-			if (k % 2 == 1) {
-				out.println(x * x * x);
-			} else {
-				long y = (n + k/2) / k;
-				out.println(x * x * x + y * y * y);
+			P[] p = new P[m];
+			for (int i = 0; i < m; i++) {
+				p[i] = new P(in.nextInt(), in.nextInt());
 			}
+
+			Arrays.sort(p);
+
+			int now = p[0].r;
+			int ans = 1;
+			for (int i = 1; i < m; i++) {
+				if (p[i].l < now) continue;
+				now = p[i].r;
+				ans++;
+			}
+			out.println(ans);
+		}
+
+		class P implements Comparable<P> {
+
+			int l, r;
+
+			public P(int l, int r) {
+				super();
+				this.l = l;
+				this.r = r;
+			}
+
+			@Override
+			public int compareTo(P o) {
+				return this.r - o.r;
+			}
+
 		}
 	}
 

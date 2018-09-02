@@ -1,4 +1,4 @@
-package abc108;
+package codeflyer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,15 +33,50 @@ public class C_2 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			long n = in.nextLong(), k = in.nextLong();
+			int n = in.nextInt();
+			long d = in.nextLong();
+			long[] x = in.nextLongArray(n);
 
-			long x = n / k;
-			if (k % 2 == 1) {
-				out.println(x * x * x);
-			} else {
-				long y = (n + k/2) / k;
-				out.println(x * x * x + y * y * y);
+			long ans = 0;
+			for (int i = 1; i < n-1; i++) {
+				int low = i - lowerBound(x, x[i] - d);
+				int high = upperBound(x, x[i] + d) - 1 - i;
+				ans += (long)low * (long)high;
 			}
+
+			for (int i = 0; i < n; i++) {
+				int high = upperBound(x, x[i] + d) - 1 - i;
+				ans -= (long)(high) * (long)(high-1) / 2;
+			}
+
+			out.println(ans);
+
+		}
+
+		public static int upperBound(long[] a, long obj) {
+			int l = 0, r = a.length - 1;
+			while (r - l >= 0) {
+				int c = (l + r) / 2;
+				if (a[c] <= obj) {
+					l = c + 1;
+				} else {
+					r = c - 1;
+				}
+			}
+			return l;
+		}
+
+		public static int lowerBound(long[] a, long obj) {
+			int l = 0, r = a.length - 1;
+			while (r - l >= 0) {
+				int c = (l + r) / 2;
+				if (obj <= a[c]) {
+					r = c - 1;
+				} else {
+					l = c + 1;
+				}
+			}
+			return l;
 		}
 	}
 

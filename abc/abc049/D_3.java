@@ -1,4 +1,4 @@
-package abc108;
+package abc049;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.InputMismatchException;
+import java.util.Map;
 import java.util.StringTokenizer;
 
-public class C_2 {
+public class D_3 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -33,15 +35,129 @@ public class C_2 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			long n = in.nextLong(), k = in.nextLong();
-
-			long x = n / k;
-			if (k % 2 == 1) {
-				out.println(x * x * x);
-			} else {
-				long y = (n + k/2) / k;
-				out.println(x * x * x + y * y * y);
+			int n = in.nextInt(), k = in.nextInt(), l = in.nextInt();
+			DisjointSet r = new DisjointSet(n);
+			DisjointSet c = new DisjointSet(n);
+			for (int i = 0; i < k; i++) {
+				int x = in.nextInt()-1, y = in.nextInt()-1;
+				r.unite(x, y);
 			}
+			for (int i = 0; i < l; i++) {
+				int x = in.nextInt()-1, y = in.nextInt()-1;
+				c.unite(x, y);
+			}
+
+			Map<P, Integer> map = new HashMap<>();
+			for (int i = 0; i < n; i++) {
+				map.merge(new P(r.findSet(i), c.findSet(i)), 1, Integer::sum);
+			}
+
+			for (int i = 0; i < n; i++) {
+				if (i > 0) {
+					out.print(" ");
+				}
+				out.printf("%d", map.get(new P(r.findSet(i), c.findSet(i))));
+			}
+
+		}
+
+		class P {
+
+			int x, y;
+
+			public P(int x, int y) {
+				super();
+				this.x = x;
+				this.y = y;
+			}
+
+			@Override
+			public int hashCode() {
+				final int prime = 31;
+				int result = 1;
+				result = prime * result + getOuterType().hashCode();
+				result = prime * result + x;
+				result = prime * result + y;
+				return result;
+			}
+
+			@Override
+			public boolean equals(Object obj) {
+				if (this == obj)
+					return true;
+				if (obj == null)
+					return false;
+				if (getClass() != obj.getClass())
+					return false;
+				P other = (P) obj;
+				if (!getOuterType().equals(other.getOuterType()))
+					return false;
+				if (x != other.x)
+					return false;
+				if (y != other.y)
+					return false;
+				return true;
+			}
+
+			private TaskX getOuterType() {
+				return TaskX.this;
+			}
+
+		}
+	}
+
+	/**
+	 * DisjointSet
+	 * */
+	public static class DisjointSet {
+
+		int[] p, rank, cnt;
+
+		public DisjointSet(int size) {
+			p = new int[size];
+			rank = new int[size];
+			cnt = new int[size];
+
+			for (int j = 0; j < size; j++) {
+				makeSet(j);
+			}
+		}
+
+		private void makeSet(int x) {
+			p[x] = x;
+			rank[x] = 0;
+			cnt[x] = 1;
+		}
+
+		public int findSet(int x) {
+			return p[x] == x ? x : findSet(p[x]);
+		}
+
+		private void link(int x, int y) {
+			if (rank[x] > rank[y]) {
+				p[y] = x;
+			} else if (rank[x] < rank[y]) {
+				p[x] = y;
+			} else if (rank[x] == rank[y]) {
+				p[x] = y;
+				rank[y]++;
+			}
+
+			if (x != y) {
+				cnt[x] = cnt[y] += cnt[x];
+			}
+		}
+
+		public void unite(int x, int y) {
+			link(findSet(x), findSet(y));
+		}
+
+		public boolean same(int x, int y) {
+			return findSet(x) == findSet(y);
+		}
+
+		public int getSize(int x) {
+			return cnt[findSet(x)];
 		}
 	}
 
