@@ -1,4 +1,4 @@
-package abc029;
+package agc001;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class D_5 {
+public class B {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -31,38 +31,21 @@ public class D_5 {
 
 	static class TaskX {
 
-		char[] s;
-		long[][][] memo;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			s = in.nextString().toCharArray();
-			memo = new long[s.length+1][s.length+1][2];
-			fill(memo, -1);
-
-			long ans = func(0, 0, 1);
-
+			long n = in.nextLong(), x = in.nextLong();
+			long ans = n + f(n - x, x);
 			out.println(ans);
-
 		}
 
-		long func(int i, int count, int tight) {
-			long ret = 0;
-
-			if (i == s.length) {
-				return count;
+		long f(long a, long b) {
+			if (a > b) {
+				long t = b;
+				b = a;
+				a = t;
 			}
-
-			if (memo[i][count][tight] != -1) {
-				return memo[i][count][tight];
-			}
-
-			int sup = s[i] - '0';
-
-			for (int num = 0; num <= (tight == 1 ? sup : 9); num++) {
-				ret += func(i+1, num == 1 ? count+1 : count, tight == 1 && num == sup ? 1 : 0);
-			}
-
-			return memo[i][count][tight] = ret;
+			if (b % a == 0) return (b/a*2-1)*a;
+			return 2*(b/a)*a + f(a, b % a);
 		}
 	}
 
@@ -164,6 +147,16 @@ public class D_5 {
 	}
 
 	static void fill(long[][][] a, long v) {
+		for (int i = 0; i < a.length; i++) {
+			for (int j = 0; j < a[0].length; j++) {
+				for (int k = 0; k < a[0][0].length; k++) {
+					a[i][j][k] = v;
+				}
+			}
+		}
+	}
+
+	static void fill(int[][][] a, int v) {
 		for (int i = 0; i < a.length; i++) {
 			for (int j = 0; j < a[0].length; j++) {
 				for (int k = 0; k < a[0][0].length; k++) {
