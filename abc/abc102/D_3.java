@@ -1,4 +1,4 @@
-package abc044;
+package abc102;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.StringTokenizer;
 
-public class C_3 {
+public class D_3 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -33,29 +37,82 @@ public class C_3 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt(), a = in.nextInt();
-			int[] x = in.nextIntArray(n);
+			int n = in.nextInt();
 
-			long[][][] dp = new long[n+1][n+1][2601];
+			// 1-indexed
+			long[] a = in.nextLongArray1Idx(n);
+			long[] sum = a.clone();
+			Arrays.parallelPrefix(sum, Math::addExact);
 
-			dp[0][0][0] = 1;
+			long ans = LINF;
+			for (int i = 2; i < n-1; i++) {
 
-			for (int i = 0; i < n; i++) {
-				for (int j = 0; j < n; j++) {
-					for (int k = 0; k < 2501; k++) {
-						dp[i+1][j+1][k+x[i]] += dp[i][j][k];
-						dp[i+1][j][k] += dp[i][j][k];
-					}
-				}
-			}
+				List<Long> list = new ArrayList<>();
+				P p1 = calc(sum, 1, i);
+				P p2 = calc(sum, i+1, n);
 
-			long ans = 0;
-			for (int k = 1; k < n+1; k++) {
-				ans += dp[n][k][k*a];
+				list.add(p1.a);
+				list.add(p1.b);
+				list.add(p2.a);
+				list.add(p2.b);
+
+				Collections.sort(list);
+
+				ans = min(ans, list.get(3) - list.get(0));
 			}
 
 			out.println(ans);
+
 		}
+
+		// 区間 [from, to] で累積和をなるべく半分に分ける2数を求める
+		P calc(long[] sum, int from, int to) {
+
+			int now = find(sum, from, to);
+			P p1 = new P(sum[now] - sum[from-1], sum[to] - sum[now]);
+			P p2 = new P(sum[now+1] - sum[from-1], sum[to] - sum[now+1]);
+
+			return p1.sum() >= p2.sum() ? p2 : p1;
+		}
+
+		// 区間 [from, to] で累積和をなるべく半分に分ける位置を探す
+		int find(long[] sum, int from, int to) {
+			long v = (sum[to] - sum[from-1])/2;
+
+			int l = from, r = to;
+			while (r - l > 1) {
+				int m = (r+l)/2;
+				long tmp = sum[m] - sum[from-1];
+				if (tmp > v) {
+					r = m;
+				} else {
+					l = m;
+				}
+			}
+			return l;
+		}
+
+		class P {
+			long a, b;
+
+			public P(long a, long b) {
+				super();
+				this.a = a;
+				this.b = b;
+			}
+
+			long sum() {
+				return Math.abs(this.a - this.b);
+			}
+
+			@Override
+			public String toString() {
+				return "P [a=" + a + ", b=" + b + "]";
+			}
+
+		}
+
+
 	}
 
 	static class InputReader {
@@ -104,6 +161,14 @@ public class C_3 {
 		public long[] nextLongArray(int n) {
 			long[] res = new long[n];
 			for (int i = 0; i < n; i++) {
+				res[i] = nextLong();
+			}
+			return res;
+		}
+
+		public long[] nextLongArray1Idx(int n) {
+			long[] res = new long[n+1];
+			for (int i = 1; i < n+1; i++) {
 				res[i] = nextLong();
 			}
 			return res;

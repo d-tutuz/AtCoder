@@ -1,4 +1,4 @@
-package abc044;
+package abc031;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class C_3 {
+public class D {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -33,29 +33,24 @@ public class C_3 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt(), a = in.nextInt();
-			int[] x = in.nextIntArray(n);
-
-			long[][][] dp = new long[n+1][n+1][2601];
-
-			dp[0][0][0] = 1;
-
+			int k = in.nextInt(), n = in.nextInt();
+			String[] v = new String[n];
+			String[] w = new String[n];
 			for (int i = 0; i < n; i++) {
-				for (int j = 0; j < n; j++) {
-					for (int k = 0; k < 2501; k++) {
-						dp[i+1][j+1][k+x[i]] += dp[i][j][k];
-						dp[i+1][j][k] += dp[i][j][k];
-					}
-				}
+				v[i] = in.nextString();
+				w[i] = in.nextString();
 			}
 
-			long ans = 0;
-			for (int k = 1; k < n+1; k++) {
-				ans += dp[n][k][k*a];
+			for (int i = 0; i < Math.pow(3, k); i++) {
+				String str = Integer.toString(i, 3);
+				out.println(str);
 			}
 
-			out.println(ans);
 		}
+	}
+
+	static String zeroPad(String str, int len) {
+		return String.format("%"+(len)+"s", str).replace(" ", "0");
 	}
 
 	static class InputReader {
