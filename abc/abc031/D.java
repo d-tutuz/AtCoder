@@ -42,15 +42,36 @@ public class D {
 			}
 
 			for (int i = 0; i < Math.pow(3, k); i++) {
-				String str = Integer.toString(i, 3);
+				String str = zeroPad(Integer.toString(i, 3), k);
 				out.println(str);
 			}
 
 		}
 	}
+	static String[] check(String[] v, String[] w, char[] str, int k) {
+		int n = str.length;
+		int[] len = new int[k];
+		String[] ret = new String[k];
+		for (int i = 0; i < k; i++) {
+			len[i] = str[i]-'0'+1;
+		}
+
+		boolean ok = true;
+		for (int i = 0; i < n; i++) {
+			int size = 0;
+			for (int j = 0; j < v[i].length(); j++) {
+				size += len[v[i].charAt(j)-'0'];
+			}
+
+			if (size != w[i].length()) {
+				ok = false;
+			}
+		}
+		return ok ? ret : null;
+	}
 
 	static String zeroPad(String str, int len) {
-		return String.format("%"+(len)+"s", str).replace(" ", "0");
+		return String.format("%"+len+"s", str).replace(" ", "0");
 	}
 
 	static class InputReader {
