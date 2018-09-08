@@ -141,8 +141,6 @@ public class D {
 		public String toString() {
 			return a +" "+ b +" "+ c +" "+ d;
 		}
-
-
 	}
 
 	static class InputReader {

@@ -35,88 +35,53 @@ public class D_2 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int H = in.nextInt(), W = in.nextInt();
-			int[][] s = new int[H][W];
-			for (int i = 0; i < H; i++) {
-				for (int j = 0; j < W; j++) {
-					s[i][j] = in.nextInt();
+			int h = in.nextInt(), w = in.nextInt();
+			List<P> list = new ArrayList<>();
+			long[][] s = new long[h][w];
+			for (int i = 0; i < h; i++) {
+				for (int j = 0; j < w; j++) {
+					s[i][j] = in.nextLong();
 				}
 			}
 
-			List<P> list = new ArrayList<>();
-			for (int h = 0; h < H; h++) {
-				for (int w = 0; w < W; w++) {
-
-					if (s[h][w] == 0) continue;
-
-					// 今が偶数の場合
-					if (s[h][w] % 2 == 0) {
-						int count = 0;
-						for (int i = 0; i < 4; i++) {
-							int hm = h + mh4[i];
-							int wm = w + mw4[i];
-							if (hm < 0 || wm < 0 || hm >= H || wm >= W) {
-								continue;
-							}
-							if (s[hm][wm] % 2 == 1) count++;
-						}
-
-						int gc = (count+1)/2;
-						for (int i = 0; i < 4; i++) {
-							int hm = h + mh4[i];
-							int wm = w + mw4[i];
-							if (hm < 0 || wm < 0 || hm >= H || wm >= W) {
-								continue;
-							}
-							if (s[hm][wm] % 2 == 1 && gc > 0) {
-								list.add(new P(hm+1, wm+1, h+1, w+1));
-								gc--;
-							}
-						}
-
-					// 今が奇数の場合
-					} else {
-						for (int i = 0; i < 4; i++) {
-							int hm = h + mh4[i];
-							int wm = w + mw4[i];
-							if (hm < 0 || wm < 0 || hm >= H || wm >= W) {
-								continue;
-							}
-							if (s[hm][wm] % 2 == 1) {
-								list.add(new P(hm+1, wm+1, h+1, w+1));
-							}
+			for (int i = 0; i < h; i++) {
+				if (i % 2 == 0) {
+					for (int j = 0; j < w-1; j++) {
+						if (s[i][j] % 2 == 1) {
+							s[i][j+1]++;
+							s[i][j]--;
+							list.add(new P(i, j, i, j+1));
 						}
 					}
 
+					if (i != h-1 && s[i][w-1] % 2 == 1) {
+						s[i][w-1]--;
+						s[i+1][w-1]++;
+						list.add(new P(i, w-1, i+1, w-1));
+					}
+				} else {
+					for (int j = w-1; j > 0; j--) {
+						if (s[i][j] % 2 == 1) {
+							s[i][j-1]++;
+							s[i][j]--;
+							list.add(new P(i, j, i, j-1));
+						}
+					}
+
+					if (i != h-1 && s[i][0] % 2 == 1) {
+						s[i][0]--;
+						s[i+1][0]++;
+						list.add(new P(i, 0, i+1, 0));
+					}
 				}
 			}
 
 			out.println(list.size());
-
 			for (P p : list) {
 				out.println(p);
 			}
 
 		}
-	}
-
-	static class P {
-		int a,b,c,d;
-
-		public P(int a, int b, int c, int d) {
-			super();
-			this.a = a;
-			this.b = b;
-			this.c = c;
-			this.d = d;
-		}
-
-		@Override
-		public String toString() {
-			return a +" "+ b +" "+ c +" "+ d;
-		}
-
-
 	}
 
 	static class InputReader {
@@ -197,6 +162,23 @@ public class D_2 {
 		public InputReader(InputStream inputStream) {
 			in = new BufferedReader(new InputStreamReader(inputStream));
 			tok = new StringTokenizer("");
+		}
+	}
+
+	static class P {
+		int a,b,c,d;
+
+		public P(int a, int b, int c, int d) {
+			super();
+			this.a = a;
+			this.b = b;
+			this.c = c;
+			this.d = d;
+		}
+
+		@Override
+		public String toString() {
+			return (a+1) +" "+ (b+1) +" "+ (c+1) +" "+ (d+1);
 		}
 	}
 
