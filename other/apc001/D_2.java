@@ -1,4 +1,4 @@
-package abc031;
+package apc001;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,11 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.InputMismatchException;
+import java.util.PriorityQueue;
 import java.util.StringTokenizer;
+import java.util.stream.Stream;
 
-public class D {
+public class D_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -30,61 +31,143 @@ public class D {
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
+	@SuppressWarnings("unchecked")
 	static class TaskX {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int k = in.nextInt(), n = in.nextInt();
-			String[] v = new String[n];
-			String[] w = new String[n];
+			int n = in.nextInt(), m = in.nextInt();
+			int[] a = in.nextIntArray(n);
+
+			if (n - 1 == m) {
+				out.println(0);
+				return;
+			}
+
+			DisjointSet set = new DisjointSet(n);
+
+			int group = n;
+			for (int i = 0; i < m; i++) {
+				int x = in.nextInt(), y = in.nextInt();
+				if (x == y) continue;
+				set.unite(x, y);
+				group--;
+			}
+
+			long ans = 0, need = 2 * (group - 1);
+
+			// 各groupの最小値の頂点とコストを求める
+			boolean[] used = new boolean[n];
+			PriorityQueue<P>[] pq = new PriorityQueue[n];
+			pq = Stream.generate(PriorityQueue::new).limit(n).toArray(PriorityQueue[]::new);
+
 			for (int i = 0; i < n; i++) {
-				v[i] = in.nextString();
-				w[i] = in.nextString();
+				pq[set.findSet(i)].add(new P(i, a[i]));
 			}
 
-			String[] ans = new String[k];
-			for (int i = 0; i < Math.pow(3, k); i++) {
-				int[] num = new int[k];
-				Arrays.fill(num, 1);
-				int idx = 0;
-				int tmp = i;
-				while (tmp > 0) {
-					num[idx++] = tmp % 3 + 1;
-					tmp /= 3;
+			for (int i = 0; i < n; i++) {
+				if (!pq[i].isEmpty()) {
+					P p = pq[i].remove();
+					used[p.i] = true;
+					ans += p.cost;
+					need--;
 				}
-
-				boolean ok = true;
-				top:
-				for (int j = 0; j < n; j++) {
-					int len = 0;
-					for (int l = 0; l < v[j].length(); l++) {
-						int sIdx = v[j].charAt(l)-'0'-1;
-						len += num[sIdx];
-					}
-					if (len != w[j].length()) {
-						ok = false;
-						break top;
-					}
-				}
-
-				if (!ok) continue;
-
-				for (int j = 0; j < n; j++) {
-					int now = 0;
-					for (int l = 0; l < v[j].length(); l++) {
-						int sIdx = v[j].charAt(l)-'0'-1;
-						int to = num[sIdx];
-						ans[sIdx] = w[j].substring(now, now+to);
-						now += to;
-					}
-				}
-				break;
 			}
 
-			for (String string : ans) {
-				out.println(string);
+			// その他から need 分の頂点を選ぶ
+			PriorityQueue<Integer> other = new PriorityQueue<Integer>();
+			for (int i = 0; i < n; i++) {
+				if (!used[i]) {
+					other.add(a[i]);
+				}
 			}
 
+			while (need > 0) {
+				if (other.isEmpty()) {
+					out.println("Impossible");
+					return;
+				}
+				ans += other.remove();
+				need--;
+			}
+
+			out.println(ans);
+		}
+
+		class P implements Comparable<P> {
+			int i, cost;
+
+			public P(int i, int cost) {
+				super();
+				this.i = i;
+				this.cost = cost;
+			}
+
+			@Override
+			public int compareTo(P o) {
+				return this.cost - o.cost;
+			}
+
+			@Override
+			public String toString() {
+				return "P [i=" + i + ", cost=" + cost + "]";
+			}
+
+		}
+
+		/**
+		 * DisjointSet
+		 * */
+		public static class DisjointSet {
+
+			int[] p, rank, cnt;
+
+			public DisjointSet(int size) {
+				p = new int[size];
+				rank = new int[size];
+				cnt = new int[size];
+
+				for (int j = 0; j < size; j++) {
+					makeSet(j);
+				}
+			}
+
+			private void makeSet(int x) {
+				p[x] = x;
+				rank[x] = 0;
+				cnt[x] = 1;
+			}
+
+			public int findSet(int x) {
+				return p[x] == x ? x : findSet(p[x]);
+			}
+
+			private void link(int x, int y) {
+				if (rank[x] > rank[y]) {
+					p[y] = x;
+				} else if (rank[x] < rank[y]) {
+					p[x] = y;
+				} else if (rank[x] == rank[y]) {
+					p[x] = y;
+					rank[y]++;
+				}
+
+				if (x != y) {
+					cnt[x] = cnt[y] += cnt[x];
+				}
+			}
+
+			public void unite(int x, int y) {
+				link(findSet(x), findSet(y));
+			}
+
+			public boolean same(int x, int y) {
+				return findSet(x) == findSet(y);
+			}
+
+			public int getSize(int x) {
+				return cnt[findSet(x)];
+			}
 		}
 	}
 
@@ -131,6 +214,14 @@ public class D {
 			return res;
 		}
 
+		public int[] nextIntArray1Index(int n) {
+			int[] res = new int[n + 1];
+			for (int i = 0; i < n; i++) {
+				res[i + 1] = nextInt();
+			}
+			return res;
+		}
+
 		public long[] nextLongArray(int n) {
 			long[] res = new long[n];
 			for (int i = 0; i < n; i++) {
@@ -143,6 +234,14 @@ public class D {
 			long[] res = new long[n];
 			for (int i = 0; i < n; i++) {
 				res[i] = nextLong() - 1;
+			}
+			return res;
+		}
+
+		public long[] nextLongArray1Index(int n) {
+			long[] res = new long[n + 1];
+			for (int i = 0; i < n; i++) {
+				res[i + 1] = nextLong();
 			}
 			return res;
 		}

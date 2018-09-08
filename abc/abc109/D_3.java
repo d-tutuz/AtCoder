@@ -1,4 +1,4 @@
-package abc031;
+package abc109;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,11 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.StringTokenizer;
 
-public class D {
+public class D_3 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -34,58 +35,73 @@ public class D {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int k = in.nextInt(), n = in.nextInt();
-			String[] v = new String[n];
-			String[] w = new String[n];
-			for (int i = 0; i < n; i++) {
-				v[i] = in.nextString();
-				w[i] = in.nextString();
+			int H = in.nextInt(), W = in.nextInt();
+			long[][] s = new long[H][W];
+			for (int i = 0; i < H; i++) {
+				for (int j = 0; j < W; j++) {
+					s[i][j] = in.nextLong();
+				}
 			}
 
-			String[] ans = new String[k];
-			for (int i = 0; i < Math.pow(3, k); i++) {
-				int[] num = new int[k];
-				Arrays.fill(num, 1);
-				int idx = 0;
-				int tmp = i;
-				while (tmp > 0) {
-					num[idx++] = tmp % 3 + 1;
-					tmp /= 3;
-				}
+			boolean[][] used = new boolean[H][W];
+			List<P> list = new ArrayList<>();
 
-				boolean ok = true;
-				top:
-				for (int j = 0; j < n; j++) {
-					int len = 0;
-					for (int l = 0; l < v[j].length(); l++) {
-						int sIdx = v[j].charAt(l)-'0'-1;
-						len += num[sIdx];
-					}
-					if (len != w[j].length()) {
-						ok = false;
-						break top;
-					}
-				}
+			for (int h = 0; h < H; h++) {
+				for (int w = 0; w < W; w++) {
 
-				if (!ok) continue;
+					if (s[h][w] == 0) continue;
 
-				for (int j = 0; j < n; j++) {
-					int now = 0;
-					for (int l = 0; l < v[j].length(); l++) {
-						int sIdx = v[j].charAt(l)-'0'-1;
-						int to = num[sIdx];
-						ans[sIdx] = w[j].substring(now, now+to);
-						now += to;
+					top:
+					if (s[h][w] % 2 == 0) {
+						continue;
+					} else {
+						for (int i = 0; i < 4; i++) {
+							int hm = h + mh8[i];
+							int wm = w + mw8[i];
+							if (hm < 0 || wm < 0 || hm >= H || wm >= W) {
+								continue;
+							}
+							if (used[h][w]) continue;
+							if (s[hm][wm] % 2 == 1) {
+								list.add(new P(h+1, w+1, h+1, wm+1));
+								list.add(new P(h+1, wm+1, hm+1, wm+1));
+								s[hm][wm]++;
+								used[h][wm] = true;
+								used[hm][wm] = true;
+
+								break top;
+							}
+						}
 					}
 				}
-				break;
 			}
 
-			for (String string : ans) {
-				out.println(string);
+			out.println(list.size());
+
+			for (P p : list) {
+				out.println(p);
 			}
 
 		}
+	}
+
+	static class P {
+		int a,b,c,d;
+
+		public P(int a, int b, int c, int d) {
+			super();
+			this.a = a;
+			this.b = b;
+			this.c = c;
+			this.d = d;
+		}
+
+		@Override
+		public String toString() {
+			return a +" "+ b +" "+ c +" "+ d;
+		}
+
+
 	}
 
 	static class InputReader {
@@ -131,6 +147,14 @@ public class D {
 			return res;
 		}
 
+		public int[] nextIntArray1Index(int n) {
+			int[] res = new int[n + 1];
+			for (int i = 0; i < n; i++) {
+				res[i + 1] = nextInt();
+			}
+			return res;
+		}
+
 		public long[] nextLongArray(int n) {
 			long[] res = new long[n];
 			for (int i = 0; i < n; i++) {
@@ -143,6 +167,14 @@ public class D {
 			long[] res = new long[n];
 			for (int i = 0; i < n; i++) {
 				res[i] = nextLong() - 1;
+			}
+			return res;
+		}
+
+		public long[] nextLongArray1Index(int n) {
+			long[] res = new long[n + 1];
+			for (int i = 0; i < n; i++) {
+				res[i + 1] = nextLong();
 			}
 			return res;
 		}
@@ -183,6 +215,10 @@ public class D {
 			ret = Math.min(ret, n[i]);
 		}
 		return ret;
+	}
+
+	static String zeroPad(String str, int len) {
+		return String.format("%" + len + "s", str).replace(" ", "0");
 	}
 
 }

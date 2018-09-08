@@ -1,4 +1,4 @@
-package abc031;
+package abc109;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,11 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.InputMismatchException;
+import java.util.Set;
 import java.util.StringTokenizer;
 
-public class D {
+public class B {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -34,57 +35,29 @@ public class D {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int k = in.nextInt(), n = in.nextInt();
-			String[] v = new String[n];
-			String[] w = new String[n];
+			Set<String> set = new HashSet<>();
+			int n = in.nextInt();
+			String[] s = new String[n];
 			for (int i = 0; i < n; i++) {
-				v[i] = in.nextString();
-				w[i] = in.nextString();
+				String str = in.nextString();
+				if (!set.contains(str)) {
+					set.add(str);
+					s[i] = str;
+				} else {
+					out.println("No");
+					return;
+				}
 			}
 
-			String[] ans = new String[k];
-			for (int i = 0; i < Math.pow(3, k); i++) {
-				int[] num = new int[k];
-				Arrays.fill(num, 1);
-				int idx = 0;
-				int tmp = i;
-				while (tmp > 0) {
-					num[idx++] = tmp % 3 + 1;
-					tmp /= 3;
+			for (int i = 0; i < n-1; i++) {
+				if (s[i].charAt(s[i].length()-1) == s[i+1].charAt(0)) {
+					continue;
+				} else {
+					out.println("No");
+					return;
 				}
-
-				boolean ok = true;
-				top:
-				for (int j = 0; j < n; j++) {
-					int len = 0;
-					for (int l = 0; l < v[j].length(); l++) {
-						int sIdx = v[j].charAt(l)-'0'-1;
-						len += num[sIdx];
-					}
-					if (len != w[j].length()) {
-						ok = false;
-						break top;
-					}
-				}
-
-				if (!ok) continue;
-
-				for (int j = 0; j < n; j++) {
-					int now = 0;
-					for (int l = 0; l < v[j].length(); l++) {
-						int sIdx = v[j].charAt(l)-'0'-1;
-						int to = num[sIdx];
-						ans[sIdx] = w[j].substring(now, now+to);
-						now += to;
-					}
-				}
-				break;
 			}
-
-			for (String string : ans) {
-				out.println(string);
-			}
-
+			out.println("Yes");
 		}
 	}
 
@@ -131,6 +104,14 @@ public class D {
 			return res;
 		}
 
+		public int[] nextIntArray1Index(int n) {
+			int[] res = new int[n + 1];
+			for (int i = 0; i < n; i++) {
+				res[i + 1] = nextInt();
+			}
+			return res;
+		}
+
 		public long[] nextLongArray(int n) {
 			long[] res = new long[n];
 			for (int i = 0; i < n; i++) {
@@ -143,6 +124,14 @@ public class D {
 			long[] res = new long[n];
 			for (int i = 0; i < n; i++) {
 				res[i] = nextLong() - 1;
+			}
+			return res;
+		}
+
+		public long[] nextLongArray1Index(int n) {
+			long[] res = new long[n + 1];
+			for (int i = 0; i < n; i++) {
+				res[i + 1] = nextLong();
 			}
 			return res;
 		}
@@ -183,6 +172,10 @@ public class D {
 			ret = Math.min(ret, n[i]);
 		}
 		return ret;
+	}
+
+	static String zeroPad(String str, int len) {
+		return String.format("%" + len + "s", str).replace(" ", "0");
 	}
 
 }
