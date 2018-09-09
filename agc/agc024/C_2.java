@@ -1,4 +1,4 @@
-package agc026;
+package agc024;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class B_4 {
+public class C_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -33,54 +33,28 @@ public class B_4 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int t = in.nextInt();
+			int n = in.nextInt();
+			long[] a = in.nextLongArray(n);
 
-			for (int i = 0; i < t; i++) {
-				long a = in.nextLong();
-				long b = in.nextLong();
-				long c = in.nextLong();
-				long d = in.nextLong();
-
-				boolean ok = true;
-
-				long sa = d-b;
-
-				if (a-b < 0) {
-					ok = false;
-				}
-
-				if (sa < 0) {
-					ok = false;
-				}
-
-				if (sa == 0 && (a-b < 0 || a-b > c)) {
-					ok =  false;
-				}
-
-				long l = -1, r = (long)Math.pow(10, 18);
-				long tar = 0;
-				while (r-l > 1) {
-					long k = (r+l)/2;
-
-					if (a - k*b + (k-1)*d <= c) {
-						tar = a - k*+b + k*d;
-					} else {
-						tar = a - k*+b;
-					}
-
-					if (tar - b < c) {
-						l = k;
-					} else {
-						r = k;
-					}
-				}
-
-				if (a - (r+1)*b + r*d < 0) {
-					ok = false;
-				}
-
-				out.println(ok ? "Yes" : "No");
+			if (a[0] != 0) {
+				out.println(-1);
+				return;
 			}
+
+			long ans = 0;
+			for (int i = 0; i < n-1; i++) {
+				long sa = a[i+1] - a[i];
+				if (sa >= 2) {
+					out.println(-1);
+					return;
+				} else if (sa == 1) {
+					ans++;
+				} else if (sa <= 0) {
+					ans += a[i+1];
+				}
+			}
+
+			out.println(ans);
 
 		}
 	}
@@ -120,6 +94,22 @@ public class B_4 {
 			return res;
 		}
 
+		public int[] nextIntArrayDec(int n) {
+			int[] res = new int[n];
+			for (int i = 0; i < n; i++) {
+				res[i] = nextInt() - 1;
+			}
+			return res;
+		}
+
+		public int[] nextIntArray1Index(int n) {
+			int[] res = new int[n + 1];
+			for (int i = 0; i < n; i++) {
+				res[i + 1] = nextInt();
+			}
+			return res;
+		}
+
 		public long[] nextLongArray(int n) {
 			long[] res = new long[n];
 			for (int i = 0; i < n; i++) {
@@ -128,10 +118,58 @@ public class B_4 {
 			return res;
 		}
 
+		public long[] nextLongArrayDec(int n) {
+			long[] res = new long[n];
+			for (int i = 0; i < n; i++) {
+				res[i] = nextLong() - 1;
+			}
+			return res;
+		}
+
+		public long[] nextLongArray1Index(int n) {
+			long[] res = new long[n + 1];
+			for (int i = 0; i < n; i++) {
+				res[i + 1] = nextLong();
+			}
+			return res;
+		}
+
 		public InputReader(InputStream inputStream) {
 			in = new BufferedReader(new InputStreamReader(inputStream));
 			tok = new StringTokenizer("");
 		}
+	}
+
+	static long max(long... n) {
+		long ret = n[0];
+		for (int i = 0; i < n.length; i++) {
+			ret = Math.max(ret, n[i]);
+		}
+		return ret;
+	}
+
+	static int max(int... n) {
+		int ret = n[0];
+		for (int i = 0; i < n.length; i++) {
+			ret = Math.max(ret, n[i]);
+		}
+		return ret;
+	}
+
+	static long min(long... n) {
+		long ret = n[0];
+		for (int i = 0; i < n.length; i++) {
+			ret = Math.min(ret, n[i]);
+		}
+		return ret;
+	}
+
+	static int min(int... n) {
+		int ret = n[0];
+		for (int i = 0; i < n.length; i++) {
+			ret = Math.min(ret, n[i]);
+		}
+		return ret;
 	}
 
 }

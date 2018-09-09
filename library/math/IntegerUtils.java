@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MathUtils {
+public class IntegerUtils {
 
 	/**
 	 * 最大公約数
@@ -17,6 +17,18 @@ public class MathUtils {
 	 * */
 	public static long lcm(long a, long b) {
 		return a * b / gcd(a, b);
+	}
+
+	/**
+	 * 桁和
+	 * */
+	public static int digitSum(int n, long base) {
+		int ret = 0;
+		while (n > 0) {
+			ret += n % base;
+			n /= base;
+		}
+		return ret;
 	}
 
 	/**

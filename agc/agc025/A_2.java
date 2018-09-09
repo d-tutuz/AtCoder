@@ -1,4 +1,4 @@
-package agc026;
+package agc025;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class B_3 {
+public class A_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -33,25 +33,23 @@ public class B_3 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int t = in.nextInt();
+			int n = in.nextInt();
 
-			for (int i = 0; i < t; i++) {
-				long a = in.nextLong();
-				long b = in.nextLong();
-				long c = in.nextLong();
-				long d = in.nextLong();
-
-				boolean ok = true;
-
-				long sa = d-b;
-				if (sa == 0 && (a-b < 0 || a-b > c)) {
-					ok = false;
-				}
-
-				out.println(ok ? "Yes" : "No");
+			if (n % 10 == 0) {
+				out.println(10);
+			} else {
+				out.println(digitSum(n, 10));
 			}
 
+		}
 
+		public static int digitSum(int n, long base) {
+			int ret = 0;
+			while (n > 0) {
+				ret += n % base;
+				n /= base;
+			}
+			return ret;
 		}
 	}
 
@@ -90,6 +88,22 @@ public class B_3 {
 			return res;
 		}
 
+		public int[] nextIntArrayDec(int n) {
+			int[] res = new int[n];
+			for (int i = 0; i < n; i++) {
+				res[i] = nextInt() - 1;
+			}
+			return res;
+		}
+
+		public int[] nextIntArray1Index(int n) {
+			int[] res = new int[n + 1];
+			for (int i = 0; i < n; i++) {
+				res[i + 1] = nextInt();
+			}
+			return res;
+		}
+
 		public long[] nextLongArray(int n) {
 			long[] res = new long[n];
 			for (int i = 0; i < n; i++) {
@@ -98,10 +112,58 @@ public class B_3 {
 			return res;
 		}
 
+		public long[] nextLongArrayDec(int n) {
+			long[] res = new long[n];
+			for (int i = 0; i < n; i++) {
+				res[i] = nextLong() - 1;
+			}
+			return res;
+		}
+
+		public long[] nextLongArray1Index(int n) {
+			long[] res = new long[n + 1];
+			for (int i = 0; i < n; i++) {
+				res[i + 1] = nextLong();
+			}
+			return res;
+		}
+
 		public InputReader(InputStream inputStream) {
 			in = new BufferedReader(new InputStreamReader(inputStream));
 			tok = new StringTokenizer("");
 		}
+	}
+
+	static long max(long... n) {
+		long ret = n[0];
+		for (int i = 0; i < n.length; i++) {
+			ret = Math.max(ret, n[i]);
+		}
+		return ret;
+	}
+
+	static int max(int... n) {
+		int ret = n[0];
+		for (int i = 0; i < n.length; i++) {
+			ret = Math.max(ret, n[i]);
+		}
+		return ret;
+	}
+
+	static long min(long... n) {
+		long ret = n[0];
+		for (int i = 0; i < n.length; i++) {
+			ret = Math.min(ret, n[i]);
+		}
+		return ret;
+	}
+
+	static int min(int... n) {
+		int ret = n[0];
+		for (int i = 0; i < n.length; i++) {
+			ret = Math.min(ret, n[i]);
+		}
+		return ret;
 	}
 
 }

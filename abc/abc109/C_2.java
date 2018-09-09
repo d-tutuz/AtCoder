@@ -1,4 +1,4 @@
-package agc026;
+package abc109;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class B_5 {
+public class C_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -33,30 +33,16 @@ public class B_5 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int t = in.nextInt();
-			for (int i = 0; i < t; i++) {
-				long a = in.nextLong();
-				long b = in.nextLong();
-				long c = in.nextLong();
-				long d = in.nextLong();
+			int n = in.nextInt();
+			long X = in.nextLong();
+			long[] x = in.nextLongArray(n);
 
-				boolean ok = true;
-
-				if (a < b) {
-					ok = false;
-				}
-
-				if (d < b) {
-					ok = false;
-				}
-
-				long g = gcd(d, b);
-				if (c < b - g + a % g) {
-					ok = false;
-				}
-
-				out.println(ok ? "Yes" : "No");
+			long ans = Math.abs(X - x[0]);
+			for (int i = 0; i < n; i++) {
+				ans = gcd(ans, Math.abs(X - x[i]));
 			}
+
+			out.println(ans);
 
 		}
 
@@ -100,6 +86,22 @@ public class B_5 {
 			return res;
 		}
 
+		public int[] nextIntArrayDec(int n) {
+			int[] res = new int[n];
+			for (int i = 0; i < n; i++) {
+				res[i] = nextInt() - 1;
+			}
+			return res;
+		}
+
+		public int[] nextIntArray1Index(int n) {
+			int[] res = new int[n + 1];
+			for (int i = 0; i < n; i++) {
+				res[i + 1] = nextInt();
+			}
+			return res;
+		}
+
 		public long[] nextLongArray(int n) {
 			long[] res = new long[n];
 			for (int i = 0; i < n; i++) {
@@ -108,10 +110,62 @@ public class B_5 {
 			return res;
 		}
 
+		public long[] nextLongArrayDec(int n) {
+			long[] res = new long[n];
+			for (int i = 0; i < n; i++) {
+				res[i] = nextLong() - 1;
+			}
+			return res;
+		}
+
+		public long[] nextLongArray1Index(int n) {
+			long[] res = new long[n + 1];
+			for (int i = 0; i < n; i++) {
+				res[i + 1] = nextLong();
+			}
+			return res;
+		}
+
 		public InputReader(InputStream inputStream) {
 			in = new BufferedReader(new InputStreamReader(inputStream));
 			tok = new StringTokenizer("");
 		}
+	}
+
+	static long max(long... n) {
+		long ret = n[0];
+		for (int i = 0; i < n.length; i++) {
+			ret = Math.max(ret, n[i]);
+		}
+		return ret;
+	}
+
+	static int max(int... n) {
+		int ret = n[0];
+		for (int i = 0; i < n.length; i++) {
+			ret = Math.max(ret, n[i]);
+		}
+		return ret;
+	}
+
+	static long min(long... n) {
+		long ret = n[0];
+		for (int i = 0; i < n.length; i++) {
+			ret = Math.min(ret, n[i]);
+		}
+		return ret;
+	}
+
+	static int min(int... n) {
+		int ret = n[0];
+		for (int i = 0; i < n.length; i++) {
+			ret = Math.min(ret, n[i]);
+		}
+		return ret;
+	}
+
+	static String zeroPad(String str, int len) {
+		return String.format("%" + len + "s", str).replace(" ", "0");
 	}
 
 }
