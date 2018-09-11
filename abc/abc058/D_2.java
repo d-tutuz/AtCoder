@@ -1,4 +1,4 @@
-package abc066;
+package abc058;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,12 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.HashSet;
 import java.util.InputMismatchException;
-import java.util.Set;
 import java.util.StringTokenizer;
 
-public class D_3 {
+public class D_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -35,108 +33,23 @@ public class D_3 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			int[] a = in.nextIntArray(n+1);
-			int b = get(a);
+			int n = in.nextInt(), m = in.nextInt();
+			long[] x = in.nextLongArray1Index(n);
+			long[] y = in.nextLongArray1Index(m);
 
-			int l = 0, m = 0, r = 0;
-
-			int count = 0;
-			for (int i = 0; i < n+1; i++) {
-				if (a[i] == b) {
-					count++;
-					continue;
-				}
-				if (count == 0) {
-					l++;
-				} else if (count == 1) {
-					m++;
-				} else {
-					r++;
-				}
+			long xsum = 0, ysum = 0;
+			for (int k = 1; k < n+1; k++) {
+				xsum += (2*k-n-1)*x[k];
+				xsum %= MOD;
+			}
+			for (int k = 1; k < m+1; k++) {
+				ysum += (2*k-m-1)*y[k];
+				ysum %= MOD;
 			}
 
-			for (int k = 1; k <= n+1; k++) {
-				long ans = 0;
+			out.println(xsum * ysum % MOD);
 
-				// b を 0 個
-				ans += perm(n-1, k);
-				ans %= MOD;
-
-				// b を 1 個
-				ans += perm(l+r, k-1);
-				ans += (perm(l+m+r, k-1) - perm(l+r, k-1) + MOD) * 2 % MOD;
-				ans %= MOD;
-
-				// b を 2 個
-				ans += perm(n-1, k-2);
-				ans %= MOD;
-
-				out.println(ans);
-
-			}
 		}
-
-		int get(int[] a) {
-			Set<Integer> set = new HashSet<>();
-			for (int i : a) {
-				if (!set.contains(i)) {
-					set.add(i);
-				} else {
-					return i;
-				}
-			}
-			return -1;
-		}
-
-	}
-
-
-
-	public static long comb(int n, int r) {
-		if (r < 0 || r > n)
-			return 0L;
-		return fact[n] % MOD * factInv[r] % MOD;
-	}
-
-	public static long perm(int n, int r) {
-		if (r < 0 || r > n)
-			return 0L;
-		return fact[n] % MOD * factInv[r] % MOD * factInv[n - r] % MOD;
-	}
-
-	public static int MAXN = 200000;
-
-	static long[] fact = factorialArray(MAXN, MOD);
-	static long[] factInv = factorialInverseArray(MAXN, MOD,
-			inverseArray(MAXN, MOD));
-
-	public static long[] factorialArray(int maxN, long mod) {
-		long[] fact = new long[maxN + 1];
-		fact[0] = 1 % mod;
-		for (int i = 1; i <= maxN; i++) {
-			fact[i] = fact[i - 1] * i % mod;
-		}
-		return fact;
-	}
-
-	public static long[] inverseArray(int maxN, long modP) {
-		long[] inv = new long[maxN + 1];
-		inv[1] = 1;
-		for (int i = 2; i <= maxN; i++) {
-			inv[i] = modP - (modP / i) * inv[(int) (modP % i)] % modP;
-		}
-		return inv;
-	}
-
-	public static long[] factorialInverseArray(int maxN, long modP,
-			long[] inverseArray) {
-		long[] factInv = new long[maxN + 1];
-		factInv[0] = 1;
-		for (int i = 1; i <= maxN; i++) {
-			factInv[i] = factInv[i - 1] * inverseArray[i] % modP;
-		}
-		return factInv;
 	}
 
 	static class InputReader {

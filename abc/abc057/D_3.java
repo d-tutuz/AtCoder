@@ -1,4 +1,4 @@
-package abc066;
+package abc057;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,9 +6,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.InputMismatchException;
-import java.util.Set;
 import java.util.StringTokenizer;
 
 public class D_3 {
@@ -35,109 +34,61 @@ public class D_3 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			int[] a = in.nextIntArray(n+1);
-			int b = get(a);
+			int n = in.nextInt(), a = in.nextInt(), b = in.nextInt();
+			double[] v = in.nextDoubleArray(n);
+			Arrays.sort(v);
 
-			int l = 0, m = 0, r = 0;
-
-			int count = 0;
-			for (int i = 0; i < n+1; i++) {
-				if (a[i] == b) {
-					count++;
-					continue;
-				}
-				if (count == 0) {
-					l++;
-				} else if (count == 1) {
-					m++;
-				} else {
-					r++;
+			double avg = 0;
+			double miv = LINF;
+			for (int i = n-1; i >= n-a; i--) {
+				avg += v[i];
+				miv = Math.min(miv, v[i]);
+			}
+			avg /= a;
+			boolean eq = true;
+			for (int i = n-1; i >= n-a; i--) {
+				if (v[i] != miv) {
+					eq = false;
+					break;
 				}
 			}
 
-			for (int k = 1; k <= n+1; k++) {
+			int cnt_all = 0;
+			int cnt_not = 0;
+
+
+			for (int i = n-1; i >= 0; i--) {
+				if (i >= n-a && v[i] != miv) cnt_not++;
+				if (v[i] == miv) cnt_all++;
+			}
+
+			if (eq) {
+				out.println(avg);
 				long ans = 0;
-
-				// b を 0 個
-				ans += perm(n-1, k);
-				ans %= MOD;
-
-				// b を 1 個
-				ans += perm(l+r, k-1);
-				ans += (perm(l+m+r, k-1) - perm(l+r, k-1) + MOD) * 2 % MOD;
-				ans %= MOD;
-
-				// b を 2 個
-				ans += perm(n-1, k-2);
-				ans %= MOD;
-
-				out.println(ans);
-
-			}
-		}
-
-		int get(int[] a) {
-			Set<Integer> set = new HashSet<>();
-			for (int i : a) {
-				if (!set.contains(i)) {
-					set.add(i);
-				} else {
-					return i;
+				for (int i = a; i <= min(b, cnt_all); i++) {
+					ans += ncr(cnt_all, i);
 				}
+				out.println(ans);
+				return;
 			}
-			return -1;
+
+			long ans = 0;
+			ans += ncr(cnt_all, a - cnt_not);
+
+			out.println(avg);
+			out.println(ans);
+
 		}
-
 	}
 
-
-
-	public static long comb(int n, int r) {
-		if (r < 0 || r > n)
-			return 0L;
-		return fact[n] % MOD * factInv[r] % MOD;
+	static long ncr(int a, int b) {
+		if (b == 0) return 1;
+		long res = ncr(a - 1, b - 1);
+		res *= a;
+		res /= b;
+		return res;
 	}
 
-	public static long perm(int n, int r) {
-		if (r < 0 || r > n)
-			return 0L;
-		return fact[n] % MOD * factInv[r] % MOD * factInv[n - r] % MOD;
-	}
-
-	public static int MAXN = 200000;
-
-	static long[] fact = factorialArray(MAXN, MOD);
-	static long[] factInv = factorialInverseArray(MAXN, MOD,
-			inverseArray(MAXN, MOD));
-
-	public static long[] factorialArray(int maxN, long mod) {
-		long[] fact = new long[maxN + 1];
-		fact[0] = 1 % mod;
-		for (int i = 1; i <= maxN; i++) {
-			fact[i] = fact[i - 1] * i % mod;
-		}
-		return fact;
-	}
-
-	public static long[] inverseArray(int maxN, long modP) {
-		long[] inv = new long[maxN + 1];
-		inv[1] = 1;
-		for (int i = 2; i <= maxN; i++) {
-			inv[i] = modP - (modP / i) * inv[(int) (modP % i)] % modP;
-		}
-		return inv;
-	}
-
-	public static long[] factorialInverseArray(int maxN, long modP,
-			long[] inverseArray) {
-		long[] factInv = new long[maxN + 1];
-		factInv[0] = 1;
-		for (int i = 1; i <= maxN; i++) {
-			factInv[i] = factInv[i - 1] * inverseArray[i] % modP;
-		}
-		return factInv;
-	}
 
 	static class InputReader {
 		BufferedReader in;
@@ -210,6 +161,14 @@ public class D_3 {
 			long[] res = new long[n + 1];
 			for (int i = 0; i < n; i++) {
 				res[i + 1] = nextLong();
+			}
+			return res;
+		}
+
+		public double[] nextDoubleArray(int n) {
+			double[] res = new double[n];
+			for (int i = 0; i < n; i++) {
+				res[i] = nextDouble();
 			}
 			return res;
 		}

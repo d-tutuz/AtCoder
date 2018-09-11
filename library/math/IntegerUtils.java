@@ -101,9 +101,9 @@ public class IntegerUtils {
 	 * 計算量：O(N^2)
 	 * r * nCr = n * n-1Cr-1
 	 * */
-	static long ncr(int a, int b) {
+	static long pascal(int a, int b) {
 		if (b == 0) return 1;
-		long res = ncr(a - 1, b - 1);
+		long res = pascal(a - 1, b - 1);
 		res *= a;
 		res /= b;
 		return res;

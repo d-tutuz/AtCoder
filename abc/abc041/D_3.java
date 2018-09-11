@@ -1,4 +1,4 @@
-package abc066;
+package abc041;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.InputMismatchException;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.stream.Stream;
 
 public class D_3 {
 
@@ -31,112 +32,46 @@ public class D_3 {
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
+	@SuppressWarnings("unchecked")
 	static class TaskX {
 
+		Set<Integer>[] g;
+		int n, m;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			int[] a = in.nextIntArray(n+1);
-			int b = get(a);
-
-			int l = 0, m = 0, r = 0;
-
-			int count = 0;
-			for (int i = 0; i < n+1; i++) {
-				if (a[i] == b) {
-					count++;
-					continue;
-				}
-				if (count == 0) {
-					l++;
-				} else if (count == 1) {
-					m++;
-				} else {
-					r++;
-				}
+			n = in.nextInt(); m = in.nextInt();
+			g = new HashSet[n];
+			g = Stream.generate(HashSet::new).limit(n).toArray(Set[]::new);
+			for (int i = 0; i < m; i++) {
+				int x = in.nextInt()-1, y = in.nextInt()-1;
+				g[x].add(y);
 			}
 
-			for (int k = 1; k <= n+1; k++) {
-				long ans = 0;
+			int state = (1 << n) - 1;
 
-				// b を 0 個
-				ans += perm(n-1, k);
-				ans %= MOD;
+			out.println(func(state));
 
-				// b を 1 個
-				ans += perm(l+r, k-1);
-				ans += (perm(l+m+r, k-1) - perm(l+r, k-1) + MOD) * 2 % MOD;
-				ans %= MOD;
-
-				// b を 2 個
-				ans += perm(n-1, k-2);
-				ans %= MOD;
-
-				out.println(ans);
-
-			}
 		}
 
-		int get(int[] a) {
-			Set<Integer> set = new HashSet<>();
-			for (int i : a) {
-				if (!set.contains(i)) {
-					set.add(i);
-				} else {
-					return i;
+		int func(int state) {
+			if (Integer.bitCount(state) == 1) {
+				return 1;
+			}
+
+			int ret = 0;
+
+			// 一番右になることができる頂点 i
+			for (int i = 0; i < n; i++) {
+				if ((state >> i & 1) == 0) continue;
+				for (int j = 0; j < n; j++) {
+					if (i == j || (state >> j & 1) == 0) continue;
+					if (g[i].contains(j)) continue;
+					ret += func(state - (1 << i));
 				}
 			}
-			return -1;
+
+			return ret;
 		}
-
-	}
-
-
-
-	public static long comb(int n, int r) {
-		if (r < 0 || r > n)
-			return 0L;
-		return fact[n] % MOD * factInv[r] % MOD;
-	}
-
-	public static long perm(int n, int r) {
-		if (r < 0 || r > n)
-			return 0L;
-		return fact[n] % MOD * factInv[r] % MOD * factInv[n - r] % MOD;
-	}
-
-	public static int MAXN = 200000;
-
-	static long[] fact = factorialArray(MAXN, MOD);
-	static long[] factInv = factorialInverseArray(MAXN, MOD,
-			inverseArray(MAXN, MOD));
-
-	public static long[] factorialArray(int maxN, long mod) {
-		long[] fact = new long[maxN + 1];
-		fact[0] = 1 % mod;
-		for (int i = 1; i <= maxN; i++) {
-			fact[i] = fact[i - 1] * i % mod;
-		}
-		return fact;
-	}
-
-	public static long[] inverseArray(int maxN, long modP) {
-		long[] inv = new long[maxN + 1];
-		inv[1] = 1;
-		for (int i = 2; i <= maxN; i++) {
-			inv[i] = modP - (modP / i) * inv[(int) (modP % i)] % modP;
-		}
-		return inv;
-	}
-
-	public static long[] factorialInverseArray(int maxN, long modP,
-			long[] inverseArray) {
-		long[] factInv = new long[maxN + 1];
-		factInv[0] = 1;
-		for (int i = 1; i <= maxN; i++) {
-			factInv[i] = factInv[i - 1] * inverseArray[i] % modP;
-		}
-		return factInv;
 	}
 
 	static class InputReader {
@@ -214,42 +149,18 @@ public class D_3 {
 			return res;
 		}
 
+		public double[] nextDoubleArray(int n) {
+			double[] res = new double[n];
+			for (int i = 0; i < n; i++) {
+				res[i] = nextDouble();
+			}
+			return res;
+		}
+
 		public InputReader(InputStream inputStream) {
 			in = new BufferedReader(new InputStreamReader(inputStream));
 			tok = new StringTokenizer("");
 		}
-	}
-
-	static long max(long... n) {
-		long ret = n[0];
-		for (int i = 0; i < n.length; i++) {
-			ret = Math.max(ret, n[i]);
-		}
-		return ret;
-	}
-
-	static int max(int... n) {
-		int ret = n[0];
-		for (int i = 0; i < n.length; i++) {
-			ret = Math.max(ret, n[i]);
-		}
-		return ret;
-	}
-
-	static long min(long... n) {
-		long ret = n[0];
-		for (int i = 0; i < n.length; i++) {
-			ret = Math.min(ret, n[i]);
-		}
-		return ret;
-	}
-
-	static int min(int... n) {
-		int ret = n[0];
-		for (int i = 0; i < n.length; i++) {
-			ret = Math.min(ret, n[i]);
-		}
-		return ret;
 	}
 
 }

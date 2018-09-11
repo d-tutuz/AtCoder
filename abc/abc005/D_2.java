@@ -1,4 +1,4 @@
-package abc066;
+package abc005;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,12 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.HashSet;
 import java.util.InputMismatchException;
-import java.util.Set;
 import java.util.StringTokenizer;
 
-public class D_3 {
+public class D_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -36,107 +34,56 @@ public class D_3 {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			int n = in.nextInt();
-			int[] a = in.nextIntArray(n+1);
-			int b = get(a);
+			long[][] a = new long[n][n];
+			long[][] sum = new long[n][n];
 
-			int l = 0, m = 0, r = 0;
-
-			int count = 0;
-			for (int i = 0; i < n+1; i++) {
-				if (a[i] == b) {
-					count++;
-					continue;
-				}
-				if (count == 0) {
-					l++;
-				} else if (count == 1) {
-					m++;
-				} else {
-					r++;
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < n; j++) {
+					a[i][j] = in.nextLong();
 				}
 			}
 
-			for (int k = 1; k <= n+1; k++) {
-				long ans = 0;
-
-				// b を 0 個
-				ans += perm(n-1, k);
-				ans %= MOD;
-
-				// b を 1 個
-				ans += perm(l+r, k-1);
-				ans += (perm(l+m+r, k-1) - perm(l+r, k-1) + MOD) * 2 % MOD;
-				ans %= MOD;
-
-				// b を 2 個
-				ans += perm(n-1, k-2);
-				ans %= MOD;
-
-				out.println(ans);
-
-			}
-		}
-
-		int get(int[] a) {
-			Set<Integer> set = new HashSet<>();
-			for (int i : a) {
-				if (!set.contains(i)) {
-					set.add(i);
-				} else {
-					return i;
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < n; j++) {
+					sum[i][j] = a[i][j];
+					if (j-1 >= 0) sum[i][j] += sum[i][j-1];
+					if (i-1 >= 0) sum[i][j] += sum[i-1][j];
+					if (i-1 >= 0 && j-1 >= 0) sum[i][j] -= sum[i-1][j-1];
 				}
 			}
-			return -1;
+
+			long[] ans = new long[n*n+1];
+			for (int h1 = 0; h1 < n; h1++) {
+				for (int h2 = h1; h2 < n; h2++) {
+					for (int w1 = 0; w1 < n; w1++) {
+						for (int w2 = w1; w2 < n; w2++) {
+							ans[(h2-h1+1)*(w2-w1+1)] = max(get(h1, w1, h2, w2, sum), ans[(h2-h1+1)*(w2-w1+1)]);
+						}
+					}
+				}
+			}
+
+			for (int i = 1; i < n*n+1; i++) {
+				ans[i] = max(ans[i-1], ans[i]);
+			}
+
+			int q = in.nextInt();
+			while (q-- > 0) {
+				int p = in.nextInt();
+				out.println(ans[p]);
+			}
+
 		}
 
-	}
+		long get(int x1, int y1, int x2, int y2, long[][] sum) {
 
+			long res = sum[x2][y2];
+			if (x1 > 0) res -= sum[x1-1][y2];
+			if (y1 > 0) res -= sum[x2][y1-1];
+			if (x1 > 0 && y1 > 0) res += sum[x1-1][y1-1];
 
-
-	public static long comb(int n, int r) {
-		if (r < 0 || r > n)
-			return 0L;
-		return fact[n] % MOD * factInv[r] % MOD;
-	}
-
-	public static long perm(int n, int r) {
-		if (r < 0 || r > n)
-			return 0L;
-		return fact[n] % MOD * factInv[r] % MOD * factInv[n - r] % MOD;
-	}
-
-	public static int MAXN = 200000;
-
-	static long[] fact = factorialArray(MAXN, MOD);
-	static long[] factInv = factorialInverseArray(MAXN, MOD,
-			inverseArray(MAXN, MOD));
-
-	public static long[] factorialArray(int maxN, long mod) {
-		long[] fact = new long[maxN + 1];
-		fact[0] = 1 % mod;
-		for (int i = 1; i <= maxN; i++) {
-			fact[i] = fact[i - 1] * i % mod;
+			return res;
 		}
-		return fact;
-	}
-
-	public static long[] inverseArray(int maxN, long modP) {
-		long[] inv = new long[maxN + 1];
-		inv[1] = 1;
-		for (int i = 2; i <= maxN; i++) {
-			inv[i] = modP - (modP / i) * inv[(int) (modP % i)] % modP;
-		}
-		return inv;
-	}
-
-	public static long[] factorialInverseArray(int maxN, long modP,
-			long[] inverseArray) {
-		long[] factInv = new long[maxN + 1];
-		factInv[0] = 1;
-		for (int i = 1; i <= maxN; i++) {
-			factInv[i] = factInv[i - 1] * inverseArray[i] % modP;
-		}
-		return factInv;
 	}
 
 	static class InputReader {
