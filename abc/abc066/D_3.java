@@ -1,4 +1,4 @@
-package abc013;
+package abc066;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.HashSet;
 import java.util.InputMismatchException;
+import java.util.Set;
 import java.util.StringTokenizer;
 
-public class D {
+public class D_3 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -33,62 +35,92 @@ public class D {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt(), m = in.nextInt(), d = in.nextInt();
-			int[] x = new int[m];
-			for (int i = 0; i < m; i++) {
-				x[i] = in.nextInt();
-			}
+			int n = in.nextInt();
+			int[] a = in.nextIntArray(n+1);
+			int b = get(a);
 
-			int[] t = new int[n+1];
-			for (int i = 1; i < n+1; i++) {
-				t[i] = i;
-			}
+			int l = 0, m = 0, r = 0;
 
-			// あみだの結果の配列 i -> t[i]
-			for (int i : x) {
-				swap(t, i, i+1);
-			}
-
-			// ダブリングの事前準備
-			int[][] next = new int[32][n+1];
+			int count = 0;
 			for (int i = 0; i < n+1; i++) {
-				next[0][i] = t[i];
-			}
-			for (int i = 0; i < 31; i++) {
-				for (int j = 0; j < n+1; j++) {
-					next[i+1][j] = next[i][next[i][j]];
+				if (a[i] == b) {
+					count++;
+					continue;
+				}
+				if (count == 0) {
+					l++;
+				} else if (count == 1) {
+					m++;
+				} else {
+					r++;
 				}
 			}
 
-			// ダブリングで i の d 番目先の要素を求める
-			int[] res = new int[n+1];
-			for (int i = 1; i < n+1; i++) {
-				int p = i;
-				for (int j = 31; j >= 0; j--) {
-					if ((d >> j & 1) == 1) {
-						p = next[j][p];
-					}
-				}
-				res[i] = p;
-			}
+			for (int k = 1; k <= n+1; k++) {
+				long ans = 0;
 
-			// 答えの整形
-			int[] ans = new int[n];
-			for (int i = 1; i < n+1; i++) {
-				ans[res[i]-1] = i;
-			}
-
-			for (int i : ans) {
-				out.println(i);
 			}
 		}
 	}
 
 
-	static void swap(int[] a, int i, int j) {
-		int tmp = a[i];
-		a[i] = a[j];
-		a[j] = tmp;
+
+	public static long comb(int n, int r) {
+		if (r < 0 || r > n)
+			return 0L;
+		return fact[n] % MOD * factInv[r] % MOD;
+	}
+
+	public static long perm(int n, int r) {
+		if (r < 0 || r > n)
+			return 0L;
+		return fact[n] % MOD * factInv[r] % MOD * factInv[n - r] % MOD;
+	}
+
+	public static int MAXN = 200000;
+
+	static long[] fact = factorialArray(MAXN, MOD);
+	static long[] factInv = factorialInverseArray(MAXN, MOD,
+			inverseArray(MAXN, MOD));
+
+	public static long[] factorialArray(int maxN, long mod) {
+		long[] fact = new long[maxN + 1];
+		fact[0] = 1 % mod;
+		for (int i = 1; i <= maxN; i++) {
+			fact[i] = fact[i - 1] * i % mod;
+		}
+		return fact;
+	}
+
+	public static long[] inverseArray(int maxN, long modP) {
+		long[] inv = new long[maxN + 1];
+		inv[1] = 1;
+		for (int i = 2; i <= maxN; i++) {
+			inv[i] = modP - (modP / i) * inv[(int) (modP % i)] % modP;
+		}
+		return inv;
+	}
+
+	public static long[] factorialInverseArray(int maxN, long modP,
+			long[] inverseArray) {
+		long[] factInv = new long[maxN + 1];
+		factInv[0] = 1;
+		for (int i = 1; i <= maxN; i++) {
+			factInv[i] = factInv[i - 1] * inverseArray[i] % modP;
+		}
+		return factInv;
+	}
+
+	static int get(int[] a) {
+		Set<Integer> set = new HashSet<>();
+		for (int i : set) {
+			if (!set.contains(i)) {
+				set.add(i);
+			} else {
+				return i;
+			}
+		}
+		return -1;
 	}
 
 	static class InputReader {
