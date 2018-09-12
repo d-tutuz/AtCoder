@@ -1,4 +1,4 @@
-package abc048;
+package abc067;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.InputMismatchException;
+import java.util.List;
+import java.util.Queue;
 import java.util.StringTokenizer;
+import java.util.stream.Stream;
 
-public class D_2 {
+public class D {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -29,28 +35,49 @@ public class D_2 {
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
+	@SuppressWarnings("unchecked")
 	static class TaskX {
 
+		int n;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			char[] s = in.nextString().toCharArray();
-			int n = s.length;
-			boolean ok = true;
-			for (int i = 0; i < n; i++) {
-				if (i % 2 == 0) {
-					if (s[i] != s[0]) ok = false;
-				} else {
-					if (s[i] != s[1]) ok = false;
-				}
+			n = in.nextInt();
+			long[] wcost = new long[n];
+			long[] bcost = new long[n];
+			Arrays.fill(bcost, INF);
+			Arrays.fill(wcost, INF);
+
+			List<Integer>[] g = new ArrayList[n];
+			g = Stream.generate(ArrayList::new).limit(n).toArray(List[]::new);
+			for (int i = 0; i < n-1; i++) {
+				int a = in.nextInt()-1, b = in.nextInt()-1;
+				g[a].add(b);
+				g[b].add(a);
 			}
 
-			if (ok) {
-				out.println("Second");
-			} else {
-				if (n % 2 == 0) {
-					out.println("Second");
-				} else {
-					out.println("First");
+			bfs(0, g, bcost);
+			bfs(n-1, g, wcost);
+
+			long ans = 0;
+			out.println(ans);
+		}
+
+		void bfs(int s, List<Integer>[] g, long[] cost) {
+
+			boolean[] used = new boolean[n];
+			Queue<Integer> q = new ArrayDeque<Integer>();
+
+			used[s] = true;
+			cost[s] = 0;
+			q.add(s);
+
+			while (!q.isEmpty()) {
+				int now = q.remove();
+				for (int to : g[now]) {
+					if (used[to]) continue;
+					used[to] = true;
+					cost[to] = cost[now] + 1;
+					q.add(to);
 				}
 			}
 
@@ -145,5 +172,4 @@ public class D_2 {
 			tok = new StringTokenizer("");
 		}
 	}
-
 }
