@@ -276,5 +276,38 @@ public class IntegerUtils {
 		}
 	}
 
+	// 多次元 min, max
+	static long max(long... n) {
+		long ret = n[0];
+		for (int i = 0; i < n.length; i++) {
+			ret = Math.max(ret, n[i]);
+		}
+		return ret;
+	}
+
+	static int max(int... n) {
+		int ret = n[0];
+		for (int i = 0; i < n.length; i++) {
+			ret = Math.max(ret, n[i]);
+		}
+		return ret;
+	}
+
+	static long min(long... n) {
+		long ret = n[0];
+		for (int i = 0; i < n.length; i++) {
+			ret = Math.min(ret, n[i]);
+		}
+		return ret;
+	}
+
+	static int min(int... n) {
+		int ret = n[0];
+		for (int i = 0; i < n.length; i++) {
+			ret = Math.min(ret, n[i]);
+		}
+		return ret;
+	}
+
 
 }

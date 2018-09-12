@@ -1,4 +1,4 @@
-package abc041;
+package abc063;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,14 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.InputMismatchException;
-import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.stream.Stream;
 
-public class D_3 {
+public class D {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -33,55 +29,39 @@ public class D_3 {
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
-	@SuppressWarnings("unchecked")
 	static class TaskX {
 
-		Set<Integer>[] g;
-		int n, m;
-		long[] memo;
+		int n;
+		long a, b;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			n = in.nextInt(); m = in.nextInt();
-			g = new HashSet[n];
-			g = Stream.generate(HashSet::new).limit(n).toArray(Set[]::new);
-			for (int i = 0; i < m; i++) {
-				int x = in.nextInt()-1, y = in.nextInt()-1;
-				g[x].add(y);
+			n = in.nextInt();
+			a = in.nextLong(); b = in.nextLong();
+			long[] h = in.nextLongArray(n);
+
+			long l = 0, r = INF;
+			while (r - l > 1) {
+				long m = (r+l)/2;
+
+				if (check(m, h)) {
+					r = m;
+				} else {
+					l = m;
+				}
 			}
 
-			int state = (1 << n) - 1;
-			memo = new long[1<<n];
-			Arrays.fill(memo, -1);
-			out.println(func(state));
-
+			out.println(r);
 		}
 
-		long func(int state) {
-			if (memo[state] != -1) {
-				return memo[state];
-			}
-
-			if (Integer.bitCount(state) == 0) {
-				return 1L;
-			}
-
-			long ret = 0;
-
-			// 一番右になることができる頂点 i
+		boolean check(long m ,long[] h) {
+			long count = 0;
 			for (int i = 0; i < n; i++) {
-				if ((state >> i & 1) == 0) continue;
-				boolean ok = true;
-				for (int j = 0; j < n; j++) {
-					if (i == j || (state >> j & 1) == 0) continue;
-					if (g[i].contains(j)) {
-						ok = false;
-						break;
-					}
+				long w = h[i] - b * m;
+				if (w > 0) {
+					count += (w + (a - b - 1)) / (a - b);
 				}
-				if (ok) ret += func(state - (1 << i));
 			}
-
-			return memo[state] = ret;
+			return count <= m;
 		}
 	}
 
@@ -173,5 +153,4 @@ public class D_3 {
 			tok = new StringTokenizer("");
 		}
 	}
-
 }

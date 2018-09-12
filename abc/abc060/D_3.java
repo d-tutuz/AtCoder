@@ -1,4 +1,4 @@
-package abc041;
+package abc060;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,11 +7,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.InputMismatchException;
-import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.stream.Stream;
 
 public class D_3 {
 
@@ -36,52 +33,65 @@ public class D_3 {
 	@SuppressWarnings("unchecked")
 	static class TaskX {
 
-		Set<Integer>[] g;
-		int n, m;
-		long[] memo;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			n = in.nextInt(); m = in.nextInt();
-			g = new HashSet[n];
-			g = Stream.generate(HashSet::new).limit(n).toArray(Set[]::new);
-			for (int i = 0; i < m; i++) {
-				int x = in.nextInt()-1, y = in.nextInt()-1;
-				g[x].add(y);
-			}
-
-			int state = (1 << n) - 1;
-			memo = new long[1<<n];
-			Arrays.fill(memo, -1);
-			out.println(func(state));
-
-		}
-
-		long func(int state) {
-			if (memo[state] != -1) {
-				return memo[state];
-			}
-
-			if (Integer.bitCount(state) == 0) {
-				return 1L;
-			}
-
-			long ret = 0;
-
-			// 一番右になることができる頂点 i
+			int n = in.nextInt();
+			long W = in.nextLong();
+			int[] tw = new int[n];
+			long[] tv = new long[n];
 			for (int i = 0; i < n; i++) {
-				if ((state >> i & 1) == 0) continue;
-				boolean ok = true;
-				for (int j = 0; j < n; j++) {
-					if (i == j || (state >> j & 1) == 0) continue;
-					if (g[i].contains(j)) {
-						ok = false;
-						break;
+				tw[i] = in.nextInt();
+				tv[i] = in.nextLong();
+			}
+
+			int a = 1, b = 1, c = 1, d = 1;
+			long[][] v = new long[4][n+1];
+			for (int i = 0; i < n; i++) {
+				int diff = tw[i] - tw[0];
+				if (diff == 0) {
+					v[diff][a++] = tv[i];
+				} else if (diff == 1) {
+					v[diff][b++] = tv[i];
+				} else if (diff == 2) {
+					v[diff][c++] = tv[i];
+				} else {
+					v[diff][d++] = tv[i];
+				}
+			}
+			for (int i = 0; i < 4; i++) {
+				revSort(v[i]);
+				Arrays.parallelPrefix(v[i], Math::addExact);
+			}
+
+			long ans = 0;
+			for (int i = 0; i <= n; i++) {
+				for (int j = 0; j <= n-i; j++) {
+					for (int k = 0; k <= n-i-j; k++) {
+						for (int m = 0; m <= n-i-j-k; m++) {
+							if (i+j+k+m > n) continue;
+							long tmp = 0;
+							long base = tw[0];
+							if (i*base + j*(base+1) + k*(base+2) + m*(base+3) > W) continue;
+							tmp += v[0][i] - v[0][0];
+							tmp += v[1][j] - v[1][0];
+							tmp += v[2][k] - v[2][0];
+							tmp += v[3][m] - v[3][0];
+							ans = Math.max(ans, tmp);
+						}
 					}
 				}
-				if (ok) ret += func(state - (1 << i));
 			}
 
-			return memo[state] = ret;
+			out.println(ans);
+		}
+	}
+
+	static void revSort(long[] a) {
+		long[] tmp = a.clone();
+		int n = a.length;
+		Arrays.sort(tmp, 1, n);
+		for (int i = 1; i < n; i++) {
+			a[i] = tmp[n-i];
 		}
 	}
 

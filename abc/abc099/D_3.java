@@ -1,4 +1,4 @@
-package abc041;
+package abc099;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,12 +6,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.InputMismatchException;
-import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.stream.Stream;
 
 public class D_3 {
 
@@ -33,55 +29,48 @@ public class D_3 {
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
-	@SuppressWarnings("unchecked")
 	static class TaskX {
 
-		Set<Integer>[] g;
-		int n, m;
-		long[] memo;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			n = in.nextInt(); m = in.nextInt();
-			g = new HashSet[n];
-			g = Stream.generate(HashSet::new).limit(n).toArray(Set[]::new);
-			for (int i = 0; i < m; i++) {
-				int x = in.nextInt()-1, y = in.nextInt()-1;
-				g[x].add(y);
+			int n = in.nextInt(), C = in.nextInt();
+
+			int[][] cost = new int[3][C];
+			int[][] d = new int[C][C];
+			for (int i = 0; i < C; i++) {
+				for (int j = 0; j < C; j++) {
+					d[i][j] = in.nextInt();
+				}
 			}
 
-			int state = (1 << n) - 1;
-			memo = new long[1<<n];
-			Arrays.fill(memo, -1);
-			out.println(func(state));
-
-		}
-
-		long func(int state) {
-			if (memo[state] != -1) {
-				return memo[state];
-			}
-
-			if (Integer.bitCount(state) == 0) {
-				return 1L;
-			}
-
-			long ret = 0;
-
-			// 一番右になることができる頂点 i
+			int[][] c = new int[n][n];
 			for (int i = 0; i < n; i++) {
-				if ((state >> i & 1) == 0) continue;
-				boolean ok = true;
 				for (int j = 0; j < n; j++) {
-					if (i == j || (state >> j & 1) == 0) continue;
-					if (g[i].contains(j)) {
-						ok = false;
-						break;
+					c[i][j] = in.nextInt()-1;
+				}
+			}
+
+			for (int k = 0; k < C; k++) {
+				for (int i = 0; i < n; i++) {
+					for (int j = 0; j < n; j++) {
+						int p = (i+j) % 3;
+						cost[p][k] += d[c[i][j]][k];
 					}
 				}
-				if (ok) ret += func(state - (1 << i));
 			}
 
-			return memo[state] = ret;
+			long ans = LINF;
+			for (int i = 0; i < C; i++) {
+				for (int j = 0; j < C; j++) {
+					for (int k = 0; k < C; k++) {
+						if (i == j || j == k || k == i) continue;
+						ans = Math.min(ans, cost[0][i] + cost[1][j] + cost[2][k]);
+					}
+				}
+			}
+
+			out.println(ans);
+
 		}
 	}
 

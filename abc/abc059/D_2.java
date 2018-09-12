@@ -1,4 +1,4 @@
-package abc041;
+package abc059;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,14 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.InputMismatchException;
-import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.stream.Stream;
 
-public class D_3 {
+public class D_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -33,55 +29,13 @@ public class D_3 {
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
-	@SuppressWarnings("unchecked")
 	static class TaskX {
 
-		Set<Integer>[] g;
-		int n, m;
-		long[] memo;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			n = in.nextInt(); m = in.nextInt();
-			g = new HashSet[n];
-			g = Stream.generate(HashSet::new).limit(n).toArray(Set[]::new);
-			for (int i = 0; i < m; i++) {
-				int x = in.nextInt()-1, y = in.nextInt()-1;
-				g[x].add(y);
-			}
+			long x = in.nextLong(), y = in.nextLong();
+			out.println(Math.abs(x-y) <= 1 ? "Brown" : "Alice");
 
-			int state = (1 << n) - 1;
-			memo = new long[1<<n];
-			Arrays.fill(memo, -1);
-			out.println(func(state));
-
-		}
-
-		long func(int state) {
-			if (memo[state] != -1) {
-				return memo[state];
-			}
-
-			if (Integer.bitCount(state) == 0) {
-				return 1L;
-			}
-
-			long ret = 0;
-
-			// 一番右になることができる頂点 i
-			for (int i = 0; i < n; i++) {
-				if ((state >> i & 1) == 0) continue;
-				boolean ok = true;
-				for (int j = 0; j < n; j++) {
-					if (i == j || (state >> j & 1) == 0) continue;
-					if (g[i].contains(j)) {
-						ok = false;
-						break;
-					}
-				}
-				if (ok) ret += func(state - (1 << i));
-			}
-
-			return memo[state] = ret;
 		}
 	}
 
@@ -173,5 +127,4 @@ public class D_3 {
 			tok = new StringTokenizer("");
 		}
 	}
-
 }
