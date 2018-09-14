@@ -1,38 +1,38 @@
+import java.util.Arrays;
 
 	/**
-	 * 1-indexed BinaryIndexTree
+	 * 0-indexed BinaryIndexTree
 	 * */
-	public class BIT {
-
-		// [1, n]
-		int n;
-		long[] bit;
+	class BIT {
+		private int n;
+		private long[] bit;
 
 		public BIT(int n) {
 			this.n = n;
-			bit = new long[n+1];
+			bit = new long[n + 1];
 		}
 
-		// indexに値vを足す
-		public void add(int i, long v) {
-			for (int x = i; x < n+1; x += x & -x) {
-				bit[x] += v;
+		public void clear() {
+			Arrays.fill(bit, 0);
+		}
+
+		public void add(int i, long x) {
+			while (i <= n) {
+				bit[i] += x;
+				i |= i + 1;
 			}
 		}
 
-		// 区間和 [1, v] を求める
-		// v[1] + ... + v[i]
-		public long sum(int i) {
-			long ret = 0;
-			for (int x = i; x > 0; x -= x & -x) {
-				ret += bit[x];
-			}
-			return ret;
+		public long query(int l, int r) {
+			return l <= r ? query(r) - query(l-1) : 0;
 		}
 
-		// 区間和 [i, j] = [1, j] - [1, i-1]を求める
-		// v[i] + ... + v[j]
-		public long query(int i, int j) {
-			return sum(j) - sum(i-1);
+		private long query(int i) {
+			long s = 0;
+			while (i >= 0) {
+				s += bit[i];
+				i = (i & (i + 1)) - 1;
+			}
+			return s;
 		}
 	}
