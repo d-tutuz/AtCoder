@@ -9,10 +9,12 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.TreeSet;
 import java.util.stream.Stream;
 
-public class C {
+public class B_3 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -32,58 +34,39 @@ public class C {
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
-	@SuppressWarnings("unchecked")
 	static class TaskX {
 
-		char[] s;
-		int[] visited;
-		List<Integer>[] g;
+		int n ,m;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			int m = in.nextInt();
-			s = in.nextString().toCharArray();
-			visited = new int[2*n];
+			n = in.nextInt(); m = in.nextInt();
+			char[] s = in.nextString().toCharArray();
 
-			// 頂点倍化して(AABB)*の形の閉路が検出できる有向グラフの形にする
-			g = new ArrayList[2*n];
-			g = Stream.generate(ArrayList::new).limit(2*n).toArray(List[]::new);
+			Set<Character>[] set = new TreeSet[n];
+			set = Stream.generate(TreeSet::new).limit(n).toArray(Set[]::new);
+
+			List<Integer>[] g = new ArrayList[n];
+			g = Stream.generate(ArrayList::new).limit(n).toArray(List[]::new);
+
 			for (int i = 0; i < m; i++) {
-				int a = in.nextInt()-1;
-				int b = in.nextInt()-1;
-				if (s[a] == s[b]) {
-					g[a].add(b + n);
-					g[b].add(a + n);
-				} else {
-					g[a + n].add(b);
-					g[b + n].add(a);
-				}
+				int a = in.nextInt()-1, b = in.nextInt()-1;
+				set[a].add(s[b]);
+				set[b].add(s[a]);
+				g[a].add(b);
+				g[b].add(a);
 			}
 
-			for (int i = 0; i < n; i++) {
-				if (visited[i] != 1) {
-					if (dfs(i)) {
-						out.println("Yes");
-						return;
-					}
-				}
+			long cnt = 0;
+			for (Set<Character> ss : set) {
+				if (ss.size() <= 1) cnt++;
 			}
 
-			out.println("No");
-
-		}
-
-		boolean dfs(int i) {
-			visited[i] = -1;
-			for (int j : g[i]) {
-				if (visited[j] == -1) {
-					return true;
-				} else if (visited[j] != 1) {
-					dfs(j);
-				}
+			if (cnt == n) {
+				out.println("No");
+			} else {
+				out.println("Yes");
 			}
-			visited[i] = 1;
-			return false;
+
 		}
 	}
 

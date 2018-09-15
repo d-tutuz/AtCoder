@@ -6,13 +6,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.InputMismatchException;
-import java.util.List;
 import java.util.StringTokenizer;
-import java.util.stream.Stream;
 
-public class C {
+public class B_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -32,58 +30,33 @@ public class C {
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
-	@SuppressWarnings("unchecked")
 	static class TaskX {
 
-		char[] s;
-		int[] visited;
-		List<Integer>[] g;
+		long x;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			int n = in.nextInt();
-			int m = in.nextInt();
-			s = in.nextString().toCharArray();
-			visited = new int[2*n];
+			x = in.nextLong();
+			long[] a = in.nextLongArray1Index(n);
 
-			// 頂点倍化して(AABB)*の形の閉路が検出できる有向グラフの形にする
-			g = new ArrayList[2*n];
-			g = Stream.generate(ArrayList::new).limit(2*n).toArray(List[]::new);
-			for (int i = 0; i < m; i++) {
-				int a = in.nextInt()-1;
-				int b = in.nextInt()-1;
-				if (s[a] == s[b]) {
-					g[a].add(b + n);
-					g[b].add(a + n);
-				} else {
-					g[a + n].add(b);
-					g[b + n].add(a);
-				}
-			}
+			long[] cost = new long[n+1];
+			Arrays.fill(cost, 0);
+			long ans = func(0, n, 5 * a[n], a);
 
-			for (int i = 0; i < n; i++) {
-				if (visited[i] != 1) {
-					if (dfs(i)) {
-						out.println("Yes");
-						return;
-					}
-				}
-			}
-
-			out.println("No");
-
+			out.println(ans);
 		}
 
-		boolean dfs(int i) {
-			visited[i] = -1;
-			for (int j : g[i]) {
-				if (visited[j] == -1) {
-					return true;
-				} else if (visited[j] != 1) {
-					dfs(j);
-				}
+		long func(long k, int now, long cost, long[] a) {
+			if (now == 0) {
+				return cost;
 			}
-			visited[i] = 1;
-			return false;
+
+			long ret = 0;
+			long d = a[now] - a[now-1];
+
+			ret += Math.min(func(k+1, now-1, cost+x+ (k+1)*(k+1)*d, a), func(k, now-1, cost+func(k, now-1, 0, a)+k*k*d, a));
+
+			return ret;
 		}
 	}
 
