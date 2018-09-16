@@ -37,21 +37,22 @@ public class B {
 			int n = in.nextInt();
 			long x = in.nextLong();
 			long[] a = in.nextLongArray1Index(n);
+			Arrays.parallelPrefix(a, Math::addExact);
 
-			long[] cost = new long[n+1];
-			Arrays.fill(cost, 0);
+			long ans = LINF;
+			for (int k = 1; k <= n; k++) {
+				long res = k * x;
+				for (int i = 0; i < (n+k-1)/k; i++) {
+					long c = i == 0 ? 5 : 2*i+3;
+					int s = n - k * i;
+					int t = Math.max(s - k, 0);
+					res += c * (a[s] - a[t]);
+				}
+				if (res < 0) res = LINF;
+				ans = Math.min(ans, res);
+			}
 
-			cost[1] = 5 * a[1] + 2 * x;
-//			for (int i = 2; i <= n; i++) {
-//				long c1 = a[i] + x + (a[i]-a[i-1]) * i * i + (a[i-1]-a[i-2]) * i * i + cost[i-1];
-//				long c2 = a[i] + x + (a[i]-a[i-1]) * i * i + x + (i+1) * (i+1) * (a[i-1]-a[i-2]) + x;
-//
-//				cost[i] = Math.min(c1, c2);
-//			}
-			cost[2] = Math.min(a[2] + x + (a[2]-a[1]) * 2 * 2 + (a[1]-a[0]) * 2 * 2 + cost[1], a[2] + x + (a[2]-a[1]) * 2 * 2 + cost[1] - x + 3 * 3 * (a[1]-a[0]) + 2 * 2 * (a[1]-a[0]));
-
-			out.println(cost[n]);
-
+			out.println(ans + n * x);
 		}
 
 	}

@@ -9,12 +9,10 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
-import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.TreeSet;
 import java.util.stream.Stream;
 
-public class B_3 {
+public class C_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -34,39 +32,64 @@ public class B_3 {
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
+	@SuppressWarnings("unchecked")
 	static class TaskX {
 
-		int n ,m;
+		List<Integer>[] g;
+		int[][] cnt;
+		char[] s;
+		boolean[] used;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			n = in.nextInt(); m = in.nextInt();
-			char[] s = in.nextString().toCharArray();
+			int n = in.nextInt(), m = in.nextInt();
+			s = in.nextString().toCharArray();
 
-			Set<Character>[] set = new TreeSet[n];
-			set = Stream.generate(TreeSet::new).limit(n).toArray(Set[]::new);
-
-			List<Integer>[] g = new ArrayList[n];
+			g = new ArrayList[n];
 			g = Stream.generate(ArrayList::new).limit(n).toArray(List[]::new);
 
+			cnt = new int[n][2];
+			used = new boolean[n];
 			for (int i = 0; i < m; i++) {
 				int a = in.nextInt()-1, b = in.nextInt()-1;
-				set[a].add(s[b]);
-				set[b].add(s[a]);
 				g[a].add(b);
 				g[b].add(a);
+				cnt[a][s[b]-'A']++;
+				cnt[b][s[a]-'A']++;
 			}
 
-			long cnt = 0;
-			for (Set<Character> ss : set) {
-				if (ss.size() <= 1) cnt++;
+			boolean[] ok = new boolean[n];
+			for (int i = 0; i < n; i++) {
+				if (cnt[i][0] >= 1 && cnt[i][1] >= 1) {
+					ok[i] = true;
+				}
 			}
 
-			if (cnt == n) {
-				out.println("No");
-			} else {
-				out.println("Yes");
+			for (int i = 0; i < n; i++) {
+				if (ok[i]) continue;
+				dfs(i, ok);
 			}
 
+			for (boolean b : ok) {
+				if (b) {
+					out.println("Yes");
+					return;
+				}
+			}
+
+			out.println("No");
+		}
+
+		void dfs(int cur, boolean[] ok) {
+			if (used[cur]) return;
+			used[cur] = true;
+
+			for (int to : g[cur]) {
+				if (!ok[to]) continue;
+				if (--cnt[to][s[cur]-'A'] == 0) {
+					ok[to] = false;
+					dfs(to, ok);
+				}
+			}
 		}
 	}
 

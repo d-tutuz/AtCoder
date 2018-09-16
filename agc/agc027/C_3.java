@@ -6,11 +6,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Arrays;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.List;
+import java.util.Queue;
 import java.util.StringTokenizer;
+import java.util.stream.Stream;
 
-public class B_2 {
+public class C_3 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -30,34 +34,60 @@ public class B_2 {
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
+	@SuppressWarnings("unchecked")
 	static class TaskX {
 
-		long x;
+		List<Integer>[] g;
+		int[][] cnt;
+		char[] s;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			x = in.nextLong();
-			long[] a = in.nextLongArray1Index(n);
+			int n = in.nextInt(), m = in.nextInt();
+			s = in.nextString().toCharArray();
 
-			long[] cost = new long[n+1];
-			Arrays.fill(cost, 0);
-			long ans = func(0, n, 5 * a[n], a);
+			g = new ArrayList[n];
+			g = Stream.generate(ArrayList::new).limit(n).toArray(List[]::new);
 
-			out.println(ans);
-		}
-
-		long func(long k, int now, long cost, long[] a) {
-			if (now == 0) {
-				return cost;
+			cnt = new int[n][2];
+			for (int i = 0; i < m; i++) {
+				int a = in.nextInt()-1, b = in.nextInt()-1;
+				g[a].add(b);
+				g[b].add(a);
+				cnt[a][s[b]-'A']++;
+				cnt[b][s[a]-'A']++;
 			}
 
-			long ret = 0;
-			long d = a[now] - a[now-1];
+			boolean[] ok = new boolean[n];
+			Queue<Integer> q = new ArrayDeque<>();
+			for (int i = 0; i < n; i++) {
+				ok[i] = (cnt[i][0] > 0 && cnt[i][1] > 0);
+				if (!ok[i]) q.add(i);
+			}
 
-			ret += Math.min(func(k+1, now-1, cost+x+ (k+1)*(k+1)*d, a), func(k, now-1, cost+func(k, now-1, 0, a)+k*k*d, a));
+			// 条件を満たさない頂点からbfsをして現在OKであった頂点が残るかどうか
+			while (!q.isEmpty()) {
+				int cur = q.remove();
+				for (int to : g[cur]) {
+					if (!ok[to]) continue;
 
-			return ret;
+					// 遷移先から遷移元の頂点の文字の数を-1する
+					if (--cnt[to][s[cur]-'A'] == 0) {
+						ok[to] = false;
+						q.add(to);
+					}
+				}
+			}
+
+			for (int i = 0; i < n; i++) {
+				if (ok[i]) {
+					out.println("Yes");
+					return;
+				}
+			}
+
+			out.println("No");
 		}
+
 	}
 
 	static class InputReader {

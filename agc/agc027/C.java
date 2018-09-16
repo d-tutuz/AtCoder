@@ -61,29 +61,24 @@ public class C {
 			}
 
 			for (int i = 0; i < n; i++) {
-				if (visited[i] != 1) {
-					if (dfs(i)) {
-						out.println("Yes");
-						return;
-					}
-				}
+				if (visited[i] != 1) dfs(i);
 			}
 
 			out.println("No");
 
 		}
 
-		boolean dfs(int i) {
+		void dfs(int i) {
 			visited[i] = -1;
 			for (int j : g[i]) {
 				if (visited[j] == -1) {
-					return true;
+					System.out.println("Yes");
+					System.exit(0);
 				} else if (visited[j] != 1) {
 					dfs(j);
 				}
 			}
 			visited[i] = 1;
-			return false;
 		}
 	}
 
