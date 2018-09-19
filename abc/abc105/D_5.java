@@ -1,4 +1,4 @@
-package abc072;
+package abc105;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
 
-public class D_2 {
+public class D_5 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -34,27 +36,68 @@ public class D_2 {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			int n = in.nextInt();
-			int[] a = in.nextIntArray(n);
-
-			int count = 0;
-			for (int i = 0; i < n; i++) {
-				if (i == n-1) {
-					if (a[i] == n) {
-						count++;
-					}
-					break;
-				}
-
-				if (a[i] == i+1 && a[i+1] == i+2) {
-					count++;
-					i++;
-				} else if (a[i] == i+1) {
-					count++;
-				}
+			long m = in.nextLong();
+			long[] a = in.nextLongArray1Index(n);
+			Arrays.parallelPrefix(a, Math::addExact);
+			for (int i = 0; i < n+1; i++) {
+				a[i] %= m;
 			}
 
-			out.println(count);
+			long[] as = a.clone();
+			Arrays.sort(as);
 
+			TreeMap<Long, Integer> map = new TreeMap<>();
+
+			int id = 0;
+			for (int i = 0; i < n+1; i++) {
+				map.put(as[i], id++);
+			}
+
+			BIT bit = new BIT(n+1);
+			long ans = 0;
+
+			for (int i = 0; i < n+1; i++) {
+				int key = map.get(a[i]);
+				ans += bit.query(key, key);
+				bit.add(key, 1);
+			}
+
+			out.println(ans);
+
+		}
+	}
+
+	static class BIT {
+		private int n;
+		private long[] bit;
+
+		public BIT(int n) {
+			this.n = n;
+			bit = new long[n + 1];
+		}
+
+		public void clear() {
+			Arrays.fill(bit, 0);
+		}
+
+		public void add(int i, long x) {
+			while (i <= n) {
+				bit[i] += x;
+				i |= i + 1;
+			}
+		}
+
+		public long query(int l, int r) {
+			return l <= r ? query(r) - query(l - 1) : 0;
+		}
+
+		private long query(int i) {
+			long s = 0;
+			while (i >= 0) {
+				s += bit[i];
+				i = (i & (i + 1)) - 1;
+			}
+			return s;
 		}
 	}
 

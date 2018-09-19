@@ -1,4 +1,4 @@
-package abc072;
+package abc068;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,31 +31,45 @@ public class D_2 {
 
 	static class TaskX {
 
+		static int n = 50;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			int[] a = in.nextIntArray(n);
-
-			int count = 0;
+			long k = in.nextLong();
+			long[] a = new long[n];
+			long count = k/n;
+			k %= n;
 			for (int i = 0; i < n; i++) {
-				if (i == n-1) {
-					if (a[i] == n) {
-						count++;
-					}
-					break;
-				}
+				a[i] = n-1 + count;
+			}
 
-				if (a[i] == i+1 && a[i+1] == i+2) {
-					count++;
-					i++;
-				} else if (a[i] == i+1) {
-					count++;
+			while (k-- > 0) {
+				int idx = -1;
+				long min = Long.MAX_VALUE;
+				for (int i = 0; i < n; i++) {
+					if (a[i] < min) {
+						min = a[i];
+						idx = i;
+					}
+				}
+				for (int i = 0; i < n; i++) {
+					a[i] += idx == i ? n : -1;
 				}
 			}
 
-			out.println(count);
+			out.println(n);
+			debug(a, out);
 
 		}
+	}
+
+	static void debug(long[] a, PrintWriter out) {
+		for (int i = 0; i < a.length; i++) {
+			if (i > 0) {
+				out.print(" ");
+			}
+			out.print(a[i]);
+		}
+		out.print("\n");
 	}
 
 	static class InputReader {
