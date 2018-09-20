@@ -1,4 +1,4 @@
-package colocon;
+package colocon_coloplprogrammingcontest2018;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -1,4 +1,4 @@
-package colocon;
+package colocon_coloplprogrammingcontest2018;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,12 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.HashSet;
 import java.util.InputMismatchException;
-import java.util.Set;
 import java.util.StringTokenizer;
 
-public class C_2 {
+public class C {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -26,45 +24,45 @@ public class C_2 {
 	static int INF = 1 << 30;
 	static int modP = 1000000007;
 
-
+	static long[] prev;
 	static long a, b;
-	static long ans;
 
 	static class TaskX {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			a = in.nextLong();
 			b = in.nextLong();
-			Set<Long> set = new HashSet<>();
-			dfs(a, set);
-			out.println(ans);
+			prev = new long[(int)(b-a+1)];
+			out.println(dfs(a, 0));
 
 		}
-	}
 
-	static void dfs(long p, Set<Long> set) {
-		if (p > b) {
-			ans++;
-			return;
-		}
-
-		// n を購入しない
-		dfs(p + 1, set);
-
-		// n を購入する
-		boolean canAdd = true;
-		for (long l : set) {
-			if (gcd(p, l) != 1) {
-				canAdd = false;
-				break;
+		static long dfs(long n, int p) {
+			if (n > b) {
+				return 1;
 			}
+
+			// n を購入しない場合
+			long ret = dfs(n + 1, p);
+
+			// n を購入する場合
+			boolean isAdd = true;
+			for (int i = 0; i < p; i++) {
+				if (gcd(n, prev[i]) != 1) {
+					isAdd = false;
+				}
+			}
+			if (isAdd) {
+				prev[p] = n;
+				ret += dfs(n + 1, p + 1);
+			}
+
+			return ret;
 		}
-		if (canAdd) {
-			set.add(p);
-			dfs(p + 1, set);
-			set.remove(p);
-		}
+
 	}
+
+
 
 	public static long gcd(long a, long b) {
 		while (b > 0) {
@@ -74,7 +72,6 @@ public class C_2 {
 		}
 		return a;
 	}
-
 
 	static class InputReader {
 		BufferedReader in;
