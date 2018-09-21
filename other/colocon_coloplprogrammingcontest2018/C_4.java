@@ -7,11 +7,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.InputMismatchException;
-import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.TreeSet;
 
-public class C_3 {
+public class C_4 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -33,38 +31,38 @@ public class C_3 {
 
 	static class TaskX {
 
-		long a, b;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			a = in.nextLong(); b = in.nextLong();
-			long ans = dfs(a, new TreeSet<>());
+			long a = in.nextLong(), b = in.nextLong();
+
+			long[] prime = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31};
+			long[][] dp = new long[37][1 << 11];
+			dp[0][0] = 1;
+
+			int n = (int)(b - a + 1);
+			for (int i = 0; i < n; i++) {
+
+				int sum = 0;
+				for (int j = 0; j < 11; j++) {
+					if ((i + a) % prime[j] == 0) sum += 1 << j;
+				}
+
+				for (int bit = 0; bit < 1 << 11; bit++) {
+					if ((bit & sum) == 0) {
+						dp[i+1][bit + sum] += dp[i][bit];
+					}
+					dp[i+1][bit] += dp[i][bit];
+				}
+			}
+
+			long ans = 0;
+			for (int bit = 0; bit < 1 << 11; bit++) {
+				ans += dp[n][bit];
+			}
+
 			out.println(ans);
 
 		}
-
-		long dfs(long tar, Set<Long> set) {
-			if (tar > b) {
-				return 1L;
-			}
-
-			long ret = 0;
-
-			boolean ok = true;
-			for (long i : set) if (gcd(tar, i) != 1) ok = false;
-
-			if (ok) {
-				set.add(tar);
-				ret += dfs(tar + 1, set);
-				set.remove(tar);
-			}
-			ret += dfs(tar + 1, set);
-
-			return ret;
-		}
-	}
-
-	public static long gcd(long a, long b) {
-		return (b == 0) ? a : gcd(b, a % b);
 	}
 
 	static class InputReader {
