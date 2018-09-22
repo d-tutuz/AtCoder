@@ -219,7 +219,7 @@ public class IntegerUtils {
 	 * */
 	static class Permutation {
 
-		// 数列 ver
+		// array ver
 		public static boolean next(int[] a) {
 			int n = a.length;
 
@@ -247,7 +247,7 @@ public class IntegerUtils {
 			a[j] = tmp;
 		}
 
-		// 文字列 ver
+		// strings ver
 		public static boolean next(char[] a) {
 			int n = a.length;
 
