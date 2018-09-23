@@ -6,12 +6,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
-public class C {
+public class D {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -35,30 +38,90 @@ public class C {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			char[] s = in.nextString().toCharArray();
-			char[] t = in.nextString().toCharArray();
-			int n = s.length;
+			int n = in.nextInt();
+			long m = in.nextLong();
 
-			Map<Character, Character> m1 = new TreeMap<>();
-			Map<Character, Character> m2 = new TreeMap<>();
+			Map<Integer, Integer> map = new TreeMap<>();
 
-			boolean ok = true;
-			for (int i = 0; i < n; i++) {
-				if (!m1.containsKey(s[i])) {
-					m1.put(s[i], t[i]);
-				} else {
-					if (m1.get(s[i]) != t[i]) ok = false;
-				}
-				if (!m2.containsKey(t[i])) {
-					m2.put(t[i], s[i]);
-				} else {
-					if (m2.get(t[i]) != s[i]) ok = false;
+			for (int p : getPrimes(10000000)) {
+				while (m % p == 0) {
+					map.merge(p, 1, Integer::sum);
+					m /= p;
 				}
 			}
 
-			out.println(ok ? "Yes" : "No");
+			long ans = 1;
+			for (int c : map.values()) {
+				ans *= comb(n + c - 1, c);
+				ans %= MOD;
+			}
 
+			out.println(ans % MOD);
 		}
+	}
+
+	public static long comb(int n, int r) {
+		if (r < 0 || r > n)
+			return 0L;
+		return fact[n] % MOD * factInv[r] % MOD * factInv[n - r] % MOD;
+	}
+
+	public static int MAXN = 1000000;
+
+	static long[] fact = factorialArray(MAXN, MOD);
+	static long[] factInv = factorialInverseArray(MAXN, MOD,
+			inverseArray(MAXN, MOD));
+
+	// 階乗の mod P テーブル
+	public static long[] factorialArray(int maxN, long mod) {
+		long[] fact = new long[maxN + 1];
+		fact[0] = 1 % mod;
+		for (int i = 1; i <= maxN; i++) {
+			fact[i] = fact[i - 1] * i % mod;
+		}
+		return fact;
+	}
+
+	// 数 i に対する mod P での逆元テーブル
+	public static long[] inverseArray(int maxN, long modP) {
+		long[] inv = new long[maxN + 1];
+		inv[1] = 1;
+		for (int i = 2; i <= maxN; i++) {
+			inv[i] = modP - (modP / i) * inv[(int) (modP % i)] % modP;
+		}
+		return inv;
+	}
+
+	// 階乗の逆元テーブル
+	public static long[] factorialInverseArray(int maxN, long modP,
+			long[] inverseArray) {
+		long[] factInv = new long[maxN + 1];
+		factInv[0] = 1;
+		for (int i = 1; i <= maxN; i++) {
+			factInv[i] = factInv[i - 1] * inverseArray[i] % modP;
+		}
+		return factInv;
+	}
+
+	public static Integer[] getPrimes(int n) {
+		boolean[] isPrime = new boolean[n + 1];
+		Arrays.fill(isPrime, true);
+		isPrime[0] = isPrime[1] = false;
+		for (int i = 2; i < isPrime.length; i++) {
+			if (!isPrime[i])
+				continue;
+			for (int j = i + i; j < isPrime.length; j += i) {
+				isPrime[j] = false;
+			}
+		}
+
+		List<Integer> list = new ArrayList<>();
+		for (int i = 1; i < isPrime.length; i++) {
+			if (isPrime[i]) {
+				list.add(i);
+			}
+		}
+		return list.toArray(new Integer[list.size()]);
 	}
 
 	static class InputReader {
