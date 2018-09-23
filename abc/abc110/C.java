@@ -1,4 +1,4 @@
-package codefestival2018qualA;
+package abc110;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,59 +28,17 @@ public class C {
 	static int[] mw4 = { -1, 0, 0, 1 };
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
+
 	static class TaskX {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int N = in.nextInt();
-			int x = in.nextInt();
-			int tsum = 0;
-			int[] t = new int[N];
-			long[] a = new long[N];
-			for (int i = 0; i < N; i++) {
-				a[i] = in.nextLong();
-				t[i] = calc(a[i]);
-				tsum += t[i];
-			}
+			char[] s = in.nextString().toCharArray();
+			char[] t = in.nextString().toCharArray();
+			int n = s.length;
+			
 
-			long[][] dp1 = new long[N+1][tsum+1];
-			long[][] dp2 = new long[N+1][tsum+1];
-
-			dp1[0][0] = 1;
-
-			for (int i = 0; i < N; i++) {
-				for (int j = 0; j <= tsum; j++) {
-					for (int k = 0; k <= t[i]; k++) {
-						if (j + k > tsum) continue;
-						if (k == t[i]) {
-							dp2[i+1][j+k] += dp1[i][j] + dp2[i][j];
-						} else {
-							dp1[i+1][j+k] += dp1[i][j];
-							dp2[i+1][j+k] += dp2[i][j];
-						}
-						dp1[i+1][j+k] %= MOD;
-						dp2[i+1][j+k] %= MOD;
-					}
-				}
-			}
-
-			int K = Math.min(x, tsum);
-			long ans = dp1[N][K];
-			for (int i = 0; i <= K; i++) {
-				ans += dp2[N][i];
-			}
-			out.println(ans % MOD);
 		}
-
-	}
-
-	static int calc(long l) {
-		int count = 0;
-		while (l > 0) {
-			count++;
-			l /= 2;
-		}
-		return count;
 	}
 
 	static class InputReader {
