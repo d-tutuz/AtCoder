@@ -2,6 +2,8 @@ package math;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class IntegerUtils {
 
@@ -94,6 +96,24 @@ public class IntegerUtils {
 		}
 
 		return ret;
+	}
+
+	/**
+	 * 素因数分解
+	 * 計算量：O(logN)
+	 *
+	 * p[i]^c の Map<P[i], c> を返す
+	 * */
+	Map<Long, Integer> getPrimeFactorization(long n) {
+		Map<Long, Integer> map = new TreeMap<>();
+		long tmp = n;
+		for (long i = 2; i * i <= n; i++) {
+			while (tmp % i == 0) {
+				map.merge(i, 1, Integer::sum);
+				tmp /= i;
+			}
+		}
+		return map;
 	}
 
 	/**

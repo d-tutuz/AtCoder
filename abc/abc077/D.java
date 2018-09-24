@@ -1,4 +1,4 @@
-package abc110;
+package abc077;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.InputMismatchException;
-import java.util.Map;
+import java.util.List;
+import java.util.PriorityQueue;
 import java.util.StringTokenizer;
-import java.util.TreeMap;
+import java.util.stream.Stream;
 
 public class D {
 
@@ -31,73 +34,60 @@ public class D {
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
+	@SuppressWarnings("unchecked")
 	static class TaskX {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			long m = in.nextLong();
+			int k = in.nextInt();
+			List<P>[] g = new ArrayList[k];
+			g = Stream.generate(ArrayList::new).limit(k).toArray(List[]::new);
 
-			Map<Long, Integer> map = new TreeMap<>();
-			long tm = m;
-			for (long i = 2; i * i <= m; i++) {
-				while (tm % i == 0) {
-					map.merge(i, 1, Integer::sum);
-					tm /= i;
+			for (int i = 0; i < k; i++) {
+				g[i].add(new P((i + 1) % k, 1));
+				g[i].add(new P((i * 10) % k, 0));
+			}
+
+			PriorityQueue<Integer> pq = new PriorityQueue<>();
+			pq.add(1);
+			long[] cost = new long[k];
+			Arrays.fill(cost, INF);
+			cost[1] = 1;
+
+			while (!pq.isEmpty()) {
+				int cur = pq.remove();
+				for (P p : g[cur]) {
+					if (cost[cur] + p.c < cost[p.t]) {
+						cost[p.t] = cost[cur] + p.c;
+						pq.add(p.t);
+					}
 				}
 			}
-			if (tm > 1) map.merge(tm, 1, Integer::sum);
+			out.println(cost[0]);
 
-			long ans = 1;
-			for (int c : map.values()) {
-				ans = (ans * comb(n + c - 1, n - 1)) % MOD;
+		}
+
+		class P implements Comparable<P> {
+			int t;
+			long c;
+
+			public P(int t, long c) {
+				super();
+				this.t = t;
+				this.c = c;
 			}
 
-			out.println(ans % MOD);
+			@Override
+			public String toString() {
+				return "P [t=" + t + ", c=" + c + "]";
+			}
+
+			@Override
+			public int compareTo(P o) {
+				return Long.compare(this.c, o.c);
+			}
+
 		}
-	}
-
-	public static long comb(int n, int r) {
-		if (n < 0 || r < 0 || r > n)
-			return 0L;
-		return fact[n] % MOD * factInv[r] % MOD * factInv[n - r] % MOD;
-	}
-
-	public static int MAXN = 1000000;
-
-	static long[] fact = factorialArray(MAXN, MOD);
-	static long[] factInv = factorialInverseArray(MAXN, MOD,
-			inverseArray(MAXN, MOD));
-
-	// 階乗の mod P テーブル
-	public static long[] factorialArray(int maxN, long mod) {
-		long[] fact = new long[maxN + 1];
-		fact[0] = 1 % mod;
-		for (int i = 1; i <= maxN; i++) {
-			fact[i] = fact[i - 1] * i % mod;
-		}
-		return fact;
-	}
-
-	// 数 i に対する mod P での逆元テーブル
-	public static long[] inverseArray(int maxN, long modP) {
-		long[] inv = new long[maxN + 1];
-		inv[1] = 1;
-		for (int i = 2; i <= maxN; i++) {
-			inv[i] = modP - (modP / i) * inv[(int) (modP % i)] % modP;
-		}
-		return inv;
-	}
-
-	// 階乗の逆元テーブル
-	public static long[] factorialInverseArray(int maxN, long modP,
-			long[] inverseArray) {
-		long[] factInv = new long[maxN + 1];
-		factInv[0] = 1;
-		for (int i = 1; i <= maxN; i++) {
-			factInv[i] = factInv[i - 1] * inverseArray[i] % modP;
-		}
-		return factInv;
 	}
 
 	static class InputReader {
