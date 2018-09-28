@@ -1,4 +1,4 @@
-package agc018;
+package abc070;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,12 +6,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.PriorityQueue;
 import java.util.StringTokenizer;
+import java.util.stream.Stream;
 
-public class C {
+public class D_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -31,96 +33,72 @@ public class C {
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
+	@SuppressWarnings("unchecked")
 	static class TaskX {
 
-		int x, y, z;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			x = in.nextInt(); y = in.nextInt(); z = in.nextInt();
-			int u = x + y + z;
+			int n = in.nextInt();
+			List<P>[] g = new ArrayList[n];
+			g = Stream.generate(ArrayList::new).limit(n).toArray(List[]::new);
 
-			P[] p = new P[u];
-			long csum = 0;
-			for (int i = 0; i < u; i++) {
-				long a = in.nextLong();
-				long b = in.nextLong();
-				long c = in.nextLong();
-				p[i] = new P(a - c, b - c);
-				csum += c;
+			for (int i = 0; i < n-1; i++) {
+				int a = in.nextInt()-1;
+				int b = in.nextInt()-1;
+				int c = in.nextInt();
+				g[a].add(new P(b, c));
+				g[b].add(new P(a, c));
 			}
 
-			Arrays.sort(p);
+			int q = in.nextInt();
+			int k = in.nextInt()-1;
 
-			long[] dp_y = f(p, u);
-			long[] dp_x = g(p, u);
-
-			long ans = 0;
-			for (int k = 0; k < u-1; k++) {
-				ans = Math.max(ans, dp_y[k] + dp_x[k+1] + csum);
+			P[] cost = new P[n];
+			for (int i = 0; i < n; i++) {
+				cost[i] = new P(i, LINF);
 			}
+			cost[k] = new P(k, 0);
+			PriorityQueue<P> pq = new PriorityQueue<>();
+			pq.add(cost[k]);
 
-			out.println(ans);
-		}
+			while (!pq.isEmpty()) {
+				P p = pq.remove();
+				int now = p.t;
 
-		long[] f(P[] p, int u) {
-			long[] res = new long[u];
-			Arrays.fill(res, -LINF);
-			long sum = 0;
-
-			PriorityQueue<Long> q = new PriorityQueue<Long>();
-			for (int i = 0; i < u; i++) {
-				q.add(p[i].y);
-				sum += p[i].y;
-				if (y < q.size()) {
-					long l = q.remove();
-					sum -= l;
+				for (P t : g[now]) {
+					int to = t.t;
+					if (cost[now].c + t.c < cost[to].c) {
+						cost[to].c = cost[now].c + t.c;
+						pq.add(cost[to]);
+					}
 				}
-				if (q.size() == y) res[i] = sum;
 			}
-			return res;
-		}
 
-		long[] g(P[] p, int u) {
-			long[] res = new long[u];
-			Arrays.fill(res, -LINF);
-			long sum = 0;
+			while (q-- > 0) {
+				int x = in.nextInt()-1;
+				int y = in.nextInt()-1;
 
-			PriorityQueue<Long> q = new PriorityQueue<Long>();
-			for (int i = u-1; i >= 0; i--) {
-				q.add(p[i].x);
-				sum += p[i].x;
-				if (x < q.size()) {
-					long l = q.remove();
-					sum -= l;
-				}
-				if (q.size() == x) res[i] = sum;
+				out.println(cost[x].c + cost[y].c);
+
 			}
-			return res;
 		}
-
 	}
 
 	static class P implements Comparable<P> {
-		long x, y;
+		int t;
+		long c;
 
-		public P(long x, long y) {
+		public P(int t, long c) {
 			super();
-			this.x = x;
-			this.y = y;
+			this.t = t;
+			this.c = c;
 		}
 
 		@Override
 		public int compareTo(P o) {
-			return -Long.compare(o.x- o.y, this.x - this.y);
+			return Long.compare(this.c, o.c);
 		}
-
-		@Override
-		public String toString() {
-			return "P [x=" + x + ", y=" + y + "]";
-		}
-
 	}
-
 
 	static class InputReader {
 		BufferedReader in;

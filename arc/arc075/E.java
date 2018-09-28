@@ -1,4 +1,4 @@
-package agc018;
+package arc075;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,10 +8,10 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.InputMismatchException;
-import java.util.PriorityQueue;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
 
-public class C {
+public class E {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -33,94 +33,74 @@ public class C {
 
 	static class TaskX {
 
-		int x, y, z;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			x = in.nextInt(); y = in.nextInt(); z = in.nextInt();
-			int u = x + y + z;
-
-			P[] p = new P[u];
-			long csum = 0;
-			for (int i = 0; i < u; i++) {
-				long a = in.nextLong();
-				long b = in.nextLong();
-				long c = in.nextLong();
-				p[i] = new P(a - c, b - c);
-				csum += c;
+			int n = in.nextInt();
+			long k = in.nextLong();
+			long[] a = new long[n+1];
+			for (int i = 1; i < n+1; i++) {
+				a[i] = in.nextLong() - k;
 			}
 
-			Arrays.sort(p);
+			Arrays.parallelPrefix(a, Math::addExact);
+			long[] as = a.clone();
+			Arrays.sort(as);
 
-			long[] dp_y = f(p, u);
-			long[] dp_x = g(p, u);
+			TreeMap<Long, Integer> map = new TreeMap<>();
+			int id = 0;
+			for (int i = 0; i < n+1; i++) {
+				map.put(as[i], id++);
+			}
 
 			long ans = 0;
-			for (int k = 0; k < u-1; k++) {
-				ans = Math.max(ans, dp_y[k] + dp_x[k+1] + csum);
+			BIT bit = new BIT(n+1);
+
+			for (int i = 0; i < n+1; i++) {
+				ans += bit.query(map.get(a[i]));
+				bit.add(map.get(a[i]), 1);
 			}
 
 			out.println(ans);
+
 		}
-
-		long[] f(P[] p, int u) {
-			long[] res = new long[u];
-			Arrays.fill(res, -LINF);
-			long sum = 0;
-
-			PriorityQueue<Long> q = new PriorityQueue<Long>();
-			for (int i = 0; i < u; i++) {
-				q.add(p[i].y);
-				sum += p[i].y;
-				if (y < q.size()) {
-					long l = q.remove();
-					sum -= l;
-				}
-				if (q.size() == y) res[i] = sum;
-			}
-			return res;
-		}
-
-		long[] g(P[] p, int u) {
-			long[] res = new long[u];
-			Arrays.fill(res, -LINF);
-			long sum = 0;
-
-			PriorityQueue<Long> q = new PriorityQueue<Long>();
-			for (int i = u-1; i >= 0; i--) {
-				q.add(p[i].x);
-				sum += p[i].x;
-				if (x < q.size()) {
-					long l = q.remove();
-					sum -= l;
-				}
-				if (q.size() == x) res[i] = sum;
-			}
-			return res;
-		}
-
 	}
 
-	static class P implements Comparable<P> {
-		long x, y;
+	/**
+	 * 0-indexed BinaryIndexTree
+	 * */
+	static class BIT {
+		private int n;
+		private long[] bit;
 
-		public P(long x, long y) {
-			super();
-			this.x = x;
-			this.y = y;
+		public BIT(int n) {
+			this.n = n;
+			bit = new long[n + 1];
 		}
 
-		@Override
-		public int compareTo(P o) {
-			return -Long.compare(o.x- o.y, this.x - this.y);
+		public void clear() {
+			Arrays.fill(bit, 0);
 		}
 
-		@Override
-		public String toString() {
-			return "P [x=" + x + ", y=" + y + "]";
+		public void add(int i, long x) {
+			while (i <= n) {
+				bit[i] += x;
+				i |= i + 1;
+			}
 		}
 
+		public long query(int l, int r) {
+			return l <= r ? query(r) - query(l - 1) : 0;
+		}
+
+		private long query(int i) {
+			long s = 0;
+			while (i >= 0) {
+				s += bit[i];
+				i = (i & (i + 1)) - 1;
+			}
+			return s;
+		}
 	}
-
 
 	static class InputReader {
 		BufferedReader in;
