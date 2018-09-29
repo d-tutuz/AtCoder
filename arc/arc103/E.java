@@ -6,7 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.StringTokenizer;
 
 public class E {
@@ -40,6 +42,38 @@ public class E {
 				return;
 			}
 
+			for (int i = 0; i < n/2; i++) {
+				if (s[i] != s[n-i-2]) {
+					out.println(-1);
+					return;
+				}
+			}
+
+			List<Integer> list = new ArrayList<>();
+			List<String> ans = new ArrayList<>();
+			for (int i = 0; i < n; i++) {
+				if (s[i] == '1') {
+					list.add(i+1);
+				}
+			}
+
+			int m = list.size();
+			for (int i = 0; i < m-1; i++) {
+				ans.add(list.get(i) + " " + list.get(i+1));
+			}
+
+			for (int i = 0; i < m-1; i++) {
+				int f = list.get(i), t = list.get(i+1);
+				for (int j = f+1; j < t; j++) {
+					ans.add(j + " " + t);
+				}
+			}
+
+			ans.add(list.get(m-1) + " " + n);
+
+			for (String str : ans) {
+				out.println(str);
+			}
 		}
 	}
 
