@@ -1,4 +1,4 @@
-package soundhoundinc_programmingcontest_2018;
+package abc071;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.StringTokenizer;
 
-public class C_2 {
+public class D_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -22,6 +24,7 @@ public class C_2 {
 	}
 
 	static int INF = 1 << 30;
+	static long LINF = 1L << 55;
 	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
@@ -32,13 +35,40 @@ public class C_2 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			double n = in.nextDouble();
-			double m = in.nextDouble();
-			double d = in.nextDouble();
+			int n = in.nextInt();
+			char[] s = in.nextString().toCharArray();
+			char[] t = in.nextString().toCharArray();
 
-			out.println(m/(n+d));
+			List<Integer> list = new ArrayList<>();
+			for (int i = 0; i < n; i++) {
+				if (s[i] == t[i]) {
+					list.add(1);
+				} else {
+					list.add(2);
+					i++;
+				}
+			}
+
+			long ans = list.get(0) == 1 ? 3 : 6;
+
+			for (int i = 1; i < list.size(); i++) {
+				if (list.get(i-1) == 1 && list.get(i) == 1) {
+					ans *= 2;
+					ans %= MOD;
+				} else if (list.get(i-1) == 1 && list.get(i) == 2) {
+					ans *= 2;
+					ans %= MOD;
+				} else if (list.get(i-1) == 2 && list.get(i) == 1) {
+					ans *= 1;
+					ans %= MOD;
+				} else if (list.get(i-1) == 2 && list.get(i) == 2) {
+					ans *= 3;
+					ans %= MOD;
+				}
+			}
+
+			out.println(ans % MOD);
 		}
-
 	}
 
 	static class InputReader {
@@ -76,10 +106,50 @@ public class C_2 {
 			return res;
 		}
 
+		public int[] nextIntArrayDec(int n) {
+			int[] res = new int[n];
+			for (int i = 0; i < n; i++) {
+				res[i] = nextInt() - 1;
+			}
+			return res;
+		}
+
+		public int[] nextIntArray1Index(int n) {
+			int[] res = new int[n + 1];
+			for (int i = 0; i < n; i++) {
+				res[i + 1] = nextInt();
+			}
+			return res;
+		}
+
 		public long[] nextLongArray(int n) {
 			long[] res = new long[n];
 			for (int i = 0; i < n; i++) {
 				res[i] = nextLong();
+			}
+			return res;
+		}
+
+		public long[] nextLongArrayDec(int n) {
+			long[] res = new long[n];
+			for (int i = 0; i < n; i++) {
+				res[i] = nextLong() - 1;
+			}
+			return res;
+		}
+
+		public long[] nextLongArray1Index(int n) {
+			long[] res = new long[n + 1];
+			for (int i = 0; i < n; i++) {
+				res[i + 1] = nextLong();
+			}
+			return res;
+		}
+
+		public double[] nextDoubleArray(int n) {
+			double[] res = new double[n];
+			for (int i = 0; i < n; i++) {
+				res[i] = nextDouble();
 			}
 			return res;
 		}

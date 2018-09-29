@@ -1,4 +1,4 @@
-package soundhoundinc_programmingcontest_2018;
+package arc103;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class B {
+public class E {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -22,6 +22,7 @@ public class B {
 	}
 
 	static int INF = 1 << 30;
+	static long LINF = 1L << 55;
 	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
@@ -33,16 +34,11 @@ public class B {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			char[] s = in.nextString().toCharArray();
-			int w = in.nextInt();
-
-			StringBuffer sb = new StringBuffer();
-			for (int i = 0; i < s.length; i++) {
-				if (i % w == 0) {
-					sb.append(s[i]);
-				}
+			int n = s.length;
+			if (s[n-1] == '1' || s[0] == '0') {
+				out.println(-1);
+				return;
 			}
-
-			out.println(sb.toString());
 
 		}
 	}
@@ -82,10 +78,50 @@ public class B {
 			return res;
 		}
 
+		public int[] nextIntArrayDec(int n) {
+			int[] res = new int[n];
+			for (int i = 0; i < n; i++) {
+				res[i] = nextInt() - 1;
+			}
+			return res;
+		}
+
+		public int[] nextIntArray1Index(int n) {
+			int[] res = new int[n + 1];
+			for (int i = 0; i < n; i++) {
+				res[i + 1] = nextInt();
+			}
+			return res;
+		}
+
 		public long[] nextLongArray(int n) {
 			long[] res = new long[n];
 			for (int i = 0; i < n; i++) {
 				res[i] = nextLong();
+			}
+			return res;
+		}
+
+		public long[] nextLongArrayDec(int n) {
+			long[] res = new long[n];
+			for (int i = 0; i < n; i++) {
+				res[i] = nextLong() - 1;
+			}
+			return res;
+		}
+
+		public long[] nextLongArray1Index(int n) {
+			long[] res = new long[n + 1];
+			for (int i = 0; i < n; i++) {
+				res[i + 1] = nextLong();
+			}
+			return res;
+		}
+
+		public double[] nextDoubleArray(int n) {
+			double[] res = new double[n];
+			for (int i = 0; i < n; i++) {
+				res[i] = nextDouble();
 			}
 			return res;
 		}

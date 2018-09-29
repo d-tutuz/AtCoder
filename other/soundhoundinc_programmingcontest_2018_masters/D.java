@@ -1,4 +1,4 @@
-package soundhoundinc_programmingcontest_2018;
+package soundhoundinc_programmingcontest_2018_masters;
 
 import java.io.BufferedReader;
 import java.io.IOException;

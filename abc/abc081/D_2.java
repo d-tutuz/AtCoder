@@ -1,4 +1,4 @@
-package soundhoundinc_programmingcontest_2018;
+package abc081;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class A {
+public class D_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -22,27 +22,57 @@ public class A {
 	}
 
 	static int INF = 1 << 30;
-	static int MOD = 1000000007;
-	static int[] mh4 = { 0, -1, 1, 0 };
-	static int[] mw4 = { -1, 0, 0, 1 };
-	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
-	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
+	static long LINF = 1L << 55;
 
 	static class TaskX {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int a = in.nextInt(), b = in.nextInt();
+			int n = in.nextInt();
+			long[] a = in.nextLongArray(n);
+			if (allZero(a)) {
+				out.println(0);
+				return;
+			}
 
-			if (a + b == 15) {
-				out.println("+");
-			} else if (a * b == 15) {
-				out.println("*");
+			long min = 0, max = 0;
+			int min_idx = -1, max_idx = -1;
+			for (int i = 0; i < n; i++) {
+				if (a[i] < min) {
+					min = a[i];
+					min_idx = i;
+				}
+				if (max < a[i]) {
+					max = a[i];
+					max_idx = i;
+				}
+			}
+
+			long add_idx = Math.abs(min) < Math.abs(max) ? max_idx : min_idx;
+			out.println(2*n-1);
+			for (int i = 0; i < n; i++) {
+				out.printf("%d %d\n", add_idx+1, i+1);
+			}
+
+			if (add_idx == max_idx) {
+				for (int i = 0; i < n-1; i++) {
+					out.printf("%d %d\n", i+1, i+2);
+				}
 			} else {
-				out.println("x");
+				for (int i = n-1; i >= 1; i--) {
+					out.printf("%d %d\n", i+1, i);
+				}
 			}
 
 		}
+	}
+
+	static boolean allZero(long[] a) {
+		for (long l : a) {
+			if (l == 0) continue;
+			return false;
+		}
+		return true;
 	}
 
 	static class InputReader {
@@ -80,10 +110,50 @@ public class A {
 			return res;
 		}
 
+		public int[] nextIntArrayDec(int n) {
+			int[] res = new int[n];
+			for (int i = 0; i < n; i++) {
+				res[i] = nextInt() - 1;
+			}
+			return res;
+		}
+
+		public int[] nextIntArray1Index(int n) {
+			int[] res = new int[n + 1];
+			for (int i = 0; i < n; i++) {
+				res[i + 1] = nextInt();
+			}
+			return res;
+		}
+
 		public long[] nextLongArray(int n) {
 			long[] res = new long[n];
 			for (int i = 0; i < n; i++) {
 				res[i] = nextLong();
+			}
+			return res;
+		}
+
+		public long[] nextLongArrayDec(int n) {
+			long[] res = new long[n];
+			for (int i = 0; i < n; i++) {
+				res[i] = nextLong() - 1;
+			}
+			return res;
+		}
+
+		public long[] nextLongArray1Index(int n) {
+			long[] res = new long[n + 1];
+			for (int i = 0; i < n; i++) {
+				res[i + 1] = nextLong();
+			}
+			return res;
+		}
+
+		public double[] nextDoubleArray(int n) {
+			double[] res = new double[n];
+			for (int i = 0; i < n; i++) {
+				res[i] = nextDouble();
 			}
 			return res;
 		}

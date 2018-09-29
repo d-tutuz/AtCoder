@@ -1,4 +1,4 @@
-package soundhoundinc_programmingcontest_2018;
+package abc094;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class C {
+public class D_3 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -22,6 +23,7 @@ public class C {
 	}
 
 	static int INF = 1 << 30;
+	static long LINF = 1L << 55;
 	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
@@ -32,19 +34,23 @@ public class C {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			double n = in.nextDouble();
-			double m = in.nextDouble();
-			double d = in.nextDouble();
+			int n = in.nextInt();
+			long[] a = in.nextLongArray(n);
+			Arrays.sort(a);
 
-			if (d == 0) {
-				out.println(n*(m-1)/(n*n));
-			} else {
-				out.println(2*(n-d)*(m-1)/(n*n));
+			long mid = a[n-1] / 2;
+			long diff = INF;
+			long num = -1;
+			for (int i = n-2; i >= 0; i--) {
+				if (Math.abs(mid - a[i]) < diff) {
+					diff = Math.abs(mid - a[i]);
+					num = a[i] / 2;
+				}
 			}
 
+			out.printf("%d %d\n", a[n-1] / 2, num);
+
 		}
-
-
 	}
 
 	static class InputReader {
@@ -82,10 +88,50 @@ public class C {
 			return res;
 		}
 
+		public int[] nextIntArrayDec(int n) {
+			int[] res = new int[n];
+			for (int i = 0; i < n; i++) {
+				res[i] = nextInt() - 1;
+			}
+			return res;
+		}
+
+		public int[] nextIntArray1Index(int n) {
+			int[] res = new int[n + 1];
+			for (int i = 0; i < n; i++) {
+				res[i + 1] = nextInt();
+			}
+			return res;
+		}
+
 		public long[] nextLongArray(int n) {
 			long[] res = new long[n];
 			for (int i = 0; i < n; i++) {
-				res[i] = nextLong();
+				res[i] = nextLong() * 2;
+			}
+			return res;
+		}
+
+		public long[] nextLongArrayDec(int n) {
+			long[] res = new long[n];
+			for (int i = 0; i < n; i++) {
+				res[i] = nextLong() - 1;
+			}
+			return res;
+		}
+
+		public long[] nextLongArray1Index(int n) {
+			long[] res = new long[n + 1];
+			for (int i = 0; i < n; i++) {
+				res[i + 1] = nextLong();
+			}
+			return res;
+		}
+
+		public double[] nextDoubleArray(int n) {
+			double[] res = new double[n];
+			for (int i = 0; i < n; i++) {
+				res[i] = nextDouble();
 			}
 			return res;
 		}
