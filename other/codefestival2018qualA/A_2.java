@@ -1,4 +1,6 @@
-package arc103;
+package codefestival2018qualA;
+
+import static java.lang.Math.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,12 +8,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.InputMismatchException;
-import java.util.List;
 import java.util.StringTokenizer;
 
-public class E {
+public class A_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -35,42 +35,51 @@ public class E {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			char[] s = in.nextString().toCharArray();
-			int n = s.length;
-			if (s[n-1] == '1' || s[0] == '0') {
-				out.println(-1);
-				return;
-			}
+			int n = in.nextInt();
+			long[] a = new long[n], t = new long[n];
+			int K = in.nextInt();
 
-			for (int i = 0; i < n/2; i++) {
-				if (s[i] != s[n-i-2]) {
-					out.println(-1);
-					return;
-				}
-			}
-
-			List<Integer> list = new ArrayList<>();
-			List<String> ans = new ArrayList<>();
+			int tsum = 0;
 			for (int i = 0; i < n; i++) {
-				if (s[i] == '1') {
-					list.add(i+1);
+				long tmp = in.nextLong();
+				a[i] = tmp;
+				while (tmp > 0) {
+					t[i]++;
+					tmp /= 2;
+				}
+				tsum += t[i];
+			}
+
+			long[][] dp1 = new long[n+1][4000];
+			long[][] dp2 = new long[n+1][4000];
+			dp1[0][0] = 1;
+
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j <= tsum; j++) {
+					for (int k = 0; k <= t[i]; k++) {
+
+						if (k == t[i]) {
+							dp2[i+1][j+k] += dp1[i][j] + dp2[i][j];
+						} else {
+							dp1[i+1][j+k] += dp1[i][j];
+							dp2[i+1][j+k] += dp2[i][j];
+						}
+
+						dp1[i+1][j+k] %= MOD;
+						dp2[i+1][j+k] %= MOD;
+					}
 				}
 			}
 
-			int m = list.size();
-			for (int i = 0; i < m-1; i++) {
-				int f = list.get(i), t = list.get(i+1);
-				ans.add(f + " " + t);
-				for (int j = f+1; j < t; j++) {
-					ans.add(j + " " + t);
-				}
+			long ans = 0;
+			if (K < tsum) {
+				ans += dp1[n][K];
 			}
 
-			ans.add(list.get(m-1) + " " + n);
-
-			for (String str : ans) {
-				out.println(str);
+			for (int i = 0; i <= min(K, tsum); i++) {
+				ans += dp2[n][i];
 			}
+			out.println(ans % MOD);
 		}
 	}
 

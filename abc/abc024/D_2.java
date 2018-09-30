@@ -1,4 +1,4 @@
-package arc103;
+package abc024;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,12 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.InputMismatchException;
-import java.util.List;
 import java.util.StringTokenizer;
 
-public class E {
+public class D_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -23,55 +21,34 @@ public class E {
 		out.close();
 	}
 
-	static int INF = 1 << 30;
-	static long LINF = 1L << 55;
 	static int MOD = 1000000007;
-	static int[] mh4 = { 0, -1, 1, 0 };
-	static int[] mw4 = { -1, 0, 0, 1 };
-	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
-	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
 	static class TaskX {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			char[] s = in.nextString().toCharArray();
-			int n = s.length;
-			if (s[n-1] == '1' || s[0] == '0') {
-				out.println(-1);
-				return;
-			}
+			long a = in.nextLong(), b = in.nextLong(), c = in.nextLong();
+			long ab = (a * b) % MOD;
+			long ac = (a * c) % MOD;
+			long bc = (b * c) % MOD;
 
-			for (int i = 0; i < n/2; i++) {
-				if (s[i] != s[n-i-2]) {
-					out.println(-1);
-					return;
-				}
-			}
+			long x = (((MOD + bc - ac) % MOD) * power((MOD + ac - bc + ab) % MOD, MOD-2, MOD)) % MOD;
+			long y = (((MOD + bc - ab) % MOD) * power((MOD + ac - bc + ab) % MOD, MOD-2, MOD)) % MOD;
 
-			List<Integer> list = new ArrayList<>();
-			List<String> ans = new ArrayList<>();
-			for (int i = 0; i < n; i++) {
-				if (s[i] == '1') {
-					list.add(i+1);
-				}
-			}
+			out.printf("%d %d\n", x, y);
 
-			int m = list.size();
-			for (int i = 0; i < m-1; i++) {
-				int f = list.get(i), t = list.get(i+1);
-				ans.add(f + " " + t);
-				for (int j = f+1; j < t; j++) {
-					ans.add(j + " " + t);
-				}
-			}
-
-			ans.add(list.get(m-1) + " " + n);
-
-			for (String str : ans) {
-				out.println(str);
-			}
 		}
+	}
+
+	static long power(long a, long e, long modP) {
+		long ret = 1;
+		for (; e > 0; e /= 2) {
+			if (e % 2 != 0) {
+				ret = (ret * a) % modP;
+			}
+			a = (a * a) % modP;
+		}
+		return ret;
 	}
 
 	static class InputReader {

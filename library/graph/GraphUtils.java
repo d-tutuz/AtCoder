@@ -269,8 +269,8 @@ public class GraphUtils {
 	 * 根付き木
 	 *
 	 * 計算量：
-	 * 　構築　：O(NlogN)
-	 * 　クエリ：O(logN)
+	 * 構築：O(NlogN)
+	 * クエリ：O(logN)
 	 *
 	 * */
 	public static class LCA {
@@ -278,7 +278,11 @@ public class GraphUtils {
 		private final int logN;
 		private final int n;
 		private final List<Integer>[] graph;
+
+		// n 個先の頂点を探すためのダブリングテーブル
 		private final int[][] par;
+
+		// 根からの深さ
 		public final int[] depth;
 
 		public LCA(List<Integer>[] g, int root) {

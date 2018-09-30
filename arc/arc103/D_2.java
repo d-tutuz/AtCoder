@@ -11,7 +11,7 @@ import java.util.InputMismatchException;
 import java.util.List;
 import java.util.StringTokenizer;
 
-public class E {
+public class D_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -35,41 +35,61 @@ public class E {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			char[] s = in.nextString().toCharArray();
-			int n = s.length;
-			if (s[n-1] == '1' || s[0] == '0') {
-				out.println(-1);
-				return;
-			}
-
-			for (int i = 0; i < n/2; i++) {
-				if (s[i] != s[n-i-2]) {
+			int n = in.nextInt();
+			long[] x = new long[n], y = new long[n], z = new long[n];
+			for (int i = 0; i < n; i++) {
+				x[i] = in.nextLong();
+				y[i] = in.nextLong();
+				z[i] = x[i] + y[i];
+				if ((z[i] - z[0]) % 2 != 0) {
 					out.println(-1);
 					return;
 				}
 			}
 
 			List<Integer> list = new ArrayList<>();
-			List<String> ans = new ArrayList<>();
+			for (int i = 30; i >= 0; i--) {
+				list.add(1 << i);
+			}
+			if (z[0] % 2 == 0) list.add(1);
+			out.println(list.size());
+			for (int i = 0; i < list.size(); i++) {
+				if (i > 0) {
+					out.print(" ");
+				}
+				out.print(list.get(i));
+			}
+			out.print("\n");
+
 			for (int i = 0; i < n; i++) {
-				if (s[i] == '1') {
-					list.add(i+1);
+				StringBuilder sb = new StringBuilder();
+				long tu = x[i] + y[i];
+				long tv = x[i] - y[i];
+
+				for (int d : list) {
+					if (tu >= 0) {
+						if (tv >= 0) {
+							sb.append("R");
+							tu -= d;
+							tv -= d;
+						} else {
+							sb.append("U");
+							tu -= d;
+							tv += d;
+						}
+					} else {
+						if (tv >= 0) {
+							sb.append("D");
+							tu += d;
+							tv -= d;
+						} else {
+							sb.append("L");
+							tu += d;
+							tv += d;
+						}
+					}
 				}
-			}
-
-			int m = list.size();
-			for (int i = 0; i < m-1; i++) {
-				int f = list.get(i), t = list.get(i+1);
-				ans.add(f + " " + t);
-				for (int j = f+1; j < t; j++) {
-					ans.add(j + " " + t);
-				}
-			}
-
-			ans.add(list.get(m-1) + " " + n);
-
-			for (String str : ans) {
-				out.println(str);
+				out.println(sb.toString());
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-package arc103;
+package abc038;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,12 +6,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.InputMismatchException;
-import java.util.List;
 import java.util.StringTokenizer;
 
-public class E {
+public class D_4 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -35,43 +34,59 @@ public class E {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			char[] s = in.nextString().toCharArray();
-			int n = s.length;
-			if (s[n-1] == '1' || s[0] == '0') {
-				out.println(-1);
-				return;
-			}
-
-			for (int i = 0; i < n/2; i++) {
-				if (s[i] != s[n-i-2]) {
-					out.println(-1);
-					return;
-				}
-			}
-
-			List<Integer> list = new ArrayList<>();
-			List<String> ans = new ArrayList<>();
+			int n = in.nextInt();
+			P[] p = new P[n];
 			for (int i = 0; i < n; i++) {
-				if (s[i] == '1') {
-					list.add(i+1);
-				}
+				int w = in.nextInt();
+				int h = in.nextInt();
+				p[i] = new P(h ,w);
 			}
 
-			int m = list.size();
-			for (int i = 0; i < m-1; i++) {
-				int f = list.get(i), t = list.get(i+1);
-				ans.add(f + " " + t);
-				for (int j = f+1; j < t; j++) {
-					ans.add(j + " " + t);
-				}
+			Arrays.sort(p);
+
+			int[] dp = new int[n];
+			Arrays.fill(dp, INF);
+
+			for (int i = 0; i < n; i++) {
+				int idx = lowerBound(dp, p[i].h);
+				dp[idx] = p[i].h;
 			}
 
-			ans.add(list.get(m-1) + " " + n);
+			out.println(lowerBound(dp, INF));
+		}
+	}
 
-			for (String str : ans) {
-				out.println(str);
+	public static int lowerBound(int[] a, int obj) {
+		int l = 0, r = a.length - 1;
+		while (r - l >= 0) {
+			int c = (l + r) / 2;
+			if (obj <= a[c]) {
+				r = c - 1;
+			} else {
+				l = c + 1;
 			}
 		}
+		return l;
+	}
+	static class P implements Comparable<P> {
+		int h, w;
+
+		public P(int h, int w) {
+			super();
+			this.h = h;
+			this.w = w;
+		}
+
+		@Override
+		public int compareTo(P o) {
+			return Integer.compare(this.w, o.w) == 0 ? -Integer.compare(this.h, o.h) : Integer.compare(this.w, o.w);
+		}
+
+		@Override
+		public String toString() {
+			return "P [h=" + h + ", w=" + w + "]";
+		}
+
 	}
 
 	static class InputReader {

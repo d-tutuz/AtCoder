@@ -1,4 +1,4 @@
-package arc103;
+package abc013;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,12 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.InputMismatchException;
-import java.util.List;
 import java.util.StringTokenizer;
 
-public class E {
+public class D_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -35,41 +33,41 @@ public class E {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			char[] s = in.nextString().toCharArray();
-			int n = s.length;
-			if (s[n-1] == '1' || s[0] == '0') {
-				out.println(-1);
-				return;
-			}
+			int n = in.nextInt(), m = in.nextInt();
+			int d = in.nextInt();
+			int[] a = in.nextIntArrayDec(m);
 
-			for (int i = 0; i < n/2; i++) {
-				if (s[i] != s[n-i-2]) {
-					out.println(-1);
-					return;
-				}
-			}
-
-			List<Integer> list = new ArrayList<>();
-			List<String> ans = new ArrayList<>();
+			int[] f = new int[n];
 			for (int i = 0; i < n; i++) {
-				if (s[i] == '1') {
-					list.add(i+1);
+				f[i] = i;
+			}
+
+			for (int i = 0; i < m; i++) {
+				int s = a[i], t = a[i]+1;
+				int tmp = f[s];
+				f[s] = f[t];
+				f[t] = tmp;
+			}
+
+			int[][] next = new int[32][n];
+			for (int i = 0; i < n; i++) {
+				next[0][f[i]] = i;
+			}
+
+			for (int i = 0; i < 31; i++) {
+				for (int j = 0; j < n; j++) {
+					next[i+1][j] = next[i][next[i][j]];
 				}
 			}
 
-			int m = list.size();
-			for (int i = 0; i < m-1; i++) {
-				int f = list.get(i), t = list.get(i+1);
-				ans.add(f + " " + t);
-				for (int j = f+1; j < t; j++) {
-					ans.add(j + " " + t);
+			for (int i = 0; i < n; i++) {
+				int p = i;
+				for (int j = 0; j < 32; j++) {
+					if ((d >> j & 1) == 1) {
+						p = next[j][p];
+					}
 				}
-			}
-
-			ans.add(list.get(m-1) + " " + n);
-
-			for (String str : ans) {
-				out.println(str);
+				out.println(p+1);
 			}
 		}
 	}
