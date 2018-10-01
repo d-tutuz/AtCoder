@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class D_3 {
+public class D_wa {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -32,54 +32,29 @@ public class D_3 {
 
 	static class TaskX {
 
-		int n, k;
-		int[] a;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			n = in.nextInt();
-			k = in.nextInt();
-			a = in.nextIntArray(n);
+			int n = in.nextInt();
+			long k = in.nextLong();
+			long[] a = in.nextLongArray(n);
 			Arrays.sort(a);
 
-			int l = -1, r = n;
-			while (r - l > 1) {
-				int m = (l+r)/2;
-
-				if (check(m)) {
-					r = m;
-				} else {
-					l = m;
+			int count = 0;
+			int idx = 0;
+			while (idx < n) {
+				long sum = a[idx];
+				for (int i = 0; i < n && sum < k; i++) {
+					if (i == idx) continue;
+					sum += a[i];
 				}
-			}
-			out.println(r);
-		}
-
-		boolean check(int m) {
-			boolean[][] dp = new boolean[n+1][k+1];
-			dp[0][0] = true;
-
-			for (int i = 0; i < n; i++) {
-				for (int j = 0; j < k+1; j++) {
-					if (i == m) {
-						dp[i+1][j] |= dp[i][j];
-						continue;
-					}
-
-					if (j - a[i] >= 0) {
-						dp[i+1][j] |= dp[i][j-a[i]];
-					}
-					dp[i+1][j] |= dp[i][j];
-				}
+				if (sum >= k && sum - a[idx] < k) count++;
+				idx++;
 			}
 
-			boolean ret = false;
-			for (int i = Math.max(0, k-a[m]); i < k; i++) {
-				ret |= dp[n][i];
-			}
-			return ret;
+			out.println(n - count);
+
 		}
 	}
-
 
 	static class InputReader {
 		BufferedReader in;
