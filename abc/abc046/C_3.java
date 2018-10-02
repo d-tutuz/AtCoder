@@ -21,42 +21,25 @@ public class C_3 {
 		out.close();
 	}
 
-	static int INF = 1 << 30;
-	static long LINF = 1L << 55;
-	static int MOD = 1000000007;
-	static int[] mh4 = { 0, -1, 1, 0 };
-	static int[] mw4 = { -1, 0, 0, 1 };
-	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
-	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
-
 	static class TaskX {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			int n = in.nextInt();
-			int[] a = new int[n], b = new int[n];
+			long[] a = new long[n], b = new long[n];
 			for (int i = 0; i < n; i++) {
-				a[i] = in.nextInt();
-				b[i] = in.nextInt();
+				a[i] = in.nextLong();
+				b[i] = in.nextLong();
 			}
 
-			long la = a[0], lb = b[0];
-			for (int i = 0; i < n; i++) {
-				la = lcm(la, a[i]);
-				lb = lcm(lb, b[i]);
+			for (int i = 0; i < n-1; i++) {
+				long max = Math.max((a[i] + a[i+1] - 1) / a[i+1], (b[i] + b[i+1] - 1) / b[i+1]);
+				a[i+1] *= max;
+				b[i+1] *= max;
 			}
 
-			out.println(Math.min(la + b[n-1] * (la / a[n-1]), lb + a[n-1] * (lb / b[n-1])));
-
+			out.println(a[n-1] + b[n-1]);
 		}
-	}
-
-	public static long gcd(long a, long b) {
-		return (b == 0) ? a : gcd(b, a % b);
-	}
-
-	public static long lcm(long a, long b) {
-		return a * b / gcd(a, b);
 	}
 
 	static class InputReader {
