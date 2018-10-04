@@ -1,4 +1,4 @@
-package soundhoundinc_programmingcontest;
+package codefestival2017final_parallel;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class C {
+public class B {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -22,47 +23,27 @@ public class C {
 	}
 
 	static int INF = 1 << 30;
-	static int modP = 1000000007;
+	static long LINF = 1L << 55;
+	static int MOD = 1000000007;
+	static int[] mh4 = { 0, -1, 1, 0 };
+	static int[] mw4 = { -1, 0, 0, 1 };
+	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
+	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
 	static class TaskX {
+
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int r = in.nextInt(), c = in.nextInt();
-			char[][] map1 = new char[r][c];
-			for (int i = 0; i < r; i++) {
-				map1[i] = in.nextString().toCharArray();
+			char[] s = in.nextString().toCharArray();
+
+			int[] cnt = new int[3];
+			for (char c : s) {
+				cnt[c - 'a']++;
 			}
 
-			long c1 = 0;
-			// #.#.#
-			// .#.#.
-			// #.#.#
-			for (int i = 0; i < r; i++) {
-				for (int j = 0; j < c; j++) {
-					if (i % 2 == 0 && j % 2 == 0) {
-						if (map1[i][j] == '.') c1++;
-					} else if (i % 2 == 1 && j % 2 == 1) {
-						if (map1[i][j] == '.') c1++;
-					}
-				}
-			}
+			Arrays.sort(cnt);
 
-			long c2 = 0;
-			// .#.#.
-			// #.#.#
-			// .#.#.
-			for (int i = 0; i < r; i++) {
-				for (int j = 0; j < c; j++) {
-					if (i % 2 == 0 && j % 2 == 1) {
-						if (map1[i][j] == '.') c2++;
-					} else if (i % 2 == 1 && j % 2 == 0) {
-						if (map1[i][j] == '.') c2++;
-					}
-				}
-			}
-
-			out.println(Math.max(c1, c2));
-
+			out.println(cnt[2] - cnt[0] <= 1 ? "YES" : "NO");
 		}
 	}
 
@@ -101,6 +82,22 @@ public class C {
 			return res;
 		}
 
+		public int[] nextIntArrayDec(int n) {
+			int[] res = new int[n];
+			for (int i = 0; i < n; i++) {
+				res[i] = nextInt() - 1;
+			}
+			return res;
+		}
+
+		public int[] nextIntArray1Index(int n) {
+			int[] res = new int[n + 1];
+			for (int i = 0; i < n; i++) {
+				res[i + 1] = nextInt();
+			}
+			return res;
+		}
+
 		public long[] nextLongArray(int n) {
 			long[] res = new long[n];
 			for (int i = 0; i < n; i++) {
@@ -109,11 +106,34 @@ public class C {
 			return res;
 		}
 
+		public long[] nextLongArrayDec(int n) {
+			long[] res = new long[n];
+			for (int i = 0; i < n; i++) {
+				res[i] = nextLong() - 1;
+			}
+			return res;
+		}
+
+		public long[] nextLongArray1Index(int n) {
+			long[] res = new long[n + 1];
+			for (int i = 0; i < n; i++) {
+				res[i + 1] = nextLong();
+			}
+			return res;
+		}
+
+		public double[] nextDoubleArray(int n) {
+			double[] res = new double[n];
+			for (int i = 0; i < n; i++) {
+				res[i] = nextDouble();
+			}
+			return res;
+		}
+
 		public InputReader(InputStream inputStream) {
 			in = new BufferedReader(new InputStreamReader(inputStream));
 			tok = new StringTokenizer("");
 		}
-
 	}
 
 }
