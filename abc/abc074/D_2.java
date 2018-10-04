@@ -1,4 +1,4 @@
-package abc069;
+package abc074;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,11 +7,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.StringTokenizer;
 
-public class D {
+public class D_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -35,34 +36,137 @@ public class D {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int h = in.nextInt(), w = in.nextInt();
 			int n = in.nextInt();
-			int[] a = in.nextIntArray(n);
-
-			int now = 0;
-			for (int i = 0; i < h; i++) {
-				List<Integer> list = new ArrayList<>();
-				int j = 0;
-				while (now < n && a[now] > 0 && j < w) {
-					list.add(now+1);
-					a[now]--;
-					j++;
-					if (a[now] == 0) now++;
+			long[][] map = new long[n][n], cost = new long[n][n];
+			fill(cost, INF);
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < n; j++) {
+					map[i][j] = in.nextLong();
+					cost[i][j] = map[i][j];
 				}
+			}
 
-				StringBuilder sb = new StringBuilder();
-				if (i % 2 == 0) {
-					for (int k = 0; k < w; k++) {
-						if (k > 0) sb.append(" ");
-						sb.append(list.get(k));
-					}
-				} else {
-					for (int k = w-1; k >= 0; k--) {
-						if (k < w-1) sb.append(" ");
-						sb.append(list.get(k));
+			for (int k = 0; k < n; k++) {
+				for (int i = 0; i < n; i++) {
+					for (int j = 0; j < n; j++) {
+						cost[i][j] = Math.min(cost[i][j], cost[i][k] + cost[k][j]);
 					}
 				}
-				out.println(sb);
+			}
+
+			List<P> list = new ArrayList<>();
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < n; j++) {
+					if (i == j) continue;
+					if (cost[i][j] != map[i][j]) {
+						out.println(-1);
+						return;
+					}
+					list.add(new P(i, j, cost[i][j]));
+				}
+			}
+
+			Collections.sort(list);
+
+			long ans = 0;
+			DisjointSet set = new DisjointSet(n);
+			for (int i = 0; i < list.size(); i++) {
+				int f = list.get(i).f;
+				int t = list.get(i).t;
+				long c = list.get(i).c;
+				if (!set.same(f, t)) {
+					set.unite(f, t);
+					ans += c;
+				}
+			}
+
+			out.println(ans);
+
+		}
+	}
+
+	/**
+	 * DisjointSet
+	 * */
+	public static class DisjointSet {
+
+		int[] p, rank, cnt;
+
+		public DisjointSet(int size) {
+			p = new int[size];
+			rank = new int[size];
+			cnt = new int[size];
+
+			for (int j = 0; j < size; j++) {
+				makeSet(j);
+			}
+		}
+
+		private void makeSet(int x) {
+			p[x] = x;
+			rank[x] = 0;
+			cnt[x] = 1;
+		}
+
+		public int findSet(int x) {
+			return p[x] == x ? x : findSet(p[x]);
+		}
+
+		private void link(int x, int y) {
+			if (rank[x] > rank[y]) {
+				p[y] = x;
+			} else if (rank[x] < rank[y]) {
+				p[x] = y;
+			} else if (rank[x] == rank[y]) {
+				p[x] = y;
+				rank[y]++;
+			}
+
+			if (x != y) {
+				cnt[x] = cnt[y] += cnt[x];
+			}
+		}
+
+		public void unite(int x, int y) {
+			link(findSet(x), findSet(y));
+		}
+
+		public boolean same(int x, int y) {
+			return findSet(x) == findSet(y);
+		}
+
+		public int getSize(int x) {
+			return cnt[findSet(x)];
+		}
+	}
+
+	static class P implements Comparable<P> {
+		int f, t;
+		long c;
+		public P(int f, int t, long c) {
+			super();
+			this.f = f;
+			this.t = t;
+			this.c = c;
+		}
+
+		@Override
+		public int compareTo(P o) {
+			return Long.compare(this.c, o.c);
+		}
+
+		@Override
+		public String toString() {
+			return "P [f=" + f + ", t=" + t + ", c=" + c + "]";
+		}
+
+	}
+
+	static void fill(long[][] cost, long v) {
+		for (int i = 0; i < cost.length; i++) {
+			for (int j = 0; j < cost[0].length; j++) {
+				cost[i][j] = v;
+				if (i == j) cost[i][j] = 0;
 			}
 		}
 	}

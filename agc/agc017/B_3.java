@@ -1,4 +1,4 @@
-package abc069;
+package agc017;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,12 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.InputMismatchException;
-import java.util.List;
 import java.util.StringTokenizer;
 
-public class D {
+public class B_3 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -35,35 +33,18 @@ public class D {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int h = in.nextInt(), w = in.nextInt();
 			int n = in.nextInt();
-			int[] a = in.nextIntArray(n);
+			long a = in.nextLong();
+			long b = in.nextLong();
+			long c = in.nextLong();
+			long d = in.nextLong();
 
-			int now = 0;
-			for (int i = 0; i < h; i++) {
-				List<Integer> list = new ArrayList<>();
-				int j = 0;
-				while (now < n && a[now] > 0 && j < w) {
-					list.add(now+1);
-					a[now]--;
-					j++;
-					if (a[now] == 0) now++;
-				}
-
-				StringBuilder sb = new StringBuilder();
-				if (i % 2 == 0) {
-					for (int k = 0; k < w; k++) {
-						if (k > 0) sb.append(" ");
-						sb.append(list.get(k));
-					}
-				} else {
-					for (int k = w-1; k >= 0; k--) {
-						if (k < w-1) sb.append(" ");
-						sb.append(list.get(k));
-					}
-				}
-				out.println(sb);
+			boolean ok = false;
+			for (int k = 0; k < n; k++) {
+				ok |= a + k*c - (n-1-k)*d <= b && b <= a + k*d - (n-1-k)*c;
 			}
+			out.println(ok ? "YES" : "NO");
+
 		}
 	}
 

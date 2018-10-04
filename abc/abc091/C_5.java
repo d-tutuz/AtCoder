@@ -1,4 +1,4 @@
-package abc069;
+package abc091;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,12 +6,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.InputMismatchException;
-import java.util.List;
 import java.util.StringTokenizer;
 
-public class D {
+public class C_5 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -35,38 +36,116 @@ public class D {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int h = in.nextInt(), w = in.nextInt();
 			int n = in.nextInt();
-			int[] a = in.nextIntArray(n);
+			Dinic dinic = new Dinic(n+200);
+			int[] a = new int[n];
+			int[] b = new int[n];
+			int[] c = new int[n];
+			int[] d = new int[n];
 
-			int now = 0;
-			for (int i = 0; i < h; i++) {
-				List<Integer> list = new ArrayList<>();
-				int j = 0;
-				while (now < n && a[now] > 0 && j < w) {
-					list.add(now+1);
-					a[now]--;
-					j++;
-					if (a[now] == 0) now++;
-				}
-
-				StringBuilder sb = new StringBuilder();
-				if (i % 2 == 0) {
-					for (int k = 0; k < w; k++) {
-						if (k > 0) sb.append(" ");
-						sb.append(list.get(k));
-					}
-				} else {
-					for (int k = w-1; k >= 0; k--) {
-						if (k < w-1) sb.append(" ");
-						sb.append(list.get(k));
-					}
-				}
-				out.println(sb);
+			for (int i = 0; i < n; i++) {
+				a[i] = in.nextInt();
+				b[i] = in.nextInt();
 			}
+
+			for (int i = 0; i < n; i++) {
+				c[i] = in.nextInt();
+				d[i] = in.nextInt();
+			}
+
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < n; j++) {
+					if (a[i] < c[j] && b[i] < d[j]) {
+						dinic.addEdge(i, j+100, 1);
+					}
+				}
+			}
+
+			for (int i = 0; i < n; i++) {
+				dinic.addEdge(200, i, 1);
+				dinic.addEdge(100+i, 201, 1);
+			}
+
+			int max = dinic.maxFlow(200, 201);
+			out.println(max);
+
 		}
 	}
 
+
+	static class Dinic {
+
+		private class Edge {
+			int to, cap, rev;
+
+			public Edge(int to, int cap, int rev) {
+				this.to = to;
+				this.cap = cap;
+				this.rev = rev;
+			}
+		}
+
+		ArrayList<ArrayList<Edge>> g;
+		int[] level, iter;
+
+		public Dinic(int V) {
+			g = new ArrayList<>(V);
+			for (int i = 0; i < V; i++) g.add(new ArrayList<>());
+			level = new int[V];
+			iter = new int[V];
+		}
+
+		void addEdge(int from, int to, int capacity) {
+			g.get(from).add(new Edge(to, capacity, g.get(to).size()));
+			g.get(to).add(new Edge(from, 0, g.get(from).size() -1));
+		}
+
+		void bfs(int s) {
+			Arrays.fill(level, -1);
+			ArrayDeque<Integer> q = new ArrayDeque<>();
+			level[s] = 0;
+			q.add(s);
+
+			while (!q.isEmpty()) {
+				int v = q.poll();
+				for (Edge e : g.get(v)) {
+					if (e.cap > 0 && level[e.to] < 0) {
+						level[e.to] = level[v] + 1;
+						q.add(e.to);
+					}
+				}
+			}
+		}
+
+		int dfs(int v, int t, int f) {
+			if (v == t) return f;
+			for (int i = iter[v]; i < g.get(v).size(); i++) {
+				Edge e = g.get(v).get(i);
+				if (e.cap > 0 && level[v] < level[e.to]) {
+					int d = dfs(e.to, t, Math.min(f, e.cap));
+					if (d > 0) {
+						e.cap -= d;
+						g.get(e.to).get(e.rev).cap += d;
+						return d;
+					}
+				}
+			}
+			return 0;
+		}
+
+		int maxFlow(int s, int t) {
+			int flow = 0;
+			while (true) {
+				bfs(s);
+				if (level[t] < 0) return flow;
+				Arrays.fill(iter, 0);
+				int f;
+				while ((f = dfs(s, t, Integer.MAX_VALUE)) > 0) {
+					flow += f;
+				}
+			}
+		}
+	}
 	static class InputReader {
 		BufferedReader in;
 		StringTokenizer tok;

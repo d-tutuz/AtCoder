@@ -1,4 +1,4 @@
-package abc069;
+package abc073;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,12 +6,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.InputMismatchException;
-import java.util.List;
 import java.util.StringTokenizer;
 
-public class D {
+public class D_3 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -35,38 +34,85 @@ public class D {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int h = in.nextInt(), w = in.nextInt();
-			int n = in.nextInt();
-			int[] a = in.nextIntArray(n);
+			int N = in.nextInt(), M = in.nextInt(), R = in.nextInt();
+			int[] r = in.nextIntArray(R);
+			Arrays.sort(r);
 
-			int now = 0;
-			for (int i = 0; i < h; i++) {
-				List<Integer> list = new ArrayList<>();
-				int j = 0;
-				while (now < n && a[now] > 0 && j < w) {
-					list.add(now+1);
-					a[now]--;
-					j++;
-					if (a[now] == 0) now++;
-				}
+			long[][] cost = new long[N][N];
+			fill(cost, INF);
 
-				StringBuilder sb = new StringBuilder();
-				if (i % 2 == 0) {
-					for (int k = 0; k < w; k++) {
-						if (k > 0) sb.append(" ");
-						sb.append(list.get(k));
-					}
-				} else {
-					for (int k = w-1; k >= 0; k--) {
-						if (k < w-1) sb.append(" ");
-						sb.append(list.get(k));
+			while (M-- > 0) {
+				int a = in.nextInt()-1, b = in.nextInt()-1, c = in.nextInt();
+				cost[a][b] = c;
+				cost[b][a] = c;
+			}
+
+			for (int k = 0; k < N; k++) {
+				for (int i = 0; i < N; i++) {
+					for (int j = 0; j < N; j++) {
+						cost[i][j] = Math.min(cost[i][j], cost[i][k] + cost[k][j]);
 					}
 				}
-				out.println(sb);
+			}
+
+			long ans = LINF;
+
+			do {
+				long tmp = 0;
+				for (int i = 0; i < R-1; i++) {
+					tmp += cost[r[i]-1][r[i+1]-1];
+				}
+				ans = Math.min(tmp, ans);
+			} while (Permutation.next(r));
+
+			out.println(ans);
+		}
+	}
+
+	static void fill(long[][] cost, int v) {
+		for (int i = 0; i < cost.length; i++) {
+			for (int j = 0; j < cost[0].length; j++) {
+				cost[i][j] = v;
+				if (i == j) cost[i][j] = 0;
 			}
 		}
 	}
 
+	static class Permutation {
+
+		public static boolean next(int[] a) {
+			int n = a.length;
+
+			int i = n - 1;
+			while (i > 0 && a[i - 1] >= a[i])
+				i--;
+			if (i <= 0)
+				return false;
+
+			int j = n - 1;
+			while (a[j] <= a[i - 1])
+				j--;
+			swap(a, i - 1, j);
+
+			int k = n - 1;
+			while (i < k)
+				swap(a, i++, k--);
+
+			return true;
+		}
+
+		private static void swap(int[] a, int i, int j) {
+			int tmp = a[i];
+			a[i] = a[j];
+			a[j] = tmp;
+		}
+
+		private static void swap(char[] a, int i, int j) {
+			char tmp = a[i];
+			a[i] = a[j];
+			a[j] = tmp;
+		}
+	}
 	static class InputReader {
 		BufferedReader in;
 		StringTokenizer tok;
