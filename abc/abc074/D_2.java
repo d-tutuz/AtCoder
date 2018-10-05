@@ -6,10 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.InputMismatchException;
-import java.util.List;
 import java.util.StringTokenizer;
 
 public class D_2 {
@@ -54,7 +51,6 @@ public class D_2 {
 				}
 			}
 
-			List<P> list = new ArrayList<>();
 			for (int i = 0; i < n; i++) {
 				for (int j = 0; j < n; j++) {
 					if (i == j) continue;
@@ -62,104 +58,29 @@ public class D_2 {
 						out.println(-1);
 						return;
 					}
-					list.add(new P(i, j, cost[i][j]));
 				}
 			}
 
-			Collections.sort(list);
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < n; j++) {
+					for (int k = 0; k < n; k++) {
+						if (i == k || k == j || j == i) continue;
+						if (cost[i][k] + cost[k][j] == cost[i][j]) {
+							map[i][j] = 0;
+						}
+					}
+				}
+			}
 
 			long ans = 0;
-			DisjointSet set = new DisjointSet(n);
-			for (int i = 0; i < list.size(); i++) {
-				int f = list.get(i).f;
-				int t = list.get(i).t;
-				long c = list.get(i).c;
-				if (!set.same(f, t)) {
-					set.unite(f, t);
-					ans += c;
+			for (int i = 0; i < n; i++) {
+				for (int j = i+1; j < n; j++) {
+					ans += map[i][j];
 				}
 			}
-
 			out.println(ans);
 
 		}
-	}
-
-	/**
-	 * DisjointSet
-	 * */
-	public static class DisjointSet {
-
-		int[] p, rank, cnt;
-
-		public DisjointSet(int size) {
-			p = new int[size];
-			rank = new int[size];
-			cnt = new int[size];
-
-			for (int j = 0; j < size; j++) {
-				makeSet(j);
-			}
-		}
-
-		private void makeSet(int x) {
-			p[x] = x;
-			rank[x] = 0;
-			cnt[x] = 1;
-		}
-
-		public int findSet(int x) {
-			return p[x] == x ? x : findSet(p[x]);
-		}
-
-		private void link(int x, int y) {
-			if (rank[x] > rank[y]) {
-				p[y] = x;
-			} else if (rank[x] < rank[y]) {
-				p[x] = y;
-			} else if (rank[x] == rank[y]) {
-				p[x] = y;
-				rank[y]++;
-			}
-
-			if (x != y) {
-				cnt[x] = cnt[y] += cnt[x];
-			}
-		}
-
-		public void unite(int x, int y) {
-			link(findSet(x), findSet(y));
-		}
-
-		public boolean same(int x, int y) {
-			return findSet(x) == findSet(y);
-		}
-
-		public int getSize(int x) {
-			return cnt[findSet(x)];
-		}
-	}
-
-	static class P implements Comparable<P> {
-		int f, t;
-		long c;
-		public P(int f, int t, long c) {
-			super();
-			this.f = f;
-			this.t = t;
-			this.c = c;
-		}
-
-		@Override
-		public int compareTo(P o) {
-			return Long.compare(this.c, o.c);
-		}
-
-		@Override
-		public String toString() {
-			return "P [f=" + f + ", t=" + t + ", c=" + c + "]";
-		}
-
 	}
 
 	static void fill(long[][] cost, long v) {
