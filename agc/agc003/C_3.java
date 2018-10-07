@@ -1,4 +1,4 @@
-package abc093;
+package agc003;
 
 import static java.lang.Math.*;
 
@@ -8,13 +8,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class D_2 {
+public class C_3 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
+//		inputStream = new FileInputStream(new File("/workspace/Atcoder/agc/agc003/C_in06.txt"));
 		OutputStream outputStream = System.out;
 		InputReader in = new InputReader(inputStream);
 		PrintWriter out = new PrintWriter(outputStream);
@@ -23,7 +25,7 @@ public class D_2 {
 		out.close();
 	}
 
-	static int INF = 1 << 31;
+	static int INF = 1 << 30;
 	static long LINF = 1L << 55;
 	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
@@ -35,34 +37,18 @@ public class D_2 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int q = in.nextInt();
-			while (q-- > 0) {
-				long a = in.nextLong(), b = in.nextLong();
-				out.println(calc(a, b));
+			int n = in.nextInt();
+			int[] a = in.nextIntArray(n);
+			int[] as = a.clone();
+			Arrays.sort(as);
+
+			long ans = 0;
+			for (int i = 0; i < n; i++) {
+				int idx = Arrays.binarySearch(as, a[i]);
+				if (abs(i - idx) % 2 == 1) ans++;
 			}
 
-		}
-
-		long calc(long a, long b) {
-			if (a == b) return (a-1) * 2;
-
-			long limit = a * b - 1;
-			long l = min(a, b) - 1, r = max(a, b) * 2 - 1;
-			while (r - l > 1) {
-				long k = (r+l)/2;
-				long max = 0;
-				for (long i = max(k/2-100, 1); i < k/2+100; i++) {
-					max = max(max, i * (k + 1 - i));
-				}
-
-				if (max > limit) {
-					r = k;
-				} else {
-					l = k;
-				}
-			}
-
-			return l - 1;
+			out.println(ans/2);
 		}
 	}
 

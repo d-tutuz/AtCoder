@@ -1,6 +1,4 @@
-package abc093;
-
-import static java.lang.Math.*;
+package abc021;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,7 +21,7 @@ public class D_2 {
 		out.close();
 	}
 
-	static int INF = 1 << 31;
+	static int INF = 1 << 30;
 	static long LINF = 1L << 55;
 	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
@@ -35,35 +33,54 @@ public class D_2 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int q = in.nextInt();
-			while (q-- > 0) {
-				long a = in.nextLong(), b = in.nextLong();
-				out.println(calc(a, b));
-			}
+			int n = in.nextInt(), k = in.nextInt();
+			out.println(H(n, k));
 
 		}
+	}
 
-		long calc(long a, long b) {
-			if (a == b) return (a-1) * 2;
+	public static long H(int n, int r) {
+		return comb(n+r-1, r);
+	}
 
-			long limit = a * b - 1;
-			long l = min(a, b) - 1, r = max(a, b) * 2 - 1;
-			while (r - l > 1) {
-				long k = (r+l)/2;
-				long max = 0;
-				for (long i = max(k/2-100, 1); i < k/2+100; i++) {
-					max = max(max, i * (k + 1 - i));
-				}
+	public static long comb(int n, int r) {
+		if (r < 0 || r > n)
+			return 0L;
+		return fact[n] % MOD * factInv[r] % MOD * factInv[n - r] % MOD;
+	}
 
-				if (max > limit) {
-					r = k;
-				} else {
-					l = k;
-				}
-			}
+	public static int MAXN = 200000;
 
-			return l - 1;
+	static long[] fact = factorialArray(MAXN, MOD);
+	static long[] factInv = factorialInverseArray(MAXN, MOD,
+			inverseArray(MAXN, MOD));
+
+	public static long[] factorialArray(int maxN, long mod) {
+		long[] fact = new long[maxN + 1];
+		fact[0] = 1 % mod;
+		for (int i = 1; i <= maxN; i++) {
+			fact[i] = fact[i - 1] * i % mod;
 		}
+		return fact;
+	}
+
+	public static long[] inverseArray(int maxN, long modP) {
+		long[] inv = new long[maxN + 1];
+		inv[1] = 1;
+		for (int i = 2; i <= maxN; i++) {
+			inv[i] = modP - (modP / i) * inv[(int) (modP % i)] % modP;
+		}
+		return inv;
+	}
+
+	public static long[] factorialInverseArray(int maxN, long modP,
+			long[] inverseArray) {
+		long[] factInv = new long[maxN + 1];
+		factInv[0] = 1;
+		for (int i = 1; i <= maxN; i++) {
+			factInv[i] = factInv[i - 1] * inverseArray[i] % modP;
+		}
+		return factInv;
 	}
 
 	static class InputReader {

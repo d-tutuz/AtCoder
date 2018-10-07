@@ -1,4 +1,4 @@
-package agc033;
+package typical.dp.contest;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class C {
+public class A {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -32,66 +32,28 @@ public class C {
 
 	static class TaskX {
 
-		int n = 200000;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int q = in.nextInt();
-			BIT bit = new BIT(n+1);
+			int n = in.nextInt();
+			int[] a = in.nextIntArray(n);
+			int sum = Arrays.stream(a).sum();
+			boolean[][] dp = new boolean[n+1][sum+1];
 
-			while (q-- > 0) {
-				int t = in.nextInt();
-				int x = in.nextInt();
+			dp[0][0] = true;
 
-				if (t == 1) {
-					bit.add(x, 1);
-				} else if (t == 2) {
-					int l = 0, r = n+1;
-					while (r - l > 1) {
-						int m = (r+l)/2;
-						if (bit.query(m) >= x) {
-							r = m;
-						} else {
-							l = m;
-						}
-					}
-					out.println(r);
-					bit.add(r, -1);
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < sum+1; j++) {
+					dp[i+1][j] |= dp[i][j];
+					if (j-a[i] >= 0) dp[i+1][j] |= dp[i][j-a[i]];
 				}
 			}
-		}
-	}
 
-	static class BIT {
-		private int n;
-		private long[] bit;
-
-		public BIT(int n) {
-			this.n = n;
-			bit = new long[n + 1];
-		}
-
-		public void clear() {
-			Arrays.fill(bit, 0);
-		}
-
-		public void add(int i, long x) {
-			while (i <= n) {
-				bit[i] += x;
-				i |= i + 1;
+			long ans = 0;
+			for (int i = 0; i < sum+1; i++) {
+				ans += dp[n][i] ? 1 : 0;
 			}
-		}
 
-		public long query(int l, int r) {
-			return l <= r ? query(r) - query(l - 1) : 0;
-		}
-
-		private long query(int i) {
-			long s = 0;
-			while (i >= 0) {
-				s += bit[i];
-				i = (i & (i + 1)) - 1;
-			}
-			return s;
+			out.println(ans);
 		}
 	}
 

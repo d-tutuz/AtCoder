@@ -1,6 +1,4 @@
-package abc093;
-
-import static java.lang.Math.*;
+package abc036;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,10 +6,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.List;
+import java.util.Queue;
 import java.util.StringTokenizer;
+import java.util.stream.Stream;
 
-public class D_2 {
+public class D_4 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -23,7 +26,7 @@ public class D_2 {
 		out.close();
 	}
 
-	static int INF = 1 << 31;
+	static int INF = 1 << 30;
 	static long LINF = 1L << 55;
 	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
@@ -31,38 +34,84 @@ public class D_2 {
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
+	@SuppressWarnings("unchecked")
 	static class TaskX {
 
+		List<Integer>[] g;
+		long[][] memo;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int q = in.nextInt();
-			while (q-- > 0) {
-				long a = in.nextLong(), b = in.nextLong();
-				out.println(calc(a, b));
+			int n = in.nextInt();
+			List<Integer>[] tmp = new ArrayList[n];
+			tmp = Stream.generate(ArrayList::new).limit(n).toArray(List[]::new);
+
+			for (int i = 0; i < n-1; i++) {
+				int a = in.nextInt()-1, b = in.nextInt()-1;
+				tmp[a].add(b);
+				tmp[b].add(a);
 			}
+
+			g = new ArrayList[n];
+			g = Stream.generate(ArrayList::new).limit(n).toArray(List[]::new);
+			memo = new long[n][2];
+			fill(memo, -1);
+
+			boolean[] used = new boolean[n];
+			Queue<Integer> q = new ArrayDeque<Integer>();
+			q.add(0);
+			used[0] = true;
+			while (!q.isEmpty()) {
+				int now = q.remove();
+
+				for (int to : tmp[now]) {
+					if (!used[to]) {
+						used[to] = true;
+						q.add(to);
+						g[now].add(to);
+					}
+				}
+			}
+
+			long ans = 0;
+			for (int i = 0; i < 2; i++) {
+				ans += func(0, i);
+				ans %= MOD;
+			}
+			out.println(ans);
 
 		}
 
-		long calc(long a, long b) {
-			if (a == b) return (a-1) * 2;
+		long func(int now, int c) {
 
-			long limit = a * b - 1;
-			long l = min(a, b) - 1, r = max(a, b) * 2 - 1;
-			while (r - l > 1) {
-				long k = (r+l)/2;
-				long max = 0;
-				for (long i = max(k/2-100, 1); i < k/2+100; i++) {
-					max = max(max, i * (k + 1 - i));
-				}
+			if (memo[now][c] != -1) {
+				return memo[now][c];
+			}
 
-				if (max > limit) {
-					r = k;
+			if (g[now].size() == 0) {
+				return 1L;
+			}
+
+			long ret = 1;
+
+			for (int next : g[now]) {
+				if (c == 0) {
+					ret *= func(next, 1);
+					ret %= MOD;
 				} else {
-					l = k;
+					ret *= (func(next, 0) + func(next, 1));
+					ret %= MOD;
 				}
 			}
 
-			return l - 1;
+			return memo[now][c] = ret % MOD;
+		}
+	}
+
+	static void fill(long[][] a, long v) {
+		for (int i = 0; i < a.length; i++) {
+			for (int j = 0; j < a[0].length; j++) {
+				a[i][j] = v;
+			}
 		}
 	}
 

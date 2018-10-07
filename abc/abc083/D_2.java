@@ -1,6 +1,4 @@
-package abc093;
-
-import static java.lang.Math.*;
+package abc083;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,7 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.HashSet;
 import java.util.InputMismatchException;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 public class D_2 {
@@ -23,7 +23,7 @@ public class D_2 {
 		out.close();
 	}
 
-	static int INF = 1 << 31;
+	static int INF = 1 << 30;
 	static long LINF = 1L << 55;
 	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
@@ -35,34 +35,20 @@ public class D_2 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int q = in.nextInt();
-			while (q-- > 0) {
-				long a = in.nextLong(), b = in.nextLong();
-				out.println(calc(a, b));
+			char[] s = in.nextString().toCharArray();
+			int n = s.length;
+
+			Set<Character> set = new HashSet<>();
+			int l = (n-1)/2, r = n/2, ans = n/2;
+			while (0 <= l && r < n) {
+				set.add(s[l]);
+				set.add(s[r]);
+				l--; r++;
+				if (set.size() >= 2) break;
+				ans++;
 			}
 
-		}
-
-		long calc(long a, long b) {
-			if (a == b) return (a-1) * 2;
-
-			long limit = a * b - 1;
-			long l = min(a, b) - 1, r = max(a, b) * 2 - 1;
-			while (r - l > 1) {
-				long k = (r+l)/2;
-				long max = 0;
-				for (long i = max(k/2-100, 1); i < k/2+100; i++) {
-					max = max(max, i * (k + 1 - i));
-				}
-
-				if (max > limit) {
-					r = k;
-				} else {
-					l = k;
-				}
-			}
-
-			return l - 1;
+			out.println(ans);
 		}
 	}
 
