@@ -34,70 +34,63 @@ public class C {
 		int n;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			n = 6;
-			int[] a = new int[n-1];
-			for (int i = 0; i < n-1; i++) {
-				a[i] = i;
+			n = in.nextInt();
+			if (n == 1) {
+				out.println(1);
+				return;
 			}
+			long ans = 0;
+			for (int k = 0; k < n; k++) {
+				ans += k * (MOD + f(k) - f(k-1)) % MOD;
+				ans %= MOD;
+			}
+			out.println(ans % MOD);
 
-			int sum = 0;
-			do {
-				for (int i = 0; i < n-1; i++) {
-					out.print(a[i]+1 + " ");
-				}
-				out.print(": " + f(a));
-				out.print("\n");
-				sum += f(a);
-			} while (Permutation.next(a));
-
-			out.println("==================");
-			out.println(sum);
 		}
 
-		int f(int[] a) {
-			int count = 0;
-			boolean[] used = new boolean[n];
-			for (int i = 0; i < n; i++) {
-				used[a[i]] = used[a[i]+1] = true;
-				count++;
-				boolean ok = true;
-				for (int j = 0; j < n; j++) {
-					ok &= used[j];
-				}
-				if (ok) return count;
-			}
-			return -1;
+		long f(int k) {
+			return comb(k-1, n-k-1) * fact[k] % MOD * fact[n-k-1] % MOD;
 		}
 	}
 
-	static class Permutation {
+	public static long comb(int n, int r) {
+		if (r < 0 || r > n)
+			return 0L;
+		return fact[n] % MOD * factInv[r] % MOD * factInv[n - r] % MOD;
+	}
 
-		public static boolean next(int[] a) {
-			int n = a.length;
+	public static int MAXN = 1000000;
 
-			int i = n - 1;
-			while (i > 0 && a[i - 1] >= a[i])
-				i--;
-			if (i <= 0)
-				return false;
+	static long[] fact = factorialArray(MAXN, MOD);
+	static long[] factInv = factorialInverseArray(MAXN, MOD,
+			inverseArray(MAXN, MOD));
 
-			int j = n - 1;
-			while (a[j] <= a[i - 1])
-				j--;
-			swap(a, i - 1, j);
-
-			int k = n - 1;
-			while (i < k)
-				swap(a, i++, k--);
-
-			return true;
+	public static long[] factorialArray(int maxN, long mod) {
+		long[] fact = new long[maxN + 1];
+		fact[0] = 1 % mod;
+		for (int i = 1; i <= maxN; i++) {
+			fact[i] = fact[i - 1] * i % mod;
 		}
+		return fact;
+	}
 
-		private static void swap(int[] a, int i, int j) {
-			int tmp = a[i];
-			a[i] = a[j];
-			a[j] = tmp;
+	public static long[] inverseArray(int maxN, long modP) {
+		long[] inv = new long[maxN + 1];
+		inv[1] = 1;
+		for (int i = 2; i <= maxN; i++) {
+			inv[i] = modP - (modP / i) * inv[(int) (modP % i)] % modP;
 		}
+		return inv;
+	}
+
+	public static long[] factorialInverseArray(int maxN, long modP,
+			long[] inverseArray) {
+		long[] factInv = new long[maxN + 1];
+		factInv[0] = 1;
+		for (int i = 1; i <= maxN; i++) {
+			factInv[i] = factInv[i - 1] * inverseArray[i] % modP;
+		}
+		return factInv;
 	}
 
 	static class InputReader {
