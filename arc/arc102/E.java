@@ -33,13 +33,35 @@ public class E {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int k = in.nextInt(), n = in.nextInt();
+			int K = in.nextInt(), N = in.nextInt();
 
+			for (int i = 2; i <= 2*K; i++) {
+				long ans = 0;
+				int n = 0;
+				for (int a = 1; a <= K; a++) {
+					if (a <= i - a && i - a <= K) n++;
+				}
+				if (i % 2 == 1) {
+					for (int m = 0; m <= n; m++) {
+						ans += (comb(n, m) * power(2, m, MOD)) % MOD * H(K-2*n+m, N-m);
+						ans %= MOD;
+					}
+				} else {
+					n--;
+					for (int m = 0; m <= n; m++) {
+						ans += (comb(n, m) * power(2, m, MOD)) % MOD * H(K-2*n+m-1, N-m-1);
+						ans %= MOD;
+						ans += (comb(n, m) * power(2, m, MOD)) % MOD * H(K-2*n+m-1, N-m);
+						ans %= MOD;
+					}
+				}
+
+				out.println(ans % MOD);
+			}
 		}
 	}
 
 	public  static long H(int n, int r) {
-
 		return comb(n+r-1, r);
 	}
 
