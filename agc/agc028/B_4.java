@@ -7,9 +7,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.InputMismatchException;
+import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
-public class B_3 {
+public class B_4 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -33,8 +34,61 @@ public class B_3 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			
+			int n = in.nextInt();
+			PriorityQueue<Long> A = new PriorityQueue<Long>();
+			PriorityQueue<Long> B = new PriorityQueue<Long>();
 
+			for (int i = 0; i < n; i++) {
+				long a = in.nextLong();
+				long b = in.nextLong();
+				A.add(a);
+				B.add(b);
+			}
+
+			PriorityQueue<Long> A2 = new PriorityQueue<>(A);
+			PriorityQueue<Long> B2 = new PriorityQueue<>(B);
+			long ans = 0;
+			int ac = 0, bc = 0;
+			int tn = n;
+			while (tn-- > 0) {
+				if (ac <= bc) {
+					ans += A.remove();
+					ac++;
+				} else {
+					long ta = A.peek();
+					long ba = B.peek();
+
+					if (ta <= ba) {
+						ans += A.remove();
+						ac++;
+					} else {
+						ans += B.remove();
+						bc++;
+					}
+				}
+			}
+
+			long ans2 = 0;
+			ac = 0; bc = 0;
+			while (n-- > 0) {
+				if (bc <= ac) {
+					ans2 += B2.remove();
+					bc++;
+				} else {
+					long ta = A2.peek();
+					long tb = B2.peek();
+
+					if (tb <= ta) {
+						ans2 += B2.remove();
+						bc++;
+					} else {
+						ans2 += A2.remove();
+						ac++;
+					}
+				}
+			}
+
+			out.println(Math.min(ans, ans2));
 		}
 	}
 
@@ -126,5 +180,5 @@ public class B_3 {
 			tok = new StringTokenizer("");
 		}
 	}
-	
+
 }
