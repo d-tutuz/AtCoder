@@ -1,4 +1,4 @@
-package agc006;
+package arc030;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.StringTokenizer;
+import java.util.stream.Stream;
 
-public class B_3 {
+public class B_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -29,45 +32,44 @@ public class B_3 {
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
+	@SuppressWarnings("unchecked")
 	static class TaskX {
 
+		List<Integer>[] g;
+		int[] h;
+		int x;
+		int ans = 0;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt(), x = in.nextInt();
+			int n = in.nextInt(); x = in.nextInt()-1;
+			h = in.nextIntArray(n);
 
-			if (x == 1 || x == 2*n-1) {
-				out.println("No");
-				return;
+			g = new ArrayList[n];
+			g = Stream.generate(ArrayList::new).limit(n).toArray(List[]::new);
+
+			for (int i = 0; i < n-1; i++) {
+				int a = in.nextInt()-1, b = in.nextInt()-1;
+				g[a].add(b);
+				g[b].add(a);
 			}
 
-			int[] ans = new int[2*n-1];
-			for (int i = 0; i < 2*n-1; i++) {
-				ans[i] = i+1;
-			}
+			dfs(x, -1);
 
-			for (int i = 0; i < 2*n-1; i++) {
-				if (ans[i] == x-1) {
-					swap(ans, i, n-2);
-				}
-				if (ans[i] == x) {
-					swap(ans, i, n-1);
-				}
-				if (ans[i] == x+1) {
-					swap(ans, i, n);
-				}
-			}
-
-			out.println("Yes");
-			for (int i : ans) {
-				out.println(i);
-			}
-
+			out.println(ans);
 		}
-	}
-	static void swap(int[] ans, int i, int j) {
-		int tmp = ans[i];
-		ans[i] = ans[j];
-		ans[j] = tmp;
+
+		boolean dfs(int now, int par) {
+			boolean ret = h[now] == 1;
+
+			for (int nex : g[now]) {
+				if (nex == par) continue;
+				boolean child = dfs(nex, now);
+				if (child) ans += 2;
+				ret |= child;
+			}
+
+			return ret;
+		}
 	}
 
 	static class InputReader {
