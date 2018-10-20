@@ -1,6 +1,4 @@
-package arc049;
-
-import static java.lang.Math.*;
+package arc015;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,45 +31,44 @@ public class B {
 
 	static class TaskX {
 
+		int[] ans = new int[6];
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			int n = in.nextInt();
-			P[] p = new P[n];
-			double msx = INF, mxx = -INF;
-			double msy = INF, mxy = -INF;
+			while (n-- > 0) {
+				double maxt = in.nextDouble();
+				double mint = in.nextDouble();
 
-			for (int i = 0; i < n; i++) {
-				double x = in.nextDouble();
-				double y = in.nextDouble();
-				double c = in.nextDouble();
-				p[i] = new P(x, y, c);
-				msx = min(msx, x);
-				mxx = max(mxx, x);
-				msy = min(msy, y);
-				mxy = max(mxy, y);
+				calc(maxt, mint);
 			}
 
-			double X = (msx + mxx) / 2;
-			double Y = (msy + mxy) / 2;
-
-			double ans = INF;
-			for (int i = 0; i < n; i++) {
-				ans = min(ans, p[i].c * max(abs(X-p[i].x), abs(Y-p[i].y)));
+			for (int i = 0; i < 6; i++) {
+				if (i > 0) out.print(" ");
+				out.print(ans[i]);
 			}
-			out.println(ans);
-		}
-	}
-
-	static class P {
-		double x, y, c;
-
-		public P(double x, double y, double c) {
-			super();
-			this.x = x;
-			this.y = y;
-			this.c = c;
+			out.print("\n");
 		}
 
+		void calc(double maxt, double mint) {
+			if (35.0 <= maxt) {
+				ans[0]++;
+			}
+			if (30.0 <= maxt && maxt < 35.0) {
+				ans[1]++;
+			}
+			if (25.0 <= maxt && maxt < 30.0) {
+				ans[2]++;
+			}
+			if (25.0 <= mint) {
+				ans[3]++;
+			}
+			if (mint < 0.0 && 0.0 <= maxt) {
+				ans[4]++;
+			}
+			if (maxt < 0.0) {
+				ans[5]++;
+			}
+		}
 	}
 
 	static class InputReader {

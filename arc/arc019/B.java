@@ -1,6 +1,4 @@
-package arc049;
-
-import static java.lang.Math.*;
+package arc019;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,43 +33,41 @@ public class B {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			P[] p = new P[n];
-			double msx = INF, mxx = -INF;
-			double msy = INF, mxy = -INF;
+			char[] s = in.nextString().toCharArray();
+			int n = s.length;
 
+			int count = 0;
 			for (int i = 0; i < n; i++) {
-				double x = in.nextDouble();
-				double y = in.nextDouble();
-				double c = in.nextDouble();
-				p[i] = new P(x, y, c);
-				msx = min(msx, x);
-				mxx = max(mxx, x);
-				msy = min(msy, y);
-				mxy = max(mxy, y);
+				if (s[i] != s[n-1-i]) count++;
 			}
 
-			double X = (msx + mxx) / 2;
-			double Y = (msy + mxy) / 2;
-
-			double ans = INF;
-			for (int i = 0; i < n; i++) {
-				ans = min(ans, p[i].c * max(abs(X-p[i].x), abs(Y-p[i].y)));
+			count /= 2;
+			long ans = 0;
+			if (count == 0) {
+				if (n % 2 == 0) {
+					out.println(25 * n);
+				} else {
+					out.println(25 * (n-1));
+				}
+				return;
+			} else if (count == 1) {
+				for (int i = 0; i < n; i++) {
+					if (i == n-1-i) ans += 25;
+					for (char c = 'A'; c <= 'Z'; c++) {
+						if (s[i] == c) continue;
+						char tmp = s[i];
+						s[i] = c;
+						if (s[i] != s[n-1-i]) ans++;
+						s[i] = tmp;
+					}
+				}
+			} else if (count >= 2) {
+				out.println(25 * n);
+				return;
 			}
+
 			out.println(ans);
 		}
-	}
-
-	static class P {
-		double x, y, c;
-
-		public P(double x, double y, double c) {
-			super();
-			this.x = x;
-			this.y = y;
-			this.c = c;
-		}
-
 	}
 
 	static class InputReader {

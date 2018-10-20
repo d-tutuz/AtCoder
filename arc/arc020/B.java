@@ -1,6 +1,4 @@
-package arc049;
-
-import static java.lang.Math.*;
+package arc020;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,43 +33,27 @@ public class B {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			P[] p = new P[n];
-			double msx = INF, mxx = -INF;
-			double msy = INF, mxy = -INF;
+			int n = in.nextInt(), c = in.nextInt();
+			int[] a = in.nextIntArray(n);
 
-			for (int i = 0; i < n; i++) {
-				double x = in.nextDouble();
-				double y = in.nextDouble();
-				double c = in.nextDouble();
-				p[i] = new P(x, y, c);
-				msx = min(msx, x);
-				mxx = max(mxx, x);
-				msy = min(msy, y);
-				mxy = max(mxy, y);
+			int ans = INF;
+			for (int i = 1; i <= 10; i++) {
+				for (int j = 1; j <= 10; j++) {
+					if (i == j) continue;
+					int cost = 0;
+					for (int k = 0; k < n; k++) {
+						if (k % 2 == 0) {
+							if (a[k] != i) cost++;
+						} else {
+							if (a[k] != j) cost++;
+						}
+					}
+					ans = Math.min(ans, cost);
+				}
 			}
 
-			double X = (msx + mxx) / 2;
-			double Y = (msy + mxy) / 2;
-
-			double ans = INF;
-			for (int i = 0; i < n; i++) {
-				ans = min(ans, p[i].c * max(abs(X-p[i].x), abs(Y-p[i].y)));
-			}
-			out.println(ans);
+			out.println(ans * c);
 		}
-	}
-
-	static class P {
-		double x, y, c;
-
-		public P(double x, double y, double c) {
-			super();
-			this.x = x;
-			this.y = y;
-			this.c = c;
-		}
-
 	}
 
 	static class InputReader {

@@ -1,6 +1,4 @@
-package arc049;
-
-import static java.lang.Math.*;
+package arc039;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class B {
+public class A {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -35,43 +33,34 @@ public class B {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			P[] p = new P[n];
-			double msx = INF, mxx = -INF;
-			double msy = INF, mxy = -INF;
-
-			for (int i = 0; i < n; i++) {
-				double x = in.nextDouble();
-				double y = in.nextDouble();
-				double c = in.nextDouble();
-				p[i] = new P(x, y, c);
-				msx = min(msx, x);
-				mxx = max(mxx, x);
-				msy = min(msy, y);
-				mxy = max(mxy, y);
+			int a = in.nextInt(), b = in.nextInt();
+			int ans = -INF;
+			for (int i = 100; i <= 999; i++) {
+				int na = 0;
+				if (!check(a, i)) continue;
+				na = i;
+				ans = Math.max(ans, na - b);
 			}
-
-			double X = (msx + mxx) / 2;
-			double Y = (msy + mxy) / 2;
-
-			double ans = INF;
-			for (int i = 0; i < n; i++) {
-				ans = min(ans, p[i].c * max(abs(X-p[i].x), abs(Y-p[i].y)));
+			for (int i = 100; i <= 999; i++) {
+				int nb = 0;
+				if (!check(b, i)) continue;
+				nb = i;
+				ans = Math.max(ans, a - nb);
 			}
 			out.println(ans);
 		}
-	}
 
-	static class P {
-		double x, y, c;
+		boolean check(int s, int t) {
+			String ss = String.valueOf(s);
+			String tt = String.valueOf(t);
 
-		public P(double x, double y, double c) {
-			super();
-			this.x = x;
-			this.y = y;
-			this.c = c;
+			int count = 0;
+			for (int i = 0; i < ss.length(); i++) {
+				if (ss.charAt(i) != tt.charAt(i)) count++;
+			}
+
+			return count <= 1;
 		}
-
 	}
 
 	static class InputReader {

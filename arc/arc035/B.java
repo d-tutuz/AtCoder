@@ -1,6 +1,4 @@
-package arc049;
-
-import static java.lang.Math.*;
+package arc035;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,8 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
 
 public class B {
 
@@ -36,42 +36,36 @@ public class B {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			int n = in.nextInt();
-			P[] p = new P[n];
-			double msx = INF, mxx = -INF;
-			double msy = INF, mxy = -INF;
-
+			long[] t = in.nextLongArray(n);
+			TreeMap<Long, Integer> map = new TreeMap<>();
 			for (int i = 0; i < n; i++) {
-				double x = in.nextDouble();
-				double y = in.nextDouble();
-				double c = in.nextDouble();
-				p[i] = new P(x, y, c);
-				msx = min(msx, x);
-				mxx = max(mxx, x);
-				msy = min(msy, y);
-				mxy = max(mxy, y);
+				map.merge(t[i], 1, Integer::sum);
 			}
 
-			double X = (msx + mxx) / 2;
-			double Y = (msy + mxy) / 2;
+			Arrays.sort(t);
+			Arrays.parallelPrefix(t, Math::addExact);
+			long sum = Arrays.stream(t).sum();
 
-			double ans = INF;
-			for (int i = 0; i < n; i++) {
-				ans = min(ans, p[i].c * max(abs(X-p[i].x), abs(Y-p[i].y)));
+			long ans = 1;
+			for (long l : map.keySet()) {
+				ans *= fact[map.get(l)];
+				ans %= MOD;
 			}
+			out.println(sum);
 			out.println(ans);
+
 		}
 	}
 
-	static class P {
-		double x, y, c;
-
-		public P(double x, double y, double c) {
-			super();
-			this.x = x;
-			this.y = y;
-			this.c = c;
+	public static int MAXN = 200000;
+	static long[] fact = factorialArray(MAXN, MOD);
+	public static long[] factorialArray(int maxN, long mod) {
+		long[] fact = new long[maxN + 1];
+		fact[0] = 1 % mod;
+		for (int i = 1; i <= maxN; i++) {
+			fact[i] = fact[i - 1] * i % mod;
 		}
-
+		return fact;
 	}
 
 	static class InputReader {

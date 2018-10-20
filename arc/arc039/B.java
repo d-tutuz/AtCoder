@@ -1,6 +1,4 @@
-package arc049;
-
-import static java.lang.Math.*;
+package arc039;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,6 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
 
 public class B {
 
@@ -35,43 +34,73 @@ public class B {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			P[] p = new P[n];
-			double msx = INF, mxx = -INF;
-			double msy = INF, mxy = -INF;
+			int n = in.nextInt(), k = in.nextInt();
+			long[] m = new long[n];
 
-			for (int i = 0; i < n; i++) {
-				double x = in.nextDouble();
-				double y = in.nextDouble();
-				double c = in.nextDouble();
-				p[i] = new P(x, y, c);
-				msx = min(msx, x);
-				mxx = max(mxx, x);
-				msy = min(msy, y);
-				mxy = max(mxy, y);
-			}
+			long ans = 0;
+			if (n <= k) {
+				int j = 0;
+				for (int i = 0; i < k; i++) m[(j++)%n]++;
 
-			double X = (msx + mxx) / 2;
-			double Y = (msy + mxy) / 2;
+				TreeMap<Long, Integer> map = new TreeMap<>();
+				for (int i = 0; i < n; i++) map.merge(m[i], 1, Integer::sum);
 
-			double ans = INF;
-			for (int i = 0; i < n; i++) {
-				ans = min(ans, p[i].c * max(abs(X-p[i].x), abs(Y-p[i].y)));
+				int N = 0;
+				for (long l : map.keySet()) N += map.get(l);
+				ans += fact[N];
+				for (long key : map.keySet()) {
+					ans *= factInv[map.get(key)];
+					ans %= MOD;
+				}
+			} else {
+				ans += comb(n+k-1, k);
 			}
 			out.println(ans);
 		}
 	}
 
-	static class P {
-		double x, y, c;
+	public static long comb(int n, int r) {
+		if (r < 0 || r > n)
+			return 0L;
+		return fact[n] % MOD * factInv[r] % MOD * factInv[n - r] % MOD;
+	}
 
-		public P(double x, double y, double c) {
-			super();
-			this.x = x;
-			this.y = y;
-			this.c = c;
+	public static long H(int n, int r) {
+		return comb(n+r-1, r);
+	}
+
+	public static int MAXN = 200000;
+
+	static long[] fact = factorialArray(MAXN, MOD);
+	static long[] factInv = factorialInverseArray(MAXN, MOD,
+			inverseArray(MAXN, MOD));
+
+	public static long[] factorialArray(int maxN, long mod) {
+		long[] fact = new long[maxN + 1];
+		fact[0] = 1 % mod;
+		for (int i = 1; i <= maxN; i++) {
+			fact[i] = fact[i - 1] * i % mod;
 		}
+		return fact;
+	}
 
+	public static long[] inverseArray(int maxN, long modP) {
+		long[] inv = new long[maxN + 1];
+		inv[1] = 1;
+		for (int i = 2; i <= maxN; i++) {
+			inv[i] = modP - (modP / i) * inv[(int) (modP % i)] % modP;
+		}
+		return inv;
+	}
+
+	public static long[] factorialInverseArray(int maxN, long modP,
+			long[] inverseArray) {
+		long[] factInv = new long[maxN + 1];
+		factInv[0] = 1;
+		for (int i = 1; i <= maxN; i++) {
+			factInv[i] = factInv[i - 1] * inverseArray[i] % modP;
+		}
+		return factInv;
 	}
 
 	static class InputReader {

@@ -1,6 +1,4 @@
-package arc049;
-
-import static java.lang.Math.*;
+package arc053;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +7,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.InputMismatchException;
+import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
 
 public class B {
 
@@ -35,43 +35,25 @@ public class B {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			P[] p = new P[n];
-			double msx = INF, mxx = -INF;
-			double msy = INF, mxy = -INF;
-
-			for (int i = 0; i < n; i++) {
-				double x = in.nextDouble();
-				double y = in.nextDouble();
-				double c = in.nextDouble();
-				p[i] = new P(x, y, c);
-				msx = min(msx, x);
-				mxx = max(mxx, x);
-				msy = min(msy, y);
-				mxy = max(mxy, y);
+			char[] s = in.nextString().toCharArray();
+			int n = s.length;
+			Map<Character, Integer> map = new TreeMap<>();
+			for (char c : s) {
+				map.merge(c, 1, Integer::sum);
 			}
 
-			double X = (msx + mxx) / 2;
-			double Y = (msy + mxy) / 2;
-
-			double ans = INF;
-			for (int i = 0; i < n; i++) {
-				ans = min(ans, p[i].c * max(abs(X-p[i].x), abs(Y-p[i].y)));
+			int k = 0;
+			for (char c : map.keySet()) {
+				if (map.get(c) % 2 == 1) k++;
 			}
-			out.println(ans);
+
+			if (k == 0) {
+				out.println(n);
+				return;
+			}
+
+			out.println(1 + (n-k)/(2*k)*2);
 		}
-	}
-
-	static class P {
-		double x, y, c;
-
-		public P(double x, double y, double c) {
-			super();
-			this.x = x;
-			this.y = y;
-			this.c = c;
-		}
-
 	}
 
 	static class InputReader {

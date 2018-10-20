@@ -1,6 +1,4 @@
-package arc049;
-
-import static java.lang.Math.*;
+package arc025;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,43 +33,60 @@ public class B {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			P[] p = new P[n];
-			double msx = INF, mxx = -INF;
-			double msy = INF, mxy = -INF;
+			int h = in.nextInt(), w = in.nextInt();
+			int[][] sumw = new int[h+1][w+1];
+			int[][] sumb = new int[h+1][w+1];
 
-			for (int i = 0; i < n; i++) {
-				double x = in.nextDouble();
-				double y = in.nextDouble();
-				double c = in.nextDouble();
-				p[i] = new P(x, y, c);
-				msx = min(msx, x);
-				mxx = max(mxx, x);
-				msy = min(msy, y);
-				mxy = max(mxy, y);
+			int[][] white = new int[h+1][w+1];
+			int[][] black = new int[h+1][w+1];
+			for (int i = 0; i < h; i++) {
+				for (int j = 0; j < w; j++) {
+					if ((i + j) % 2 == 0) {
+						black[i][j] = in.nextInt();
+					} else {
+						white[i][j] = in.nextInt();
+					}
+				}
 			}
 
-			double X = (msx + mxx) / 2;
-			double Y = (msy + mxy) / 2;
+			for (int i = 0; i < h+1; i++) {
+				for (int j = 0; j < w+1; j++) {
+					sumw[i][j] = white[i][j];
+					if (i > 0) sumw[i][j] += sumw[i-1][j];
+					if (j > 0) sumw[i][j] += sumw[i][j-1];
+					if (i > 0 && j > 0) sumw[i][j] -= sumw[i-1][j-1];
 
-			double ans = INF;
-			for (int i = 0; i < n; i++) {
-				ans = min(ans, p[i].c * max(abs(X-p[i].x), abs(Y-p[i].y)));
+					sumb[i][j] = black[i][j];
+					if (i > 0) sumb[i][j] += sumb[i-1][j];
+					if (j > 0) sumb[i][j] += sumb[i][j-1];
+					if (i > 0 && j > 0) sumb[i][j] -= sumb[i-1][j-1];
+				}
 			}
+
+			int ans = 0;
+			for (int i = 0; i < h; i++) {
+				for (int j = i; j < h; j++) {
+					for (int k = 0; k < w; k++) {
+						for (int l = k; l < w; l++) {
+							if (get(i, k, j, l, sumw) == get(i, k, j, l, sumb)) {
+								ans = Math.max(ans, (j-i+1) * (l-k+1));
+							}
+						}
+					}
+				}
+			}
+
 			out.println(ans);
-		}
-	}
 
-	static class P {
-		double x, y, c;
-
-		public P(double x, double y, double c) {
-			super();
-			this.x = x;
-			this.y = y;
-			this.c = c;
 		}
 
+		int get(int x1, int y1, int x2, int y2, int[][] sum) {
+			int res = sum[x2][y2];
+			if (x1 > 0) res -= sum[x1-1][y2];
+			if (y1 > 0) res -= sum[x2][y1-1];
+			if (x1 > 0 && y1 > 0) res += sum[x1-1][y1-1];
+			return res;
+		}
 	}
 
 	static class InputReader {
