@@ -1,4 +1,4 @@
-package arc023;
+package arc009;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,11 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.InputMismatchException;
-import java.util.List;
 import java.util.StringTokenizer;
-import java.util.stream.Stream;
+import java.util.TreeMap;
 
 public class B {
 
@@ -32,40 +31,50 @@ public class B {
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
-	@SuppressWarnings("unchecked")
 	static class TaskX {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int r = in.nextInt(), c = in.nextInt(), d = in.nextInt();
-			int[][] s = new int[r][c];
-			for (int i = 0; i < r; i++) {
-				for (int j = 0; j < c; j++) {
-					s[i][j] = in.nextInt();
-				}
+			TreeMap<Character, Character> map = new TreeMap<>();
+			for (int i = 0; i < 10; i++) {
+				map.put(in.nextString().charAt(0), Character.valueOf(i));
 			}
 
-			int k = r + c - 1;
-			List<Integer>[] g = new ArrayList[k];
-			g = Stream.generate(ArrayList::new).limit(k).toArray(List[]::new);
+			int n = in.nextInt();
+			P[] p = new P[n];
+			char[][] s = new char[n][];
+			for (int i = 0; i < n; i++) {
+				s[i] = in.nextString().toCharArray();
 
-			while (k-- > 0) {
-				for (int i = 0; i < r; i++) {
-					if (k - i >= c || k - i < 0) continue;
-					g[k].add(s[i][k-i]);
+				String str = new String(s[i]);
+				for (String t : map.keySet()) {
+					str = str.replaceAll(t, map.get(t));
 				}
+				p[i] = new P(s[i], Integer.parseInt(str));
 			}
+			Arrays.sort(p);
 
-			d = Math.min(d, r + c - ((r + c) % 2 == 1 ? 1 : 2));
-			int ans = -INF;
-			for (int i = d % 2 == 1 ? 1 : 0; i <= d && i < r + c - 1; i += 2) {
-				for (int num : g[i]) {
-					ans = Math.max(ans, num);
-				}
+			for (P pp : p) {
+				out.println(pp.s);
 			}
+		}
+	}
 
-			out.println(ans);
-
+	static class P implements Comparable<P> {
+		String s;
+		int m;
+		public P(String s, int m) {
+			super();
+			this.s = s;
+			this.m = m;
+		}
+		@Override
+		public int compareTo(P o) {
+			return Integer.compare(this.m, o.m);
+		}
+		@Override
+		public String toString() {
+			return "P [s=" + s + ", m=" + m + "]";
 		}
 	}
 

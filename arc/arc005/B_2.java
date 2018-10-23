@@ -1,4 +1,4 @@
-package arc023;
+package arc005;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,13 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.InputMismatchException;
-import java.util.List;
 import java.util.StringTokenizer;
-import java.util.stream.Stream;
 
-public class B {
+public class B_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -32,41 +29,51 @@ public class B {
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
-	@SuppressWarnings("unchecked")
 	static class TaskX {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int r = in.nextInt(), c = in.nextInt(), d = in.nextInt();
-			int[][] s = new int[r][c];
-			for (int i = 0; i < r; i++) {
-				for (int j = 0; j < c; j++) {
-					s[i][j] = in.nextInt();
+			int x = in.nextInt()-1, y = in.nextInt()-1;
+			char[] w = in.nextString().toCharArray();
+
+			char[][] s = new char[9][];
+			for (int i = 0; i < 9; i++) {
+				s[i] = in.nextString().toCharArray();
+			}
+
+			int dx = 0, dy = 0;
+			if (w[0] == 'R') {
+				dx++;
+			} else if (w[0] == 'L') {
+			 	dx--;
+			} else if (w[0] == 'U') {
+			 	dy--;
+			} else if (w[0] == 'D') {
+			 	dy++;
+			}
+
+			if (w.length == 2) {
+				if (w[1] == 'U') {
+					dy--;
+				} else if (w[1] == 'D') {
+					dy++;
 				}
 			}
 
-			int k = r + c - 1;
-			List<Integer>[] g = new ArrayList[k];
-			g = Stream.generate(ArrayList::new).limit(k).toArray(List[]::new);
-
-			while (k-- > 0) {
-				for (int i = 0; i < r; i++) {
-					if (k - i >= c || k - i < 0) continue;
-					g[k].add(s[i][k-i]);
-				}
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < 4; i++) {
+				sb.append(s[turn(y)][turn(x)]);
+				x += dx;
+				y += dy;
 			}
-
-			d = Math.min(d, r + c - ((r + c) % 2 == 1 ? 1 : 2));
-			int ans = -INF;
-			for (int i = d % 2 == 1 ? 1 : 0; i <= d && i < r + c - 1; i += 2) {
-				for (int num : g[i]) {
-					ans = Math.max(ans, num);
-				}
-			}
-
-			out.println(ans);
-
+			out.println(sb.toString());
 		}
+	}
+
+	static int turn(int a) {
+		if (a < 0) return -a;
+		if (a > 8) return 16 - a;
+		return a;
 	}
 
 	static class InputReader {

@@ -1,4 +1,4 @@
-package arc023;
+package arc008;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,11 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.InputMismatchException;
-import java.util.List;
 import java.util.StringTokenizer;
-import java.util.stream.Stream;
+import java.util.TreeMap;
 
 public class B {
 
@@ -32,40 +30,33 @@ public class B {
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
-	@SuppressWarnings("unchecked")
 	static class TaskX {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int r = in.nextInt(), c = in.nextInt(), d = in.nextInt();
-			int[][] s = new int[r][c];
-			for (int i = 0; i < r; i++) {
-				for (int j = 0; j < c; j++) {
-					s[i][j] = in.nextInt();
-				}
+			int n = in.nextInt(), m = in.nextInt();
+			char[] s = in.nextString().toCharArray();
+			char[] t = in.nextString().toCharArray();
+			TreeMap<Character, Integer> name = new TreeMap<>();
+			TreeMap<Character, Integer> kit = new TreeMap<>();
+
+			for (char c : s) {
+				name.merge(c, 1, Integer::sum);
+			}
+			for (char c : t) {
+				kit.merge(c, 1, Integer::sum);
 			}
 
-			int k = r + c - 1;
-			List<Integer>[] g = new ArrayList[k];
-			g = Stream.generate(ArrayList::new).limit(k).toArray(List[]::new);
-
-			while (k-- > 0) {
-				for (int i = 0; i < r; i++) {
-					if (k - i >= c || k - i < 0) continue;
-					g[k].add(s[i][k-i]);
+			int count = 0;
+			for (char c : name.keySet()) {
+				if (kit.containsKey(c)) {
+					count = Math.max(count, (name.get(c) + kit.get(c) -1) / kit.get(c));
+				} else {
+					out.println(-1);
+					return;
 				}
 			}
-
-			d = Math.min(d, r + c - ((r + c) % 2 == 1 ? 1 : 2));
-			int ans = -INF;
-			for (int i = d % 2 == 1 ? 1 : 0; i <= d && i < r + c - 1; i += 2) {
-				for (int num : g[i]) {
-					ans = Math.max(ans, num);
-				}
-			}
-
-			out.println(ans);
-
+			out.println(count);
 		}
 	}
 

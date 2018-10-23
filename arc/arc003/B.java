@@ -1,4 +1,4 @@
-package arc023;
+package arc003;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,11 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.InputMismatchException;
-import java.util.List;
 import java.util.StringTokenizer;
-import java.util.stream.Stream;
 
 public class B {
 
@@ -32,41 +30,29 @@ public class B {
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
-	@SuppressWarnings("unchecked")
 	static class TaskX {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int r = in.nextInt(), c = in.nextInt(), d = in.nextInt();
-			int[][] s = new int[r][c];
-			for (int i = 0; i < r; i++) {
-				for (int j = 0; j < c; j++) {
-					s[i][j] = in.nextInt();
-				}
+			int n = in.nextInt();
+			String[] ss = new String[n];
+			for (int i = 0; i < n; i++) {
+				ss[i] = rev(in.nextString());
 			}
 
-			int k = r + c - 1;
-			List<Integer>[] g = new ArrayList[k];
-			g = Stream.generate(ArrayList::new).limit(k).toArray(List[]::new);
+			Arrays.sort(ss);
 
-			while (k-- > 0) {
-				for (int i = 0; i < r; i++) {
-					if (k - i >= c || k - i < 0) continue;
-					g[k].add(s[i][k-i]);
-				}
+			for (String s : ss) {
+				out.println(rev(s));
 			}
-
-			d = Math.min(d, r + c - ((r + c) % 2 == 1 ? 1 : 2));
-			int ans = -INF;
-			for (int i = d % 2 == 1 ? 1 : 0; i <= d && i < r + c - 1; i += 2) {
-				for (int num : g[i]) {
-					ans = Math.max(ans, num);
-				}
-			}
-
-			out.println(ans);
 
 		}
+	}
+
+	static String rev(String s) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(s).reverse();
+		return sb.toString();
 	}
 
 	static class InputReader {

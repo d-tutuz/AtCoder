@@ -1,4 +1,4 @@
-package arc023;
+package arc005;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,11 +6,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.InputMismatchException;
-import java.util.List;
 import java.util.StringTokenizer;
-import java.util.stream.Stream;
 
 public class B {
 
@@ -32,41 +29,124 @@ public class B {
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
-	@SuppressWarnings("unchecked")
 	static class TaskX {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int r = in.nextInt(), c = in.nextInt(), d = in.nextInt();
-			int[][] s = new int[r][c];
-			for (int i = 0; i < r; i++) {
-				for (int j = 0; j < c; j++) {
-					s[i][j] = in.nextInt();
-				}
+			int w = in.nextInt()-1, h = in.nextInt()-1;
+			String s = in.nextString();
+			char[][] mat = new char[9][9];
+			for (int i = 0; i < 9; i++) {
+				mat[i] = in.nextString().toCharArray();
 			}
 
-			int k = r + c - 1;
-			List<Integer>[] g = new ArrayList[k];
-			g = Stream.generate(ArrayList::new).limit(k).toArray(List[]::new);
-
+			StringBuilder sb = new StringBuilder();
+			int k = 4;
 			while (k-- > 0) {
-				for (int i = 0; i < r; i++) {
-					if (k - i >= c || k - i < 0) continue;
-					g[k].add(s[i][k-i]);
+				sb.append(mat[h][w]);
+
+				if ("R".equals(s)) {
+					if (isInside(h, w+1)) {
+						w++;
+					} else {
+						s = "L";
+						w--;
+					}
+				} else if ("L".equals(s)) {
+					if (isInside(h, w-1)) {
+						w--;
+					} else {
+						s = "R";
+						w++;
+					}
+				} else if ("U".equals(s)) {
+					if (isInside(h-1, w)) {
+						h--;
+					} else {
+						s = "D";
+						h++;
+					}
+				} else if ("D".equals(s)) {
+					if (isInside(h+1, w)) {
+						h++;
+					} else {
+						h--;
+						s = "U";
+					}
+				} else if ("RU".equals(s)) {
+					if (isInside(h-1, w+1)) {
+						w++;
+						h--;
+					} else {
+						if (isConer(h, w)) {
+							w--;
+							h++;
+							s = "LD";
+						} else {
+							s = "LU";
+							h--;
+							w--;
+						}
+					}
+				} else if ("RD".equals(s)) {
+					if (isInside(h+1, w+1)) {
+						w++;
+						h++;
+					} else {
+						if (isConer(h, w)) {
+							h--;
+							w--;
+							s = "LU";
+						} else {
+							s = "LD";
+							w--;
+							h++;
+						}
+					}
+				} else if ("LU".equals(s)) {
+					if (isInside(h-1, w-1)) {
+						w--;
+						h--;
+					} else {
+						if (isConer(h, w)) {
+							w++;
+							h++;
+							s = "RD";
+						} else {
+							s = "RU";
+							h--;
+							w++;
+						}
+					}
+				} else if ("LD".equals(s)) {
+					if (isInside(h + 1, w - 1)) {
+						w--;
+						h++;
+					} else {
+						if (isConer(h, w)) {
+							w++;
+							h--;
+							s = "RU";
+						} else {
+							s = "RD";
+						}
+
+					}
 				}
 			}
 
-			d = Math.min(d, r + c - ((r + c) % 2 == 1 ? 1 : 2));
-			int ans = -INF;
-			for (int i = d % 2 == 1 ? 1 : 0; i <= d && i < r + c - 1; i += 2) {
-				for (int num : g[i]) {
-					ans = Math.max(ans, num);
-				}
-			}
-
-			out.println(ans);
-
+			out.println(sb.toString());
 		}
+
+		boolean isInside(int h, int w) {
+			return 0 <= h && h < 9 && 0 <= w && w < 9;
+		}
+
+		boolean isConer(int h, int w) {
+			return ((h % 8) == 0 && (w % 8) == 0);
+		}
+
+
 	}
 
 	static class InputReader {
