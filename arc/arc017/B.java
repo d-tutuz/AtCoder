@@ -1,4 +1,4 @@
-package arc009;
+package arc017;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,9 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.InputMismatchException;
-import java.util.Map;
 import java.util.StringTokenizer;
 
 public class B {
@@ -36,46 +34,19 @@ public class B {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			Map<Character, Character> map = new HashMap<>();
-			for (char i = '0'; i <= '9'; i++) {
-				map.put(in.nextString().charAt(0), i);
+			int n = in.nextInt(), k = in.nextInt();
+			int[] a = in.nextIntArray1Index(n);
+			int[] sum = new int[n+1];
+			for (int i = 1; i < n+1; i++) {
+				if (a[i-1] < a[i]) sum[i]++;
 			}
+			Arrays.parallelPrefix(sum, Math::addExact);
 
-			int n = in.nextInt();
-			P[] p = new P[n];
-			char[][] s = new char[n][];
-			for (int i = 0; i < n; i++) {
-				s[i] = in.nextString().toCharArray();
-				char[] t = new char[s[i].length];
-				for (int j = 0; j < s[i].length; j++) {
-					if (!map.containsKey(s[i][j])) continue;
-					t[j] = map.get(s[i][j]);
-				}
-				p[i] = new P(new String(s[i]), Integer.parseInt(new String(t)));
+			int cnt = 0;
+			for (int i = 1; i + k - 1 < n + 1; i++) {
+				if (sum[i+k-1] - sum[i] == k-1) cnt++;
 			}
-			Arrays.sort(p);
-
-			for (P pp : p) {
-				out.println(pp.s);
-			}
-		}
-	}
-
-	static class P implements Comparable<P> {
-		String s;
-		int m;
-		public P(String s, int m) {
-			super();
-			this.s = s;
-			this.m = m;
-		}
-		@Override
-		public int compareTo(P o) {
-			return Integer.compare(this.m, o.m);
-		}
-		@Override
-		public String toString() {
-			return "P [s=" + s + ", m=" + m + "]";
+			out.println(cnt);
 		}
 	}
 

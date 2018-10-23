@@ -1,4 +1,4 @@
-package arc009;
+package arc010;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,9 +7,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Calendar;
 import java.util.InputMismatchException;
-import java.util.Map;
 import java.util.StringTokenizer;
 
 public class B {
@@ -36,46 +35,45 @@ public class B {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			Map<Character, Character> map = new HashMap<>();
-			for (char i = '0'; i <= '9'; i++) {
-				map.put(in.nextString().charAt(0), i);
-			}
-
 			int n = in.nextInt();
-			P[] p = new P[n];
-			char[][] s = new char[n][];
+			P[] ps = new P[n];
 			for (int i = 0; i < n; i++) {
-				s[i] = in.nextString().toCharArray();
-				char[] t = new char[s[i].length];
-				for (int j = 0; j < s[i].length; j++) {
-					if (!map.containsKey(s[i][j])) continue;
-					t[j] = map.get(s[i][j]);
-				}
-				p[i] = new P(new String(s[i]), Integer.parseInt(new String(t)));
+				String[] s = in.nextString().split("/");
+				ps[i] = new P(Integer.parseInt(s[0]), Integer.parseInt(s[1]));
 			}
-			Arrays.sort(p);
+			Arrays.sort(ps);
 
-			for (P pp : p) {
-				out.println(pp.s);
+			Calendar cal = Calendar.getInstance();
+			cal.set(2012, 1, 1);
+
+			boolean[] rest = new boolean[366];
+			for (int i = 0; i < 366; i++) {
+				int dow = cal.get(Calendar.DAY_OF_WEEK);
+				if (dow == 1 || dow == 2) {
+					rest[i] = true;
+				}
+				cal.add(Calendar.DAY_OF_MONTH, 1);
 			}
+
+			for (P p : ps) {
+				cal.set(2012, p.m, p.d);
+			}
+
 		}
 	}
 
 	static class P implements Comparable<P> {
-		String s;
-		int m;
-		public P(String s, int m) {
+		int m, d;
+
+		public P(int m, int d) {
 			super();
-			this.s = s;
 			this.m = m;
+			this.d = d;
 		}
 		@Override
 		public int compareTo(P o) {
-			return Integer.compare(this.m, o.m);
-		}
-		@Override
-		public String toString() {
-			return "P [s=" + s + ", m=" + m + "]";
+			int res = Integer.compare(this.m, o.m);
+			return res == 0 ? Integer.compare(this.d, o.d) : res;
 		}
 	}
 

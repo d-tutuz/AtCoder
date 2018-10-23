@@ -1,4 +1,4 @@
-package arc009;
+package arc011;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,11 +6,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.stream.Stream;
 
 public class B {
 
@@ -36,47 +38,63 @@ public class B {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			Map<Character, Character> map = new HashMap<>();
-			for (char i = '0'; i <= '9'; i++) {
-				map.put(in.nextString().charAt(0), i);
-			}
-
 			int n = in.nextInt();
-			P[] p = new P[n];
+			Map<Character, Character> map = initMap();
+
 			char[][] s = new char[n][];
 			for (int i = 0; i < n; i++) {
 				s[i] = in.nextString().toCharArray();
-				char[] t = new char[s[i].length];
-				for (int j = 0; j < s[i].length; j++) {
-					if (!map.containsKey(s[i][j])) continue;
-					t[j] = map.get(s[i][j]);
-				}
-				p[i] = new P(new String(s[i]), Integer.parseInt(new String(t)));
 			}
-			Arrays.sort(p);
 
-			for (P pp : p) {
-				out.println(pp.s);
+			List<Character>[] list = new ArrayList[n];
+			list = Stream.generate(ArrayList::new).limit(n).toArray(List[]::new);
+
+			for (int i = 0; i < n; i++) {
+				for (char c : s[i]) {
+					if (map.containsKey(Character.toLowerCase(c))) {
+						list[i].add(map.get(Character.toLowerCase(c)));
+					}
+				}
 			}
+
+			boolean isFirst = true;
+			for (int i = 0; i < n; i++) {
+				if (list[i].size() == 0) continue;
+				if (!isFirst) {
+					out.print(" ");
+				}
+				isFirst = false;
+				for (char cc : list[i]) {
+					out.print(cc);
+				}
+			}
+			out.print("\n");
 		}
 	}
 
-	static class P implements Comparable<P> {
-		String s;
-		int m;
-		public P(String s, int m) {
-			super();
-			this.s = s;
-			this.m = m;
-		}
-		@Override
-		public int compareTo(P o) {
-			return Integer.compare(this.m, o.m);
-		}
-		@Override
-		public String toString() {
-			return "P [s=" + s + ", m=" + m + "]";
-		}
+	static Map<Character, Character> initMap() {
+		HashMap<Character, Character> map = new HashMap<>();
+		map.put('b', '1');
+		map.put('c', '1');
+		map.put('d', '2');
+		map.put('w', '2');
+		map.put('t', '3');
+		map.put('j', '3');
+		map.put('f', '4');
+		map.put('q', '4');
+		map.put('l', '5');
+		map.put('v', '5');
+		map.put('s', '6');
+		map.put('x', '6');
+		map.put('p', '7');
+		map.put('m', '7');
+		map.put('k', '8');
+		map.put('h', '8');
+		map.put('g', '9');
+		map.put('n', '9');
+		map.put('z', '0');
+		map.put('r', '0');
+		return map;
 	}
 
 	static class InputReader {
