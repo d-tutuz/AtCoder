@@ -1,4 +1,4 @@
-package codethanksfestival2017parallel;
+package codethanksfestival2017_parallel;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class D {
+public class D_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -35,9 +35,11 @@ public class D {
 
 			long n = in.nextLong(), m = in.nextLong();
 
-			long g = gcd(m, n);
+			long g = gcd(n, m);
+			long k = m % g == 0 ? m/g-1 : m/g;
 
-			out.println(g * ((m-1)/g));
+			out.println(g * k);
+
 		}
 
 		public static long gcd(long a, long b) {
@@ -80,10 +82,26 @@ public class D {
 			return res;
 		}
 
+		public int[] nextIntArrayDec(int n) {
+			int[] res = new int[n];
+			for (int i = 0; i < n; i++) {
+				res[i] = nextInt() - 1;
+			}
+			return res;
+		}
+
 		public long[] nextLongArray(int n) {
 			long[] res = new long[n];
 			for (int i = 0; i < n; i++) {
 				res[i] = nextLong();
+			}
+			return res;
+		}
+
+		public long[] nextLongArrayDec(int n) {
+			long[] res = new long[n];
+			for (int i = 0; i < n; i++) {
+				res[i] = nextLong() - 1;
 			}
 			return res;
 		}

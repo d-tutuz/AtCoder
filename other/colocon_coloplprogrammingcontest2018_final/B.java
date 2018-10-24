@@ -1,4 +1,4 @@
-package codethanksfestival2017parallel;
+package colocon_coloplprogrammingcontest2018_final;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class D_2 {
+public class B {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -33,17 +35,35 @@ public class D_2 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			long n = in.nextLong(), m = in.nextLong();
+			char[] s = in.nextString().toCharArray();
+			int n = s.length;
 
-			long g = gcd(n, m);
-			long k = m % g == 0 ? m/g-1 : m/g;
+			Deque<Character> stack = new ArrayDeque<>();
+			stack.addFirst(s[0]);
+			char now = s[0];
 
-			out.println(g * k);
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < n; i++) {
+				if (s[i] == '+' || s[i] == '-' || s[i] == '*' || s[i] == '/') {
+					stack.addFirst(now);
+					now = s[i];
+					continue;
+				}
 
-		}
+				if (s[i] == ',') {
+					sb.append(now);
+					continue;
+				}
 
-		public static long gcd(long a, long b) {
-			return (b == 0) ? a : gcd(b, a % b);
+				if (s[i] == ')') {
+					now = stack.pollFirst();
+				}
+
+				sb.append(s[i]);
+			}
+
+			out.println(sb.toString());
+
 		}
 	}
 
@@ -90,6 +110,14 @@ public class D_2 {
 			return res;
 		}
 
+		public int[] nextIntArray1Index(int n) {
+			int[] res = new int[n + 1];
+			for (int i = 0; i < n; i++) {
+				res[i + 1] = nextInt();
+			}
+			return res;
+		}
+
 		public long[] nextLongArray(int n) {
 			long[] res = new long[n];
 			for (int i = 0; i < n; i++) {
@@ -106,10 +134,25 @@ public class D_2 {
 			return res;
 		}
 
+		public long[] nextLongArray1Index(int n) {
+			long[] res = new long[n + 1];
+			for (int i = 0; i < n; i++) {
+				res[i + 1] = nextLong();
+			}
+			return res;
+		}
+
+		public double[] nextDoubleArray(int n) {
+			double[] res = new double[n];
+			for (int i = 0; i < n; i++) {
+				res[i] = nextDouble();
+			}
+			return res;
+		}
+
 		public InputReader(InputStream inputStream) {
 			in = new BufferedReader(new InputStreamReader(inputStream));
 			tok = new StringTokenizer("");
 		}
 	}
-
 }

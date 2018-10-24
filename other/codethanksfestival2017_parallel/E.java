@@ -1,4 +1,4 @@
-package codethanksfestival2017parallel;
+package codethanksfestival2017_parallel;
 
 import static java.lang.Math.*;
 
