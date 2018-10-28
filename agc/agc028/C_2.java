@@ -1,4 +1,4 @@
-package tenka1programmercontest_2018;
+package agc028;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,11 +6,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.InputMismatchException;
+import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
 
-public class C_5 {
+public class C_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -32,45 +36,96 @@ public class C_5 {
 
 	static class TaskX {
 
+		int n;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			long[] a = in.nextLongArray(n);
-
-			Arrays.sort(a);
-
-			long ans = 0;
-			if (n % 2 == 0) {
-				for (int i = 0; i < n; i++) {
-					if (i < n/2) {
-						ans -= a[i] * 2;
-					} else {
-						ans += a[i] * 2;
-					}
-				}
-				ans += a[n/2-1];
-				ans -= a[n/2];
-			} else {
-				long ans1 = 0, ans2 = 0;
-				for (int i = 0; i < n; i++) {
-					if (i <= n/2) {
-						ans1 -= a[i] * 2;
-					} else {
-						ans1 += a[i] * 2;
-					}
-					if (i < n/2) {
-						ans2 -= a[i] * 2;
-					} else {
-						ans2 += a[i] * 2;
-					}
-				}
-				ans1 += a[n/2-1];
-				ans1 += a[n/2];
-				ans2 -= a[n/2];
-				ans2 -= a[n/2+1];
-				ans = Math.max(ans1, ans2);
+			n = in.nextInt();
+			List<P> list = new ArrayList<>();
+			long suma = 0, sumb = 0;
+			for (int i = 0; i < n; i++) {
+				long a = in.nextLong();
+				long b = in.nextLong();
+				list.add(new P(a, i));
+				list.add(new P(b, i));
+				suma += a; sumb += b;
 			}
+
+			Collections.sort(list);
+
+			long ans = f(list.toArray(new P[0]));
+
+			ans = Math.min(ans, suma);
+			ans = Math.min(ans, sumb);
+
 			out.println(ans);
+
+		}
+
+		long f(P[] p) {
+			long ret = LINF, base = 0;
+			Map<Integer, Integer> map = new TreeMap<>();
+			boolean ok = false;
+			for (int i = 0; i < n; i++) {
+				base += p[i].num;
+				map.merge(p[i].idx, 1, Integer::sum);
+				if (map.get(p[i].idx) >= 2) ok = true;
+			}
+			if (ok) {
+				return base;
+			}
+
+			Map<Integer, Integer> tmap = new TreeMap<>(map);
+			long tmp = base;
+			tmp -= p[n-1].num;
+			tmap.merge(p[n-1].idx, -1, Integer::sum);
+			tmp += p[n].num;
+			tmap.merge(p[n].idx, 1, Integer::sum);
+			if (tmap.get(p[n].idx) >= 2) {
+				ret = Math.min(ret, tmp);
+			}
+
+			tmap = new TreeMap<>(map);
+			tmp = base;
+			tmp -= p[n-1].num;
+			tmap.merge(p[n-1].idx, -1, Integer::sum);
+			tmp += p[n+1].num;
+			tmap.merge(p[n+1].idx, 1, Integer::sum);
+			if (tmap.get(p[n+1].idx) >= 2) {
+				ret = Math.min(ret, tmp);
+			}
+
+			tmap = new TreeMap<>(map);
+			tmp = base;
+			tmp -= p[n-2].num;
+			tmap.merge(p[n-2].idx, -1, Integer::sum);
+			tmp += p[n].num;
+			tmap.merge(p[n].idx, 1, Integer::sum);
+			if (tmap.get(p[n].idx) >= 2) {
+				ret = Math.min(ret, tmp);
+			}
+
+			return ret;
+		}
+	}
+
+	static class P implements Comparable<P> {
+		long num;
+		int idx;
+
+		public P(long num, int idx) {
+			super();
+			this.num = num;
+			this.idx = idx;
+		}
+
+		@Override
+		public String toString() {
+			return "P [num=" + num + ", idx=" + idx + "]";
+		}
+
+		@Override
+		public int compareTo(P o) {
+			return Long.compare(this.num, o.num);
 		}
 	}
 

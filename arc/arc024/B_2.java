@@ -1,4 +1,4 @@
-package tenka1programmercontest_2018;
+package arc024;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,11 +6,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.StringTokenizer;
 
-public class C_5 {
+public class B_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -35,41 +37,55 @@ public class C_5 {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			int n = in.nextInt();
-			long[] a = in.nextLongArray(n);
-
-			Arrays.sort(a);
-
-			long ans = 0;
-			if (n % 2 == 0) {
-				for (int i = 0; i < n; i++) {
-					if (i < n/2) {
-						ans -= a[i] * 2;
-					} else {
-						ans += a[i] * 2;
-					}
-				}
-				ans += a[n/2-1];
-				ans -= a[n/2];
-			} else {
-				long ans1 = 0, ans2 = 0;
-				for (int i = 0; i < n; i++) {
-					if (i <= n/2) {
-						ans1 -= a[i] * 2;
-					} else {
-						ans1 += a[i] * 2;
-					}
-					if (i < n/2) {
-						ans2 -= a[i] * 2;
-					} else {
-						ans2 += a[i] * 2;
-					}
-				}
-				ans1 += a[n/2-1];
-				ans1 += a[n/2];
-				ans2 -= a[n/2];
-				ans2 -= a[n/2+1];
-				ans = Math.max(ans1, ans2);
+			int s = -1;
+			int[] a = new int[n];
+			for (int i = 0; i < n; i++) {
+				a[i] = in.nextInt();
+				if (s == -1 && a[i] == 1) s = i;
 			}
+
+			int sum = Arrays.stream(a).sum();
+			if (sum == 0 || sum == n) {
+				out.println(-1);
+				return;
+			}
+
+			List<Integer> one = new ArrayList<>();
+			for (int l = 0, r = 0; l < n; r++, l++) {
+				while (r < n && a[r] == 1) {
+					r++;
+				}
+				if (r - l != 0) one.add(r - l);
+				l = r;
+			}
+
+			List<Integer> zero = new ArrayList<>();
+			for (int l = 0, r = 0; l < n; r++, l++) {
+				while (r < n && a[r] == 0) {
+					r++;
+				}
+				if (r - l != 0) zero.add(r - l);
+				l = r;
+			}
+
+			if (a[0] == a[n-1] && a[0] == 0 && zero.size() >= 2) {
+				zero.set(0, zero.get(0) + zero.get(zero.size()-1));
+				zero.remove(zero.size()-1);
+			}
+
+			if (a[0] == a[n-1] && a[0] == 1 && one.size() >= 2) {
+				one.set(0, one.get(0) + one.get(one.size()-1));
+				one.remove(one.size()-1);
+			}
+
+			int ans = 0;
+			for (int i : zero) {
+				ans = Math.max(ans, (i-1)/2+1);
+			}
+			for (int i : one) {
+				ans = Math.max(ans, (i-1)/2+1);
+			}
+
 			out.println(ans);
 		}
 	}

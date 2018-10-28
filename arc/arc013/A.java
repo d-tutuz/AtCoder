@@ -1,4 +1,4 @@
-package tenka1programmercontest_2018;
+package arc013;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class C_5 {
+public class A {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -34,44 +34,55 @@ public class C_5 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			long[] a = in.nextLongArray(n);
-
-			Arrays.sort(a);
-
-			long ans = 0;
-			if (n % 2 == 0) {
-				for (int i = 0; i < n; i++) {
-					if (i < n/2) {
-						ans -= a[i] * 2;
-					} else {
-						ans += a[i] * 2;
+			int[] from = in.nextIntArray(3);
+			int[] to = in.nextIntArray(3);
+			Arrays.sort(to);
+			int ans = 0;
+			do {
+				int tmp = 1;
+				for (int i = 0; i < 3; i++) {
+					if (from[i] < to[i]) {
+						tmp = 0;
+						break;
 					}
+					tmp *= from[i] / to[i];
 				}
-				ans += a[n/2-1];
-				ans -= a[n/2];
-			} else {
-				long ans1 = 0, ans2 = 0;
-				for (int i = 0; i < n; i++) {
-					if (i <= n/2) {
-						ans1 -= a[i] * 2;
-					} else {
-						ans1 += a[i] * 2;
-					}
-					if (i < n/2) {
-						ans2 -= a[i] * 2;
-					} else {
-						ans2 += a[i] * 2;
-					}
-				}
-				ans1 += a[n/2-1];
-				ans1 += a[n/2];
-				ans2 -= a[n/2];
-				ans2 -= a[n/2+1];
-				ans = Math.max(ans1, ans2);
-			}
+				ans = Math.max(ans, tmp);
+			} while (Permutation.next(to));
+
 			out.println(ans);
 		}
+	}
+
+	static class Permutation {
+
+		public static boolean next(int[] a) {
+			int n = a.length;
+
+			int i = n - 1;
+			while (i > 0 && a[i - 1] >= a[i])
+				i--;
+			if (i <= 0)
+				return false;
+
+			int j = n - 1;
+			while (a[j] <= a[i - 1])
+				j--;
+			swap(a, i - 1, j);
+
+			int k = n - 1;
+			while (i < k)
+				swap(a, i++, k--);
+
+			return true;
+		}
+
+		private static void swap(int[] a, int i, int j) {
+			int tmp = a[i];
+			a[i] = a[j];
+			a[j] = tmp;
+		}
+
 	}
 
 	static class InputReader {

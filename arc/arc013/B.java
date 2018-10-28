@@ -1,4 +1,4 @@
-package tenka1programmercontest_2018;
+package arc013;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class C_5 {
+public class B {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -34,43 +34,22 @@ public class C_5 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			long[] a = in.nextLongArray(n);
-
-			Arrays.sort(a);
-
-			long ans = 0;
-			if (n % 2 == 0) {
-				for (int i = 0; i < n; i++) {
-					if (i < n/2) {
-						ans -= a[i] * 2;
-					} else {
-						ans += a[i] * 2;
-					}
+			int c = in.nextInt();
+			int[][] mat = new int[c][3];
+			for (int i = 0; i < c; i++) {
+				for (int j = 0; j < 3; j++) {
+					mat[i][j] = in.nextInt();
 				}
-				ans += a[n/2-1];
-				ans -= a[n/2];
-			} else {
-				long ans1 = 0, ans2 = 0;
-				for (int i = 0; i < n; i++) {
-					if (i <= n/2) {
-						ans1 -= a[i] * 2;
-					} else {
-						ans1 += a[i] * 2;
-					}
-					if (i < n/2) {
-						ans2 -= a[i] * 2;
-					} else {
-						ans2 += a[i] * 2;
-					}
-				}
-				ans1 += a[n/2-1];
-				ans1 += a[n/2];
-				ans2 -= a[n/2];
-				ans2 -= a[n/2+1];
-				ans = Math.max(ans1, ans2);
+				Arrays.sort(mat[i]);
 			}
-			out.println(ans);
+
+			int[] ans = new int[3];
+			for (int i = 0; i < 3; i++) {
+				for (int j = 0; j < c; j++) {
+					ans[i] = Math.max(ans[i], mat[j][i]);
+				}
+			}
+			out.println(ans[0] * ans[1] * ans[2]);
 		}
 	}
 

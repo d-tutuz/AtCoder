@@ -1,4 +1,4 @@
-package tenka1programmercontest_2018;
+package arc038;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,11 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class C_5 {
+public class B_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -32,46 +31,58 @@ public class C_5 {
 
 	static class TaskX {
 
+		int h, w;
+		char[][] s;
+		boolean[][] memo, used;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			long[] a = in.nextLongArray(n);
-
-			Arrays.sort(a);
-
-			long ans = 0;
-			if (n % 2 == 0) {
-				for (int i = 0; i < n; i++) {
-					if (i < n/2) {
-						ans -= a[i] * 2;
-					} else {
-						ans += a[i] * 2;
-					}
-				}
-				ans += a[n/2-1];
-				ans -= a[n/2];
-			} else {
-				long ans1 = 0, ans2 = 0;
-				for (int i = 0; i < n; i++) {
-					if (i <= n/2) {
-						ans1 -= a[i] * 2;
-					} else {
-						ans1 += a[i] * 2;
-					}
-					if (i < n/2) {
-						ans2 -= a[i] * 2;
-					} else {
-						ans2 += a[i] * 2;
-					}
-				}
-				ans1 += a[n/2-1];
-				ans1 += a[n/2];
-				ans2 -= a[n/2];
-				ans2 -= a[n/2+1];
-				ans = Math.max(ans1, ans2);
+			h = in.nextInt(); w = in.nextInt();
+			s = new char[h+1][w+1];
+			for (int i = 0; i < h; i++) {
+				s[i] = in.nextString().toCharArray();
 			}
-			out.println(ans);
+			memo = new boolean[h+1][w+1];
+			used = new boolean[h+1][w+1];;
+
+			out.println(f(0, 0) ? "First" : "Second");
+
+			print(memo);
+
 		}
+
+		boolean f(int h, int w) {
+			if (used[h][w]) {
+				return memo[h][w];
+			}
+			if (!canMove(h, w)) {
+				return memo[h][w] = true;
+			}
+			boolean ret = false;
+
+			ret |= !f(h+1, w);
+			ret |= !f(h, w+1);
+			ret |= !f(h+1, w+1);
+
+			used[h][w] = true;
+			return memo[h][w] = ret;
+		}
+
+		boolean canMove(int hh, int ww) {
+			return 0 <= hh && hh < h && 0 <= ww && ww < w && s[hh][ww] != '#';
+		}
+	}
+
+	static void print(boolean[][] ok) {
+		int n = ok.length-1;
+		int m = ok[0].length-1;
+
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < m; j++) {
+				System.out.print(ok[i][j] + " ");
+			}
+			System.out.print("\n");
+		}
+		System.out.print("\n");
 	}
 
 	static class InputReader {

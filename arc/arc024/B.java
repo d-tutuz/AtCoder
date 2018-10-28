@@ -1,4 +1,4 @@
-package tenka1programmercontest_2018;
+package arc024;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class C_5 {
+public class B {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -25,52 +25,58 @@ public class C_5 {
 	static int INF = 1 << 30;
 	static long LINF = 1L << 55;
 	static int MOD = 1000000007;
-	static int[] mh4 = { 0, -1, 1, 0 };
-	static int[] mw4 = { -1, 0, 0, 1 };
-	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
-	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
 	static class TaskX {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			int n = in.nextInt();
-			long[] a = in.nextLongArray(n);
-
-			Arrays.sort(a);
-
-			long ans = 0;
-			if (n % 2 == 0) {
-				for (int i = 0; i < n; i++) {
-					if (i < n/2) {
-						ans -= a[i] * 2;
-					} else {
-						ans += a[i] * 2;
-					}
-				}
-				ans += a[n/2-1];
-				ans -= a[n/2];
-			} else {
-				long ans1 = 0, ans2 = 0;
-				for (int i = 0; i < n; i++) {
-					if (i <= n/2) {
-						ans1 -= a[i] * 2;
-					} else {
-						ans1 += a[i] * 2;
-					}
-					if (i < n/2) {
-						ans2 -= a[i] * 2;
-					} else {
-						ans2 += a[i] * 2;
-					}
-				}
-				ans1 += a[n/2-1];
-				ans1 += a[n/2];
-				ans2 -= a[n/2];
-				ans2 -= a[n/2+1];
-				ans = Math.max(ans1, ans2);
+			int[] a = new int[n];
+			for (int i = 0; i < n; i++) {
+				a[i] = in.nextInt() == 0 ? -1 : 1;
 			}
-			out.println(ans);
+			int sum = Arrays.stream(a).sum();
+
+			if (sum == -n || sum == n) {
+				out.println(-1);
+				return;
+			}
+
+			int count = 1;
+			boolean change = true;
+			while (change) {
+
+				change = false;
+				int[] b = a.clone();
+				for (int i = 0; i < n; i++) {
+					if (a[i] == 1) {
+						if (a[(i+n-1)%n] > 0 && a[(i+n+1)%n] > 0) {
+							b[i] *= -1;
+							change = true;
+						}
+					} else {
+						if (a[(i+n-1)%n] < 0 && a[(i+n+1)%n] < 0) {
+							b[i] *= -1;
+							change = true;
+						}
+					}
+				}
+				a = b.clone();
+
+				if (change) count++;
+				for (int i = 0; i < n; i++) {
+					if (i > 0) out.print(" ");
+					out.print(a[i] == -1 ? 0 : a[i]);
+				}
+				out.print("\n");
+			}
+			out.println(count);
+
+//			out.println(n);
+			for (int i = 0; i < n; i++) {
+				if (i > 0) out.print(" ");
+				out.print(a[i] == -1 ? 0 : a[i]);
+			}
 		}
 	}
 
