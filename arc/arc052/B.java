@@ -1,4 +1,4 @@
-package arc049;
+package arc052;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
@@ -33,41 +34,70 @@ public class B {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			double[] x = new double[n];
-			double[] y = new double[n];
-			double[] c = new double[n];
+			int n = in.nextInt(), q = in.nextInt();
+
+			T[] t = new T[n];
 			for (int i = 0; i < n; i++) {
-				x[i] = in.nextDouble();
-				y[i] = in.nextDouble();
-				c[i] = in.nextDouble();
+				t[i] = new T(in.nextInt(), in.nextInt(), in.nextInt());
 			}
+			Arrays.sort(t);
 
-			double l = 0, r = 1e9;
-			double t = (r+l)/2;
-			for (int i = 0; i < 1000; i++) {
-				t = (r+l)/2;
-
-				double minx = Double.POSITIVE_INFINITY;
-				double maxx = Double.NEGATIVE_INFINITY;
-				double miny = Double.POSITIVE_INFINITY;
-				double maxy = Double.NEGATIVE_INFINITY;
-
-				for (int j = 0; j < n; j++) {
-					minx = Math.min(minx, x[j] + t/c[j]);
-					maxx = Math.max(maxx, x[j] - t/c[j]);
-					miny = Math.min(miny, y[j] + t/c[j]);
-					maxy = Math.max(maxy, y[j] - t/c[j]);
-				}
-
-				if (maxx <= minx && maxy <= miny) {
-					r = t;
-				} else {
-					l = t;
-				}
+			P[] p = new P[q];
+			for (int i = 0; i < n; i++) {
+				p[i] = new P(in.nextInt(), in.nextInt());
 			}
+			Arrays.sort(p);
 
-			out.println(r);
+			out.println("");
+
+		}
+	}
+
+	static class T implements Comparable<T> {
+		int x, r, h;
+
+		public T(int x, int r, int h) {
+			super();
+			this.x = x;
+			this.r = r;
+			this.h = h;
+		}
+
+		@Override
+		public String toString() {
+			return "T [x=" + x + ", r=" + r + ", h=" + h + "]";
+		}
+
+		@Override
+		public int compareTo(T o) {
+			int xx = Integer.compare(this.x, o.x);
+			int rr = Integer.compare(this.r, o.r);
+			int hh = Integer.compare(this.h, o.h);
+
+			return xx == 0 ? rr == 0 ? hh : rr : xx;
+		}
+	}
+
+	static class P implements Comparable<P> {
+		int a, b;
+
+		public P(int a, int b) {
+			super();
+			this.a = a;
+			this.b = b;
+		}
+
+		@Override
+		public String toString() {
+			return "P [a=" + a + ", b=" + b + "]";
+		}
+
+		@Override
+		public int compareTo(P o) {
+			int aa = Integer.compare(this.a, o.a);
+			int bb = Integer.compare(this.b, o.b);
+
+			return aa == 0 ? bb : aa;
 		}
 	}
 

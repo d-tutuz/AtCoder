@@ -1,4 +1,6 @@
-package arc049;
+package arc055;
+
+import static java.lang.Math.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,43 +33,50 @@ public class B {
 
 	static class TaskX {
 
+		int n, k;
+		double[][] memo;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			double[] x = new double[n];
-			double[] y = new double[n];
-			double[] c = new double[n];
-			for (int i = 0; i < n; i++) {
-				x[i] = in.nextDouble();
-				y[i] = in.nextDouble();
-				c[i] = in.nextDouble();
+			n = in.nextInt(); k = in.nextInt();
+			memo = new double[n+1][k+1];
+			fill(memo, -1);
+
+			double ans = f(1, k);
+			out.println(ans);
+
+		}
+
+		// s まで見て残り k 個選択できるときの最大の確率
+		double f(int s, int k) {
+			if (k <= 0) return 0;
+			if (k >= n + 1 - s) return 1;
+			if (memo[s][k] >= 0) return memo[s][k];
+
+			int left = n + 1 - s;
+
+			// 1.N であった場合
+			double yes = 1.0 / left;
+
+			// 2.N ではなかったが、今までの最大の場合
+			double fake = (1 - yes) * (1.0 / s);
+
+			// 3.上記以外
+			double no = 1 - fake - yes;
+
+			// 選択する場合(1,2)としない場合(3)の合計
+			double take = (yes + fake * f(s+1, k-1));
+			double nottake = (fake * f(s+1, k));
+
+			return memo[s][k] = no * f(s+1, k) + max(take, nottake);
+
+		}
+	}
+
+	static void fill(double[][] a, double v) {
+		for (int i = 0; i < a.length; i++) {
+			for (int j = 0; j < a[0].length; j++) {
+				a[i][j] = v;
 			}
-
-			double l = 0, r = 1e9;
-			double t = (r+l)/2;
-			for (int i = 0; i < 1000; i++) {
-				t = (r+l)/2;
-
-				double minx = Double.POSITIVE_INFINITY;
-				double maxx = Double.NEGATIVE_INFINITY;
-				double miny = Double.POSITIVE_INFINITY;
-				double maxy = Double.NEGATIVE_INFINITY;
-
-				for (int j = 0; j < n; j++) {
-					minx = Math.min(minx, x[j] + t/c[j]);
-					maxx = Math.max(maxx, x[j] - t/c[j]);
-					miny = Math.min(miny, y[j] + t/c[j]);
-					maxy = Math.max(maxy, y[j] - t/c[j]);
-				}
-
-				if (maxx <= minx && maxy <= miny) {
-					r = t;
-				} else {
-					l = t;
-				}
-			}
-
-			out.println(r);
 		}
 	}
 
