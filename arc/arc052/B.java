@@ -1,12 +1,15 @@
 package arc052;
 
+import static java.lang.Math.*;
+
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
@@ -14,6 +17,7 @@ public class B {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
+		inputStream = new FileInputStream(new File("/workspace/Atcoder/arc/arc052/input1.txt"));
 		OutputStream outputStream = System.out;
 		InputReader in = new InputReader(inputStream);
 		PrintWriter out = new PrintWriter(outputStream);
@@ -35,69 +39,50 @@ public class B {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			int n = in.nextInt(), q = in.nextInt();
+			double[] x = new double[n], r = new double[n], h = new double[n];
 
-			T[] t = new T[n];
 			for (int i = 0; i < n; i++) {
-				t[i] = new T(in.nextInt(), in.nextInt(), in.nextInt());
+				x[i] = in.nextDouble();
+				r[i] = in.nextDouble();
+				h[i] = in.nextDouble();
 			}
-			Arrays.sort(t);
 
-			P[] p = new P[q];
-			for (int i = 0; i < n; i++) {
-				p[i] = new P(in.nextInt(), in.nextInt());
+			while (q-- > 0) {
+				double sum = 0.0;
+				long a = in.nextLong(), b = in.nextLong();
+				for (int i = 0; i < n; i++) {
+					double ah = x[i] + h[i] - a;
+					double ar = ah * r[i] / h[i];
+					double bh = x[i] + h[i] - b;
+					double br = bh * r[i] / h[i];
+
+					if (x[i] + h[i] <= a || b <= x[i]) {
+						continue;
+					}
+
+					// 円錐の下部のみ
+					if (a <= x[i] && b < x[i] + h[i]) {
+						sum += r[i] * r[i] * h[i];
+						sum -= br * br * bh;
+
+					// 円錐全体が[a, b]で被覆されている
+					} else if (a <= x[i] && x[i] + h[i] <= b) {
+						sum += r[i] * r[i] * h[i];
+
+					// 円錐が[a, b]で台形になっている
+					} else if (x[i] < a && b < x[i] + h[i]) {
+						sum += ar * ar * ah;
+						sum -= br * br * bh;
+
+					// 円錐の上部のみ
+					} else if (x[i] < a && x[i] + h[i] <= b) {
+						sum += ar * ar * ah;
+					}
+
+				}
+				out.println(sum * PI / 3);
 			}
-			Arrays.sort(p);
 
-			out.println("");
-
-		}
-	}
-
-	static class T implements Comparable<T> {
-		int x, r, h;
-
-		public T(int x, int r, int h) {
-			super();
-			this.x = x;
-			this.r = r;
-			this.h = h;
-		}
-
-		@Override
-		public String toString() {
-			return "T [x=" + x + ", r=" + r + ", h=" + h + "]";
-		}
-
-		@Override
-		public int compareTo(T o) {
-			int xx = Integer.compare(this.x, o.x);
-			int rr = Integer.compare(this.r, o.r);
-			int hh = Integer.compare(this.h, o.h);
-
-			return xx == 0 ? rr == 0 ? hh : rr : xx;
-		}
-	}
-
-	static class P implements Comparable<P> {
-		int a, b;
-
-		public P(int a, int b) {
-			super();
-			this.a = a;
-			this.b = b;
-		}
-
-		@Override
-		public String toString() {
-			return "P [a=" + a + ", b=" + b + "]";
-		}
-
-		@Override
-		public int compareTo(P o) {
-			int aa = Integer.compare(this.a, o.a);
-			int bb = Integer.compare(this.b, o.b);
-
-			return aa == 0 ? bb : aa;
 		}
 	}
 
