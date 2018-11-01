@@ -64,7 +64,6 @@ public class B {
 			for (int i = 0; i < 1000; i++) {
 				double m = (l+r)/2;
 
-				// TODO: 回転後の長さの求め方
 				double aa = a * cos(m) + b * sin(m);
 				double bb = a * sin(m) + b * cos(m);
 
