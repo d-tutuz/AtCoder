@@ -1,4 +1,4 @@
-package abc094;
+package abc043;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,11 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class C_4 {
+public class D {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -34,25 +33,19 @@ public class C_4 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			int[] x = in.nextIntArray(n);
-			int[] xs = x.clone();
-			Arrays.sort(xs);
-
-			int l = xs[n/2-1], r = xs[n/2];
-			if (l > r) {
-				int tmp = l;
-				l = r;
-				r = tmp;
-			}
+			char[] s = in.nextString().toCharArray();
+			int n = s.length;
 			for (int i = 0; i < n; i++) {
-				if (x[i] <= l) {
-					out.println(r);
-				} else {
-					out.println(l);
+				if (i+1 < n && s[i] == s[i+1]) {
+					out.printf("%d %d\n", i+1, i+2);
+					return;
+				}
+				if (i+2 < n && s[i] == s[i+2]) {
+					out.printf("%d %d\n", i+1, i+3);
+					return;
 				}
 			}
-
+			out.printf("%d %d\n", -1, -1);
 		}
 	}
 

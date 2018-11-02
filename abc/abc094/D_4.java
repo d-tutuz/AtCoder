@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class C_4 {
+public class D_4 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -35,24 +35,36 @@ public class C_4 {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			int n = in.nextInt();
-			int[] x = in.nextIntArray(n);
-			int[] xs = x.clone();
-			Arrays.sort(xs);
-
-			int l = xs[n/2-1], r = xs[n/2];
-			if (l > r) {
-				int tmp = l;
-				l = r;
-				r = tmp;
-			}
+			P[] p = new P[n];
 			for (int i = 0; i < n; i++) {
-				if (x[i] <= l) {
-					out.println(r);
-				} else {
-					out.println(l);
+				p[i] = new P(i, in.nextInt());
+			}
+			Arrays.sort(p);
+
+			int diff = INF;
+			int num = -1;
+			for (int i = 0; i < n-1; i++) {
+				if (Math.abs(p[n-1].num/2 - p[i].num) < diff) {
+					num = p[i].num;
+					diff = Math.abs(p[i].num - p[n-1].num/2);
 				}
 			}
+			out.printf("%d %d\n", p[n-1].num/2, num/2);
+		}
+	}
 
+	static class P implements Comparable<P>{
+		int idx, num;
+
+		public P(int idx, int num) {
+			super();
+			this.idx = idx;
+			this.num = num * 2;
+		}
+
+		@Override
+		public int compareTo(P o) {
+			return Integer.compare(this.num, o.num);
 		}
 	}
 

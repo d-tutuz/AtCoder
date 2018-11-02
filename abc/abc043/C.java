@@ -1,4 +1,4 @@
-package abc094;
+package abc043;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,11 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class C_4 {
+public class C {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -35,24 +34,17 @@ public class C_4 {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			int n = in.nextInt();
-			int[] x = in.nextIntArray(n);
-			int[] xs = x.clone();
-			Arrays.sort(xs);
+			int[] a = in.nextIntArray(n);
 
-			int l = xs[n/2-1], r = xs[n/2];
-			if (l > r) {
-				int tmp = l;
-				l = r;
-				r = tmp;
-			}
-			for (int i = 0; i < n; i++) {
-				if (x[i] <= l) {
-					out.println(r);
-				} else {
-					out.println(l);
+			int cost = INF;
+			for (int i = -100; i <= 100; i++) {
+				int tmp = 0;
+				for (int j = 0; j < n; j++) {
+					tmp += (a[j] - i) * (a[j] - i);
 				}
+				cost = Math.min(cost, tmp);
 			}
-
+			out.println(cost);
 		}
 	}
 
