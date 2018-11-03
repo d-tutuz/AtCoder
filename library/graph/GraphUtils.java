@@ -126,6 +126,81 @@ public class GraphUtils {
 		}
 	}
 
+	/**
+	 * 重み付きunionFind
+	 *
+	 * union : weight(y) = weight(x) + w として x, y を union する
+	 * diff  : weight(y) - weight(x) を return する
+	 *
+	 * */
+	public static class WeightedUnionFind {
+		int[] par;
+		int[] ws;
+
+		public WeightedUnionFind(int n) {
+			par = new int[n];
+			ws = new int[n];
+			for (int i = 0; i < n; i++) {
+				par[i] = -1;
+			}
+		}
+
+		public int find(int x) {
+			if (par[x] < 0) {
+				return x;
+			} else {
+				final int parent = find(par[x]);
+				ws[x] += ws[par[x]];
+				par[x] = parent;
+				return parent;
+			}
+		}
+
+		public int weight(int x) {
+			find(x);
+			return ws[x];
+		}
+
+		public boolean union(int x, int y, int w) {
+			w += weight(x);
+			w -= weight(y);
+			x = find(x);
+			y = find(y);
+
+			if (x != y) {
+				if (par[y] < par[x]) {
+					int tmp = x;
+					x = y;
+					y = tmp;
+					w = -w;
+				}
+				par[x] += par[y];
+				par[y] = x;
+				ws[y] = w;
+
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		public boolean same(int x, int y) {
+			return find(x) == find(y);
+		}
+
+		public Integer diff(int x, int y) {
+			if (!same(x, y)) {
+				return null;
+			} else {
+				return this.weight(x) - this.weight(y);
+			}
+		}
+
+		public int size(int x) {
+			return -par[find(x)];
+		}
+	}
+
 	static class Node {
 		int nodeNum;
 		long cost;
