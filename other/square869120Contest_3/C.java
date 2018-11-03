@@ -1,4 +1,4 @@
-package abc107;
+package square869120Contest_3;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class D_3 {
+public class C {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -32,80 +32,46 @@ public class D_3 {
 
 	static class TaskX {
 
-		int k = 1 << 17;
-		int offset = k;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			int[] a = in.nextIntArray(n);
-			int[] as = a.clone();
-			Arrays.sort(as);
+			int N = in.nextInt(), K = in.nextInt();
+			int[] a = in.nextIntArray(N);
+			Arrays.sort(a);
 
-			BIT bit = new BIT(k + offset);
-			int thr = n * (n+1) / 2;
-			thr = (thr + 1) / 2;
+			int m = 1 << 9;
 
-			int l = 0, r = n;
-			while (r - l > 1) {
-				int m = (r+l)/2;
-				int now = 0;
-				int cnt = 0;
+			long[] fact = factorialArray(m, MOD);
 
-				bit.clear();
-				bit.add(now + offset, 1);
-
-				for (int i = 0; i < n; i++) {
-					now += a[i] < as[m] ? -1 : 1;
-					cnt += bit.query(now + offset);
-					bit.add(now + offset, 1);
-				}
-
-				if (cnt >= thr) {
-					l = m;
-				} else {
-					r = m;
+			long[][][] dp = new long[N+1][N+1][m];
+			dp[0][0][0] = 1;
+			for (int i = 0; i < N; i++) {
+				for (int j = 0; j < N; j++) {
+					for (int k = 0; k < m; k++) {
+						dp[i+1][j][k] += dp[i][j][k];
+						dp[i+1][j][k] %= MOD;
+						dp[i+1][j+1][k^a[i]] += dp[i][j][k];
+						dp[i+1][j+1][k^a[i]] %= MOD;
+					}
 				}
 			}
-			out.println(as[l]);
+
+			long ans = 0;
+			for (int j = 0; j < N+1; j++) {
+				ans += dp[N][j][K] * fact[j];
+				ans %= MOD;
+			}
+
+			out.println(ans);
 
 		}
 	}
-
-	/**
-	 * 0-indexed BinaryIndexTree
-	 * */
-	static class BIT {
-		private int n;
-		private long[] bit;
-
-		public BIT(int n) {
-			this.n = n;
-			bit = new long[n + 1];
+	public static long[] factorialArray(int maxN, long mod) {
+		long[] fact = new long[maxN + 1];
+		fact[0] = 1 % mod;
+		for (int i = 1; i <= maxN; i++) {
+			fact[i] = fact[i - 1] * i % mod;
 		}
-
-		public void clear() {
-			Arrays.fill(bit, 0);
-		}
-
-		public void add(int i, long x) {
-			while (i <= n) {
-				bit[i] += x;
-				i |= i + 1;
-			}
-		}
-
-		public long query(int l, int r) {
-			return l <= r ? query(r) - query(l - 1) : 0;
-		}
-
-		private long query(int i) {
-			long s = 0;
-			while (i >= 0) {
-				s += bit[i];
-				i = (i & (i + 1)) - 1;
-			}
-			return s;
-		}
+		return fact;
 	}
 
 	static class InputReader {
