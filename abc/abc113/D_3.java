@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class D_2 {
+public class D_3 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -33,26 +33,33 @@ public class D_2 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int h = in.nextInt(), w = in.nextInt(), k = in.nextInt();
-
-			long[][] dp = new long[h+1][w+1];
+			int H = in.nextInt(), W = in.nextInt(), K = in.nextInt();
+			long[][] dp = new long[H+1][W+1];
 			dp[0][0] = 1;
 
-			for (int i = 0; i < h; i++) {
-				for (int j = 0; j < w; j++) {
-					for (int bit = 0; bit < 1 << (w-1); bit++) {
-
+			for (int i = 0; i < H; i++) {
+				for (int j = 0; j < W; j++) {
+					for (int bit = 0; bit < 1 << (W-1); bit++) {
 						boolean ok = true;
-						for (int m = 0; m < w-2; m++) {
-							if ((bit >> m & 1) == 1 && (bit >> m+1 & 1) == 1) ok = false;
+						for (int l = 0; l < W-2; l++) {
+							// 横棒がつながる場合は除く
+							if ((bit >> l & 1) == 1 && (bit >> (l+1) & 1) == 1) {
+								ok = false;
+							}
 						}
+
 						if (ok) {
-							if (j >= 1 && (bit >> (j-1) & 1) == 1) {
+							// 左に遷移
+							if (j >= 1 && (bit >> j-1 & 1) == 1) {
 								dp[i+1][j-1] += dp[i][j];
 								dp[i+1][j-1] %= MOD;
-							} else if (j <= w-2 && (bit >> j & 1) == 1) {
+
+								// 右に遷移
+							} else if (j <= W-2 && (bit >> j & 1) == 1) {
 								dp[i+1][j+1] += dp[i][j];
 								dp[i+1][j+1] %= MOD;
+
+								// まっすぐ遷移
 							} else {
 								dp[i+1][j] += dp[i][j];
 								dp[i+1][j] %= MOD;
@@ -62,7 +69,7 @@ public class D_2 {
 				}
 			}
 
-			out.println(dp[h][k-1] % MOD);
+			out.println(dp[H][K-1]);
 
 		}
 	}
