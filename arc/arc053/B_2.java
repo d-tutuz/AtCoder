@@ -1,4 +1,4 @@
-package abc069;
+package arc053;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.util.InputMismatchException;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-public class C_2 {
+public class B_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -35,28 +35,31 @@ public class C_2 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			Map<Integer, Integer> map = new HashMap<>();
+			char[] s = in.nextString().toCharArray();
+			int n = s.length;
+
+			Map<Character, Integer> map = new HashMap<>();
 			for (int i = 0; i < n; i++) {
-				int a = in.nextInt();
-				if (a % 4 == 0) {
-					map.merge(4, 1, Integer::sum);
-				} else if (a % 2 == 0) {
-					map.merge(2, 1, Integer::sum);
+				map.merge(s[i], 1, Integer::sum);
+			}
+
+			int base = 0;
+			int count = 0;
+			for (char c : map.keySet()) {
+				int v = map.get(c);
+				if (v % 2 == 1) {
+					base++;
+					count += v - 1;
 				} else {
-					map.merge(1, 1, Integer::sum);
+					count += v;
 				}
 			}
 
-			int c1 = map.containsKey(1) ? map.get(1) : 0;
-			int c2 = map.containsKey(2) ? map.get(2) : 0;
-			int c4 = map.containsKey(4) ? map.get(4) : 0;
-
-			c4 += c2 / 3;
-			c2 -= c2 / 3;
-			c1 += c2;
-
-			out.println(Math.abs(c1 - c4) <= 1 ? "Yes" : "No");
+			if (base == 0) {
+				out.println(count);
+			} else {
+				out.println(1 + count / 2 / base * 2);
+			}
 
 		}
 	}
