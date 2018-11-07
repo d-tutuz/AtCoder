@@ -1,4 +1,4 @@
-package arc077;
+package abc098;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class D_2 {
+public class C_3 {
+
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -34,88 +36,26 @@ public class D_2 {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			int n = in.nextInt();
-			int[] a = new int[n+1];
-			int[] b = new int[n+1];
+			char[] s = in.nextString().toCharArray();
 
-			int d = -1;
-			for (int i = 0; i < n+1; i++) {
-				a[i] = in.nextInt();
-				if (++b[a[i]] >= 2) {
-					d = a[i];
-				}
-			}
-
-			int l = 0, m = 0, r = 0;
-			int count = 0;
-			for (int i = 0; i < n+1; i++) {
-				if (a[i] == d) {
-					count++;
-					continue;
-				}
-				if (count == 0) {
-					l++;
-				} else if (count == 1) {
-					m++;
+			int[] w = new int[n], e = new int[n];
+			for (int i = 0; i < n; i++) {
+				if (s[i] == 'W') {
+					w[i] = 1;
 				} else {
-					r++;
+					e[i] = 1;
 				}
 			}
 
-			for (int k = 1; k <= n+1; k++) {
-				long ans = 0;
+			Arrays.parallelPrefix(w, Math::addExact);
+			Arrays.parallelPrefix(e, Math::addExact);
 
-				ans += comb(n-1, k);
-				ans %= MOD;
-
-				ans += comb(l+r, k-1) + ((comb(n-1, k-1) - comb(r+l, k-1) + MOD) % MOD) * 2;
-				ans %= MOD;
-
-				ans += comb(n-1, k-2);
-				ans %= MOD;
-
-				out.println(ans);
+			int ans = INF;
+			for (int i = 0; i < n; i++) {
+				ans = Math.min(ans, (i == 0 ? 0 : w[i-1]) + e[n-1] - e[i]);
 			}
+			out.println(ans);
 		}
-	}
-
-	public static long comb(int n, int r) {
-		if (r < 0 || r > n)
-			return 0L;
-		return fact[n] % MOD * factInv[r] % MOD * factInv[n - r] % MOD;
-	}
-
-	public static int MAXN = 200000;
-
-	static long[] fact = factorialArray(MAXN, MOD);
-	static long[] factInv = factorialInverseArray(MAXN, MOD,
-			inverseArray(MAXN, MOD));
-
-	public static long[] factorialArray(int maxN, long mod) {
-		long[] fact = new long[maxN + 1];
-		fact[0] = 1 % mod;
-		for (int i = 1; i <= maxN; i++) {
-			fact[i] = fact[i - 1] * i % mod;
-		}
-		return fact;
-	}
-
-	public static long[] inverseArray(int maxN, long modP) {
-		long[] inv = new long[maxN + 1];
-		inv[1] = 1;
-		for (int i = 2; i <= maxN; i++) {
-			inv[i] = modP - (modP / i) * inv[(int) (modP % i)] % modP;
-		}
-		return inv;
-	}
-
-	public static long[] factorialInverseArray(int maxN, long modP,
-			long[] inverseArray) {
-		long[] factInv = new long[maxN + 1];
-		factInv[0] = 1;
-		for (int i = 1; i <= maxN; i++) {
-			factInv[i] = factInv[i - 1] * inverseArray[i] % modP;
-		}
-		return factInv;
 	}
 
 	static class InputReader {
