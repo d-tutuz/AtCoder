@@ -1,4 +1,4 @@
-package arc028;
+package arc045;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,8 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.InputMismatchException;
-import java.util.PriorityQueue;
+import java.util.List;
 import java.util.StringTokenizer;
 
 public class B_2 {
@@ -34,45 +36,37 @@ public class B_2 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt(), k = in.nextInt();
-			P[] p = new P[n];
-			for (int i = 0; i < n; i++) {
-				p[i] = new P(i, in.nextInt());
+			int n = in.nextInt(), m = in.nextInt();
+			int[] seg = new int[300010], can = new int[300010];
+			int[] l = new int[300010], r = new int[300010];
+			for (int i = 0; i < m; i++) {
+				l[i] = in.nextInt();
+				r[i] = in.nextInt();
+			}
+			for (int i = 0; i < m; i++) {
+				seg[l[i]]++; seg[r[i]+1]--;
 			}
 
-			PriorityQueue<P> pq = new PriorityQueue<>();
+			Arrays.parallelPrefix(seg, Math::addExact);
 
-			for (int i = 0; i < n; i++) {
-				if (pq.size() < k) {
-					pq.add(p[i]);
-				} else {
-					P t = pq.peek();
-					if (p[i].x < t.x) {
-						pq.remove();
-						pq.add(p[i]);
-					}
+			for (int i = 0; i < 300010; i++) {
+				if (seg[i] >= 2) can[i] = 1;
+			}
+
+			Arrays.parallelPrefix(can, Math::addExact);
+
+			List<Integer> list = new ArrayList<>();
+			for (int i = 0; i < m; i++) {
+				if (can[r[i]] - can[l[i]-1] == r[i] - l[i] + 1) {
+					list.add(i+1);
 				}
-
-				if (pq.size() == k) out.println(pq.peek().idx+1);
 			}
 
+			out.println(list.size());
+			for (int i : list) {
+				out.println(i);
+			}
 		}
-	}
-
-	static class P implements Comparable<P> {
-		int idx, x;
-
-		public P(int idx, int x) {
-			super();
-			this.idx = idx;
-			this.x = x;
-		}
-
-		@Override
-		public int compareTo(P o) {
-			return -Integer.compare(this.x, o.x);
-		}
-
 	}
 
 	static class InputReader {
@@ -106,6 +100,54 @@ public class B_2 {
 			int[] res = new int[n];
 			for (int i = 0; i < n; i++) {
 				res[i] = nextInt();
+			}
+			return res;
+		}
+
+		public int[] nextIntArrayDec(int n) {
+			int[] res = new int[n];
+			for (int i = 0; i < n; i++) {
+				res[i] = nextInt() - 1;
+			}
+			return res;
+		}
+
+		public int[] nextIntArray1Index(int n) {
+			int[] res = new int[n + 1];
+			for (int i = 0; i < n; i++) {
+				res[i + 1] = nextInt();
+			}
+			return res;
+		}
+
+		public long[] nextLongArray(int n) {
+			long[] res = new long[n];
+			for (int i = 0; i < n; i++) {
+				res[i] = nextLong();
+			}
+			return res;
+		}
+
+		public long[] nextLongArrayDec(int n) {
+			long[] res = new long[n];
+			for (int i = 0; i < n; i++) {
+				res[i] = nextLong() - 1;
+			}
+			return res;
+		}
+
+		public long[] nextLongArray1Index(int n) {
+			long[] res = new long[n + 1];
+			for (int i = 0; i < n; i++) {
+				res[i + 1] = nextLong();
+			}
+			return res;
+		}
+
+		public double[] nextDoubleArray(int n) {
+			double[] res = new double[n];
+			for (int i = 0; i < n; i++) {
+				res[i] = nextDouble();
 			}
 			return res;
 		}
