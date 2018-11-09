@@ -1,4 +1,4 @@
-package arc027;
+package agc001;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,82 +33,51 @@ public class B_2 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			char[] s = in.nextString().toCharArray();
-			char[] t = in.nextString().toCharArray();
+			long n = in.nextLong();
+			long x = in.nextLong();
 
-			DisjointSet set = new DisjointSet(1000);
+			out.println(f(x, n-x) + n);
+		}
 
-			for (int i = 0; i < n; i++) {
-				set.unite(s[i], t[i]);
+		long f(long s, long l) {
+			long ret = 0;
+
+			if (s > l) {
+				long t = s;
+				s = l;
+				l = t;
 			}
 
-			boolean[] used = new boolean[1000];
-			boolean[] num = new boolean[1000];
-			for (char i = '0'; i <= '9'; i++) {
-				num[set.findSet((int)i)] = true;
+			if (s == 0) {
+				return l;
 			}
 
-			long ans = 1;
-			for (int i = 0; i < n; i++) {
-				if (num[set.findSet(s[i])] || used[set.findSet(s[i])]) continue;
-				ans *= i == 0 ? 9 : 10;
-				used[set.findSet(s[i])] = true;
-			}
-			out.println(ans);
-		}
-	}
-
-	public static class DisjointSet {
-
-		int[] p, rank, cnt;
-
-		public DisjointSet(int size) {
-			p = new int[size];
-			rank = new int[size];
-			cnt = new int[size];
-
-			for (int j = 0; j < size; j++) {
-				makeSet(j);
-			}
-		}
-
-		private void makeSet(int x) {
-			p[x] = x;
-			rank[x] = 0;
-			cnt[x] = 1;
-		}
-
-		public int findSet(int x) {
-			return p[x] == x ? x : findSet(p[x]);
-		}
-
-		private void link(int x, int y) {
-			if (rank[x] > rank[y]) {
-				p[y] = x;
-			} else if (rank[x] < rank[y]) {
-				p[x] = y;
-			} else if (rank[x] == rank[y]) {
-				p[x] = y;
-				rank[y]++;
+			if (l % s == 0) {
+				ret += (l / s - 1) * 2 * s + f(s, l % s);
+			} else {
+				ret += (l / s) * 2 * s + f(s, l % s);
 			}
 
-			if (x != y) {
-				cnt[x] = cnt[y] += cnt[x];
-			}
+			return ret;
 		}
 
-		public void unite(int x, int y) {
-			link(findSet(x), findSet(y));
-		}
-
-		public boolean same(int x, int y) {
-			return findSet(x) == findSet(y);
-		}
-
-		public int getSize(int x) {
-			return cnt[findSet(x)];
-		}
+//		long f(long s, long l) {
+//			long ret = 0;
+//
+//			if (s > l) {
+//				long t = s;
+//				s = l;
+//				l = t;
+//			}
+//
+//			if (s == l) {
+//				return s;
+//			}
+//
+//			ret += 2*s + f(s, l-s);
+//
+//			return ret;
+//		}
 	}
 
 	static class InputReader {
