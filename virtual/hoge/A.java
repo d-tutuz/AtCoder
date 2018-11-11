@@ -1,4 +1,4 @@
-package agc028;
+package hoge;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class B {
+public class A {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -33,42 +33,13 @@ public class B {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			long[] a = in.nextLongArray(n);
-
-			long[] fact = new long[n+1], factInvSum = new long[n+1];
-			fact[0] = 1;
-			for (int i = 1; i < n+1; i++) {
-				fact[i] = fact[i-1] * i % MOD;
-				factInvSum[i] = power(i, MOD - 2, MOD);
-				factInvSum[i] += factInvSum[i-1];
-				factInvSum[i] %= MOD;
+			char[] s = in.nextString().toCharArray();
+			for (int i = 0; i < s.length; i++) {
+				out.print(s[i] == '1' ? 9 : 1);
 			}
-
-			long ans = 0;
-			for (int i = 0; i < n; i++) {
-				long coe = MOD + factInvSum[n-i] + factInvSum[i+1] - 1;
-				coe %= MOD;
-				ans += coe * a[i];
-				ans %= MOD;
-			}
-
-			ans *= fact[n];
-			ans %= MOD;
-			out.println(ans);
+			out.print("\n");
 
 		}
-	}
-
-	static long power(long a, long e, long modP) {
-		long ret = 1;
-		for (; e > 0; e /= 2) {
-			if (e % 2 != 0) {
-				ret = (ret * a) % modP;
-			}
-			a = (a * a) % modP;
-		}
-		return ret;
 	}
 
 	static class InputReader {

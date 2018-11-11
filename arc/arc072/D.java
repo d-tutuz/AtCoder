@@ -1,4 +1,4 @@
-package agc028;
+package arc072;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class B {
+public class D {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -31,44 +32,64 @@ public class B {
 
 	static class TaskX {
 
+		int WIN = 1, LOSE = 0;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			long[] a = in.nextLongArray(n);
-
-			long[] fact = new long[n+1], factInvSum = new long[n+1];
-			fact[0] = 1;
-			for (int i = 1; i < n+1; i++) {
-				fact[i] = fact[i-1] * i % MOD;
-				factInvSum[i] = power(i, MOD - 2, MOD);
-				factInvSum[i] += factInvSum[i-1];
-				factInvSum[i] %= MOD;
+			int H = 20, W = 20;
+			int[][] mat = new int[H][W];
+			for (int i = 0; i < mat.length; i++) {
+				Arrays.fill(mat[i], -1);
 			}
 
-			long ans = 0;
-			for (int i = 0; i < n; i++) {
-				long coe = MOD + factInvSum[n-i] + factInvSum[i+1] - 1;
-				coe %= MOD;
-				ans += coe * a[i];
-				ans %= MOD;
+			mat[0][0] = LOSE;
+			mat[0][1] = LOSE;
+			mat[1][0] = LOSE;
+			mat[1][1] = LOSE;
+			mat[2][0] = WIN;
+			mat[0][2] = WIN;
+
+			for (int k = 3; k <= H+W; k++) {
+				for (int h = 0; h <= k; h++) {
+					int nh = h, nw = k-h;
+					boolean win = false;
+
+					for (int i = 1; i <= nh/2; i++) {
+						int mh = nh - i*2;
+						int mw = nw + i;
+						if (mh < 0 || mh >= H || mw < 0 || mw >= W) continue;
+						if (mat[mh][mw] == 0) {
+							win = true;
+							break;
+						}
+					}
+
+					for (int i = 1; i <= nw/2; i++) {
+						int mh = nh + i;
+						int mw = nw - i*2;
+						if (mh < 0 || mh >= H || mw < 0 || mw >= W) continue;
+						if (mat[mh][mw] == 0) {
+							win = true;
+							break;
+						}
+					}
+
+					if (nh < 0 || nh >= H || nw < 0 || nw >= W) continue;
+					mat[nh][nw] = win ? WIN : LOSE;
+				}
 			}
-
-			ans *= fact[n];
-			ans %= MOD;
-			out.println(ans);
-
+			print(mat, out);
 		}
 	}
 
-	static long power(long a, long e, long modP) {
-		long ret = 1;
-		for (; e > 0; e /= 2) {
-			if (e % 2 != 0) {
-				ret = (ret * a) % modP;
+	static void print(int[][] a, PrintWriter out) {
+
+		for (int i = 0; i < a.length; i++) {
+			for (int j = 0; j < a[0].length; j++) {
+				if (j > 0) out.print(" ");
+				out.print(a[i][j]);
 			}
-			a = (a * a) % modP;
+			out.print("\n");
 		}
-		return ret;
 	}
 
 	static class InputReader {

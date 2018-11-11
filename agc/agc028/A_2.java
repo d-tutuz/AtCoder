@@ -7,9 +7,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.InputMismatchException;
+import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
 
-public class B {
+public class A_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -33,42 +35,50 @@ public class B {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			long[] a = in.nextLongArray(n);
+			long n = in.nextLong(), m = in.nextLong();
+			long l = lcm(n, m);
 
-			long[] fact = new long[n+1], factInvSum = new long[n+1];
-			fact[0] = 1;
-			for (int i = 1; i < n+1; i++) {
-				fact[i] = fact[i-1] * i % MOD;
-				factInvSum[i] = power(i, MOD - 2, MOD);
-				factInvSum[i] += factInvSum[i-1];
-				factInvSum[i] %= MOD;
-			}
+			char[] s = in.nextString().toCharArray();
+			char[] t = in.nextString().toCharArray();
 
-			long ans = 0;
+			Map<Long, Character> map = new TreeMap<>();
 			for (int i = 0; i < n; i++) {
-				long coe = MOD + factInvSum[n-i] + factInvSum[i+1] - 1;
-				coe %= MOD;
-				ans += coe * a[i];
-				ans %= MOD;
+				if (map.containsKey(l/n*i+1)) {
+					if (map.get(l/n*i+1) == s[i]) {
+						continue;
+					} else {
+						out.println(-1);
+						return;
+					}
+				} else {
+					map.put(l/n*i+1, s[i]);
+				}
 			}
 
-			ans *= fact[n];
-			ans %= MOD;
-			out.println(ans);
+			for (int i = 0; i < m; i++) {
+				if (map.containsKey(l/m*i+1)) {
+					if (map.get(l/m*i+1) == t[i]) {
+						continue;
+					} else {
+						out.println(-1);
+						return;
+					}
+				} else {
+					map.put(l/m*i+1, t[i]);
+				}
+			}
+
+			out.println(l);
 
 		}
 	}
 
-	static long power(long a, long e, long modP) {
-		long ret = 1;
-		for (; e > 0; e /= 2) {
-			if (e % 2 != 0) {
-				ret = (ret * a) % modP;
-			}
-			a = (a * a) % modP;
-		}
-		return ret;
+	public static long gcd(long a, long b) {
+		return (b == 0) ? a : gcd(b, a % b);
+	}
+
+	public static long lcm(long a, long b) {
+		return a / gcd(a, b) * b;
 	}
 
 	static class InputReader {

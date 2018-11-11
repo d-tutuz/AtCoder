@@ -1,4 +1,4 @@
-package agc028;
+package agc011;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class B {
+public class B_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -35,40 +36,25 @@ public class B {
 
 			int n = in.nextInt();
 			long[] a = in.nextLongArray(n);
+			Arrays.sort(a);
+			long[] sum = a.clone();
 
-			long[] fact = new long[n+1], factInvSum = new long[n+1];
-			fact[0] = 1;
-			for (int i = 1; i < n+1; i++) {
-				fact[i] = fact[i-1] * i % MOD;
-				factInvSum[i] = power(i, MOD - 2, MOD);
-				factInvSum[i] += factInvSum[i-1];
-				factInvSum[i] %= MOD;
+			Arrays.parallelPrefix(sum, Math::addExact);
+
+			boolean[] ok = new boolean[n];
+			ok[n-1] = true;
+			for (int i = n-2; i >= 0; i--) {
+				if (ok[i+1] && a[i+1] <= 2 * sum[i]) {
+					ok[i] = true;
+				}
 			}
 
-			long ans = 0;
-			for (int i = 0; i < n; i++) {
-				long coe = MOD + factInvSum[n-i] + factInvSum[i+1] - 1;
-				coe %= MOD;
-				ans += coe * a[i];
-				ans %= MOD;
-			}
+			int count = 0;
+			for (int i = 0; i < n; i++) if (ok[i]) count++;
 
-			ans *= fact[n];
-			ans %= MOD;
-			out.println(ans);
+			out.println(count);
 
 		}
-	}
-
-	static long power(long a, long e, long modP) {
-		long ret = 1;
-		for (; e > 0; e /= 2) {
-			if (e % 2 != 0) {
-				ret = (ret * a) % modP;
-			}
-			a = (a * a) % modP;
-		}
-		return ret;
 	}
 
 	static class InputReader {

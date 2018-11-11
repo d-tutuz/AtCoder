@@ -1,4 +1,4 @@
-package agc028;
+package agc008;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,11 +6,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.InputMismatchException;
-import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
-public class B_4 {
+public class B_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -34,61 +34,28 @@ public class B_4 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			PriorityQueue<Long> A = new PriorityQueue<Long>();
-			PriorityQueue<Long> B = new PriorityQueue<Long>();
-
+			int n = in.nextInt(), k = in.nextInt();
+			long[] a = in.nextLongArray(n);
+			long[] pos = new long[n];
+			long total = 0;
 			for (int i = 0; i < n; i++) {
-				long a = in.nextLong();
-				long b = in.nextLong();
-				A.add(a);
-				B.add(b);
+				if (a[i] > 0) pos[i] = a[i];
+				total += pos[i];
 			}
+			Arrays.parallelPrefix(pos, Math::addExact);
+			Arrays.parallelPrefix(a, Math::addExact);
 
-			PriorityQueue<Long> A2 = new PriorityQueue<>(A);
-			PriorityQueue<Long> B2 = new PriorityQueue<>(B);
-			long ans = 0;
-			int ac = 0, bc = 0;
-			int tn = n;
-			while (tn-- > 0) {
-				if (ac <= bc) {
-					ans += A.remove();
-					ac++;
-				} else {
-					long ta = A.peek();
-					long ba = B.peek();
+			long ans = -LINF;
+			for (int i = 0; i < n-k+1; i++) {
+				long sum = total;
+				sum -= pos[i+k-1] - (i == 0 ? 0 : pos[i-1]);
 
-					if (ta <= ba) {
-						ans += A.remove();
-						ac++;
-					} else {
-						ans += B.remove();
-						bc++;
-					}
-				}
+				long tmp = a[i+k-1] - (i == 0 ? 0 : a[i-1]);
+				if (tmp > 0) sum += tmp;
+
+				ans = Math.max(ans, sum);
 			}
-
-			long ans2 = 0;
-			ac = 0; bc = 0;
-			while (n-- > 0) {
-				if (bc <= ac) {
-					ans2 += B2.remove();
-					bc++;
-				} else {
-					long ta = A2.peek();
-					long tb = B2.peek();
-
-					if (tb <= ta) {
-						ans2 += B2.remove();
-						bc++;
-					} else {
-						ans2 += A2.remove();
-						ac++;
-					}
-				}
-			}
-
-			out.println(Math.min(ans, ans2));
+			out.println(ans);
 		}
 	}
 

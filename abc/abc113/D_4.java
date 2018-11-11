@@ -1,4 +1,4 @@
-package agc028;
+package abc113;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
-public class B {
+public class D_4 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -33,42 +33,52 @@ public class B {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			long[] a = in.nextLongArray(n);
+			int h = in.nextInt(), w = in.nextInt(), k = in.nextInt();
 
-			long[] fact = new long[n+1], factInvSum = new long[n+1];
-			fact[0] = 1;
-			for (int i = 1; i < n+1; i++) {
-				fact[i] = fact[i-1] * i % MOD;
-				factInvSum[i] = power(i, MOD - 2, MOD);
-				factInvSum[i] += factInvSum[i-1];
-				factInvSum[i] %= MOD;
+			long[][] dp = new long[h+1][w];
+			dp[0][0] = 1;
+
+			for (int i = 0; i < h; i++) {
+				for (int j = 0; j < w; j++) {
+					long left = 0, center = 0, right = 0;
+
+					for (int bit = 0; bit < 1 << (w-1); bit++) {
+
+						boolean ok = true;
+						for (int l = 0; l < w-2; l++) {
+							if ((bit >> l & 1) == 1 && (bit >> (l+1) & 1) == 1) {
+								ok = false;
+								break;
+							}
+						}
+						if (!ok) continue;
+
+						if (j < w-1 && (bit >> j & 1) == 1) {
+							right++;
+						} else if (0 < j && (bit >> (j-1) & 1) == 1) {
+							left++;
+						} else {
+							center++;
+						}
+
+					}
+
+					if (0 < j) {
+						dp[i+1][j-1] += dp[i][j] * left;
+						dp[i+1][j-1] %= MOD;
+					}
+					if (j < w-1) {
+						dp[i+1][j+1] += dp[i][j] * right;
+						dp[i+1][j+1] %= MOD;
+					}
+					dp[i+1][j] += dp[i][j] * center;
+					dp[i+1][j] %= MOD;
+				}
 			}
 
-			long ans = 0;
-			for (int i = 0; i < n; i++) {
-				long coe = MOD + factInvSum[n-i] + factInvSum[i+1] - 1;
-				coe %= MOD;
-				ans += coe * a[i];
-				ans %= MOD;
-			}
-
-			ans *= fact[n];
-			ans %= MOD;
-			out.println(ans);
+			out.println(dp[h][k-1]);
 
 		}
-	}
-
-	static long power(long a, long e, long modP) {
-		long ret = 1;
-		for (; e > 0; e /= 2) {
-			if (e % 2 != 0) {
-				ret = (ret * a) % modP;
-			}
-			a = (a * a) % modP;
-		}
-		return ret;
 	}
 
 	static class InputReader {

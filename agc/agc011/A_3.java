@@ -1,4 +1,4 @@
-package agc028;
+package agc011;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.InputMismatchException;
+import java.util.Queue;
 import java.util.StringTokenizer;
 
-public class B_3 {
+public class A_3 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -33,8 +36,39 @@ public class B_3 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			
+			int n = in.nextInt();
+			long c = in.nextLong(), k = in.nextLong();
+			long[] t = in.nextLongArray(n);
+			Arrays.sort(t);
 
+			int count = 0;
+			Queue<Integer> q = new ArrayDeque<>();
+			long thr = -1;
+			for (int i = 0; i < n; i++) {
+
+				if (q.isEmpty()) {
+					thr = t[i] + k;
+					q.add(i);
+				} else {
+					if (t[i] > thr) {
+						count++;
+						q.clear();
+						q.add(i);
+						thr = t[i] + k;
+					} else {
+						q.add(i);
+					}
+				}
+
+				if (q.size() == c) {
+					count++;
+					q.clear();
+				}
+			}
+
+			if (!q.isEmpty()) count++;
+
+			out.println(count);
 		}
 	}
 
@@ -126,5 +160,5 @@ public class B_3 {
 			tok = new StringTokenizer("");
 		}
 	}
-	
+
 }

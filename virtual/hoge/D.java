@@ -1,4 +1,4 @@
-package agc028;
+package hoge;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,11 +6,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.InputMismatchException;
-import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
-public class B_2 {
+public class D {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -35,36 +35,70 @@ public class B_2 {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			int n = in.nextInt();
-			PriorityQueue<Long> A = new PriorityQueue<Long>();
-			PriorityQueue<Long> B = new PriorityQueue<Long>();
-
-			for (int i = 0; i < n; i++) {
-				long a = in.nextLong();
-				long b = in.nextLong();
-				A.add(a);
-				B.add(b);
-			}
+			long[] a = in.nextLongArray(n);
+			long[] as = a.clone();
+			Arrays.sort(as);
 
 			long ans = 0;
-			int ac = 0, bc = 0;
-			while (n-- > 0) {
-				if (ac <= bc) {
-					ans += A.remove();
-					ac++;
-				} else {
-					long ta = A.peek();
-					long ba = B.peek();
+			if (n % 2 == 0) {
 
-					if (ta <= ba) {
-						ans += A.remove();
-						ac++;
+				long[] b = new long[n];
+				for (int i = 0; i < n; i++) {
+					if (i % 2 == 0) {
+						b[i] = 2;
 					} else {
-						ans += B.remove();
-						bc++;
+						b[i] = -2;
 					}
 				}
+				b[0] = 1; b[n-1] = -1;
+				Arrays.sort(b);
+
+				long tmp = 0;
+				for (int i = 0; i < n; i++) {
+					tmp += as[i] * b[i];
+				}
+				ans = Math.max(ans, tmp);
+
+			} else {
+
+				long[] b = new long[n];
+				for (int i = 0; i < n; i++) {
+					if (i % 2 == 0) {
+						b[i] = 2;
+					} else {
+						b[i] = -2;
+					}
+				}
+				b[0] = 1; b[n-1] = 1;
+				Arrays.sort(b);
+
+				long tmp = 0;
+				for (int i = 0; i < n; i++) {
+					tmp += as[i] * b[i];
+				}
+				ans = Math.max(ans, tmp);
+
+				b = new long[n];
+				for (int i = 0; i < n; i++) {
+					if (i % 2 == 0) {
+						b[i] = -2;
+					} else {
+						b[i] = 2;
+					}
+				}
+				b[0] = -1; b[n-1] = -1;
+				Arrays.sort(b);
+
+				tmp = 0;
+				for (int i = 0; i < n; i++) {
+					tmp += as[i] * b[i];
+				}
+
+				ans = Math.max(ans, tmp);
 			}
+
 			out.println(ans);
+
 		}
 	}
 

@@ -1,4 +1,4 @@
-package agc028;
+package hoge;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,41 +34,19 @@ public class B {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			int n = in.nextInt();
-			long[] a = in.nextLongArray(n);
-
-			long[] fact = new long[n+1], factInvSum = new long[n+1];
-			fact[0] = 1;
-			for (int i = 1; i < n+1; i++) {
-				fact[i] = fact[i-1] * i % MOD;
-				factInvSum[i] = power(i, MOD - 2, MOD);
-				factInvSum[i] += factInvSum[i-1];
-				factInvSum[i] %= MOD;
+			for (int i = n; i < 1000; i++) {
+				if (check(i)) {
+					out.println(i);
+					return;
+				}
 			}
-
-			long ans = 0;
-			for (int i = 0; i < n; i++) {
-				long coe = MOD + factInvSum[n-i] + factInvSum[i+1] - 1;
-				coe %= MOD;
-				ans += coe * a[i];
-				ans %= MOD;
-			}
-
-			ans *= fact[n];
-			ans %= MOD;
-			out.println(ans);
 
 		}
-	}
 
-	static long power(long a, long e, long modP) {
-		long ret = 1;
-		for (; e > 0; e /= 2) {
-			if (e % 2 != 0) {
-				ret = (ret * a) % modP;
-			}
-			a = (a * a) % modP;
+		boolean check(int n) {
+			char[] s = String.valueOf(n).toCharArray();
+			return s[0] == s[1] && s[1] == s[2];
 		}
-		return ret;
 	}
 
 	static class InputReader {

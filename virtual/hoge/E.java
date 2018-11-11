@@ -1,4 +1,4 @@
-package agc028;
+package hoge;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.StringTokenizer;
+import java.util.stream.Stream;
 
-public class B {
+public class E {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -33,42 +36,50 @@ public class B {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			long[] a = in.nextLongArray(n);
+			long n = in.nextLong();
 
-			long[] fact = new long[n+1], factInvSum = new long[n+1];
-			fact[0] = 1;
-			for (int i = 1; i < n+1; i++) {
-				fact[i] = fact[i-1] * i % MOD;
-				factInvSum[i] = power(i, MOD - 2, MOD);
-				factInvSum[i] += factInvSum[i-1];
-				factInvSum[i] %= MOD;
+//			if (n == 1) {
+//				out.println("Yes");
+//				out.println(2);
+//				out.printf("%d %d\n", 1, 1);
+//				out.printf("%d %d\n", 1, 1);
+//			}
+
+			int idx = -1;
+			for (long k = 0; k <= 1e7; k++) {
+				if (k * (k-1) / 2 == n) {
+					idx = (int)k;
+					break;
+				}
 			}
 
-			long ans = 0;
-			for (int i = 0; i < n; i++) {
-				long coe = MOD + factInvSum[n-i] + factInvSum[i+1] - 1;
-				coe %= MOD;
-				ans += coe * a[i];
-				ans %= MOD;
+			if (idx == -1) {
+				out.println("No");
+				return;
 			}
 
-			ans *= fact[n];
-			ans %= MOD;
-			out.println(ans);
+			List<Integer>[] g = new ArrayList[idx];
+			g = Stream.generate(ArrayList::new).limit(idx).toArray(List[]::new);
 
+			int num = 1;
+			for (int i = 0; i < idx; i++) {
+				for (int j = i+1; j < idx; j++) {
+					g[i].add(num);
+					g[j].add(num);
+					num++;
+				}
+			}
+
+			out.println("Yes");
+			out.println(idx);
+			for (List<Integer> list : g) {
+				out.print(list.size());
+				for (int i = 0; i < list.size(); i++) {
+					out.print(" " + list.get(i));
+				}
+				out.print("\n");
+			}
 		}
-	}
-
-	static long power(long a, long e, long modP) {
-		long ret = 1;
-		for (; e > 0; e /= 2) {
-			if (e % 2 != 0) {
-				ret = (ret * a) % modP;
-			}
-			a = (a * a) % modP;
-		}
-		return ret;
 	}
 
 	static class InputReader {
