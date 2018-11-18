@@ -6,12 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.Comparator;
 import java.util.InputMismatchException;
+import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
-public class E {
+public class E_2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -38,24 +38,29 @@ public class E {
 			int n = in.nextInt(), k = in.nextInt();
 			long[] a = in.nextLongArray(n);
 
-			Deque<Long> deque = new ArrayDeque<>();
-			while (deque.size() < k) {
-				deque.addLast(a[0]);
+			PriorityQueue<Long> pq = new PriorityQueue<>();
+			PriorityQueue<Long> pq_rev = new PriorityQueue<>(Comparator.reverseOrder());
+
+			while (pq.size() < k) {
+				pq.add(a[0]);
+				pq_rev.add(a[0]);
 			}
 
 			long ans = 0;
 			for (int i = 1; i <= n; i++) {
 
-				long c = deque.removeFirst();
+				long c = pq.remove();
 				ans += c;
 				if (i == n) break;
 
-				deque.addLast(a[i]);
-				while (a[i] < deque.peekFirst()) {
-					deque.removeFirst();
-					deque.addLast(a[i]);
-				}
+				pq.add(a[i]);
 
+				while (a[i] < pq_rev.peek()) {
+					long t = pq_rev.remove();
+					pq_rev.add(a[i]);
+					pq.remove(t);
+					pq.add(a[i]);
+				}
 			}
 
 			out.println(ans);
