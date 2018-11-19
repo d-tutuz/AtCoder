@@ -6,12 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Comparator;
 import java.util.InputMismatchException;
-import java.util.PriorityQueue;
+import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
 
-public class E_2 {
+public class A_3 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -35,34 +35,23 @@ public class E_2 {
 
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt(), k = in.nextInt();
-			long[] a = in.nextLongArray(n);
-
-			PriorityQueue<Long> pq = new PriorityQueue<>();
-			PriorityQueue<Long> pq_rev = new PriorityQueue<>(Comparator.reverseOrder());
-
-			while (pq.size() < k) {
-				pq.add(a[0]);
-				pq_rev.add(a[0]);
+			int n = in.nextInt(), m = in.nextInt();
+			Map<Integer, Integer>[] map = new TreeMap[n];
+			for (int i = 0; i < n; i++) {
+				map[i] = new TreeMap<>();
 			}
 
 			long ans = 0;
-			for (int i = 1; i <= n; i++) {
-
-				long c = pq.remove();
-				pq_rev.remove(c);
-				ans += c;
-				if (i == n) break;
-
-				pq.add(a[i]);
-				pq_rev.add(a[i]);
-
-				while (a[i] < pq_rev.peek()) {
-					long t = pq_rev.remove();
-					pq_rev.add(a[i]);
-					pq.remove(t);
-					pq.add(a[i]);
+			for (int i = 0; i < m; i++) {
+				int a = in.nextInt()-1, b = in.nextInt()-1, l = in.nextInt();
+				if (map[a].containsKey(2540-l)) {
+					ans += map[a].get(2540-l);
 				}
+				if (map[b].containsKey(2540-l)) {
+					ans += map[b].get(2540-l);
+				}
+				map[a].merge(l, 1, Integer::sum);
+				map[b].merge(l, 1, Integer::sum);
 			}
 
 			out.println(ans);

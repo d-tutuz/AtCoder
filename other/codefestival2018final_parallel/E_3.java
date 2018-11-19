@@ -6,12 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Comparator;
 import java.util.InputMismatchException;
-import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
-public class E_2 {
+public class E_3 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -36,36 +34,62 @@ public class E_2 {
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
 			int n = in.nextInt(), k = in.nextInt();
-			long[] a = in.nextLongArray(n);
-
-			PriorityQueue<Long> pq = new PriorityQueue<>();
-			PriorityQueue<Long> pq_rev = new PriorityQueue<>(Comparator.reverseOrder());
-
-			while (pq.size() < k) {
-				pq.add(a[0]);
-				pq_rev.add(a[0]);
+			RangeMinimumQuery rmq = new RangeMinimumQuery(n);
+			for (int i = 0; i < n; i++) {
+				int a = in.nextInt();
+				rmq.update(i, a);
 			}
-
 			long ans = 0;
-			for (int i = 1; i <= n; i++) {
-
-				long c = pq.remove();
-				pq_rev.remove(c);
-				ans += c;
-				if (i == n) break;
-
-				pq.add(a[i]);
-				pq_rev.add(a[i]);
-
-				while (a[i] < pq_rev.peek()) {
-					long t = pq_rev.remove();
-					pq_rev.add(a[i]);
-					pq.remove(t);
-					pq.add(a[i]);
-				}
+			for (int i = 0; i < n; i++) {
+				ans += rmq.query(Math.max(0, i-k+1), i+1);
 			}
-
 			out.println(ans);
+		}
+	}
+
+	static class RangeMinimumQuery {
+		final int inf = (1 << 31) - 1;
+
+		int size;
+		int[] dat;
+
+		// 初期化
+		public RangeMinimumQuery(int n) {
+			size = 1;
+			while (size < n) {
+				size *= 2;
+			}
+			dat = new int[size * 2];
+			for (int i = 0; i < size * 2; i++) {
+				dat[i] = inf;
+			}
+		}
+
+		// k 番目(0-indexed) を a に更新
+		void update(int k, int a) {
+			k += size;
+			dat[k] = a;
+			while (k > 0) {
+				k /= 2;
+				dat[k] = Math.min(dat[2 * k], dat[2 * k + 1]);
+			}
+		}
+
+		// [a, b) の最小値を求める
+		private int query(int a, int b, int k, int l, int r) {
+			if (r <= a || b <= l) return inf;
+
+			if (a <= l && r <= b) {
+				return dat[k];
+			} else {
+				int vl = query(a, b, 2 * k, l, (l+r)/2);
+				int vr = query(a, b, 2 * k + 1, (l+r)/2, r);
+				return Math.min(vl, vr);
+			}
+		}
+
+		int query(int a, int b) {
+			return query(a, b, 1, 0, size);
 		}
 	}
 
