@@ -6,9 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.InputMismatchException;
-import java.util.Set;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 public class D_2 {
@@ -37,29 +37,22 @@ public class D_2 {
 
 			long h = in.nextLong(), w = in.nextLong();
 			int n = in.nextInt();
-			Set<P> set = new HashSet<>();
-			Set<P> target = new HashSet<>();
+			Map<P, Integer> map = new HashMap<>();
 			long[] a = new long[n], b = new long[n];
 			for (int i = 0; i < n; i++) {
 				a[i] = in.nextLong();
 				b[i] = in.nextLong();
-				set.add(new P(a[i], b[i]));
 				for (int j = 0; j < 9; j++) {
 					if (1 < a[i] + mh9[j] && a[i] + mh9[j] < h && 1 < b[i] + mw9[j] && b[i] + mw9[j] < w) {
-						target.add(new P(a[i] + mh9[j], b[i] + mw9[j]));
+						map.merge(new P(a[i] + mh9[j], b[i] + mw9[j]), 1, Integer::sum);
 					}
 				}
 			}
 
 			long[] ans = new long[10];
-			ans[0] = (h-2) * (w-2) - target.size();
-			for (P p : target) {
-				int cnt = 0;
-				for (int i = 0; i < 9; i++) {
-					if (set.contains(new P(p.first+mh9[i], p.second+mw9[i]))) {
-						cnt++;
-					}
-				}
+			ans[0] = (h-2) * (w-2) - map.size();
+			for (P p : map.keySet()) {
+				int cnt = map.get(p);
 				ans[cnt]++;
 			}
 
