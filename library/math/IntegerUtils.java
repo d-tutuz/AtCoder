@@ -196,34 +196,6 @@ public class IntegerUtils {
 		return factInv;
 	}
 
-//	/**
-//	 * 順列(N!)
-//	 *
-//	 * @input ary 順列の対象になる文字列
-//	 * @input startIndex
-//	 * @input endIndex
-//	 * @input list 順列分に増幅した文字列リスト
-//	 *
-//	 * */
-//	public static List<String> permute(char[] ary, int startIndex, int endIndex, List<String> list) {
-//		if (startIndex == endIndex) {
-//			list.add(String.valueOf(ary));
-//		} else {
-//			for (int i = startIndex; i <= endIndex; i++) {
-//				swap(ary, startIndex, i);
-//				permute(ary, startIndex + 1, endIndex, list);
-//				swap(ary, startIndex, i);
-//			}
-//		}
-//		return list;
-//	}
-//
-//	public static void swap(char[] ary, int x, int y) {
-//		char temp = ary[x];
-//		ary[x] = ary[y];
-//		ary[y] = temp;
-//	}
-
 	/**
 	 * 順列(N!)
 	 *
@@ -327,6 +299,19 @@ public class IntegerUtils {
 			ret = Math.min(ret, n[i]);
 		}
 		return ret;
+	}
+
+	// 分割数：j を i に分割するときの組み合わせの数
+	int[][] partition(int sum, int part, final int mod) {
+		int[][] dp = new int[part + 1][sum + 1];
+		dp[0][0] = 1;
+		for (int i = 1; i <= part; i++) {
+			for (int j = 0; j <= sum; j++) {
+				dp[i][j] = dp[i - 1][j] + (j < i ? 0 : dp[i][j - i]);
+				dp[i][j] %= mod;
+			}
+		}
+		return dp;
 	}
 
 
