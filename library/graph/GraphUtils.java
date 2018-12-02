@@ -4,6 +4,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.PriorityQueue;
 
 
 
@@ -124,6 +125,76 @@ public class GraphUtils {
 		public int getSize(int x) {
 			return cnt[findSet(x)];
 		}
+	}
+
+	int dijkstra(int from, int to, List<P>[] g) {
+		final int INF = 1 << 30;
+		int n = g.length;
+		PriorityQueue<P> q = new PriorityQueue<>();
+		int[] cost = new int[n];
+		Arrays.fill(cost, INF);
+		cost[from] = 0;
+		q.add(new P(from, cost[from]));
+
+		while (!q.isEmpty()) {
+
+			P pp = q.remove();
+			for (P p : g[pp.first]) {
+				if (cost[pp.first] + p.second < cost[p.first]) {
+					cost[p.first] = cost[pp.first] + p.second;
+					q.add(new P(p.first, cost[p.first]));
+				}
+			}
+
+		}
+
+		return cost[to];
+	}
+
+	class P implements Comparable<P> {
+		int first, second;
+
+		public P(int first, int second) {
+			super();
+			this.first = first;
+			this.second = second;
+		}
+
+		@Override
+		public String toString() {
+			return "P [first=" + first + ", second=" + second + "]";
+		}
+
+		@Override
+		public int compareTo(P o) {
+			return Integer.compare(this.second, o.second);
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + first;
+			result = prime * result + second;
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			P other = (P) obj;
+			if (first != other.first)
+				return false;
+			if (second != other.second)
+				return false;
+			return true;
+		}
+
 	}
 
 	/**
