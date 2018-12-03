@@ -39,7 +39,7 @@ public class C_3 {
 			memo = new long[s.length+1][s.length+1][2];
 			fill(memo, -1);
 
-			long ans = func(0, 0, 1, 0);
+			long ans = func(0, 1, 1, 0);
 
 			out.println(ans);
 

@@ -47,34 +47,38 @@ public class D {
 				}
 			}
 
-
-			int count24 = 0;
-			int count6 = 0, count4 = 0, count2 = 0;
+			int c2 = 0, c4 = 0, c14 = 0, c24 = 0, c74 = 0;
 
 			for (int i : map.keySet()) {
 				int v = map.get(i);
-				if (map.get(i) >= 6) {
-					count6++;
+				if (v >= 74) {
+					c74++;
 				}
-				if (map.get(i) >= 4) {
-					count4++;
-				} else if (map.get(i) >= 2) {
-					count2++;
+				if (v >= 24) {
+					c24++;
+				}
+				if (v >= 14) {
+					c14++;
+				}
+				if (v >= 4) {
+					c4++;
+				}
+				if (v >= 2) {
+					c2++;
 				}
 			}
 
-//			long ans = count4 * (count4-1) / 2 * count6;
-//			ans += count24 * (count24-1) / 2 *
-//			out.println(ans);
+			long ans = 0;
+			ans += comb(c4) * (c2 - 2);
+			ans += c24 * (c2 - 1);
+			ans += c14 * (c4 - 1);
+			ans += c74;
 
-			out.printf("%d %d %d\n", count6, count4, count2);
+			out.println(ans);
+		}
 
-			out.println("---------------");
-
-			for (int i : map.keySet()) {
-				out.printf("%d %d\n", i, map.get(i));
-			}
-
+		long comb(int n) {
+			return n * (n-1) / 2;
 		}
 
 	}

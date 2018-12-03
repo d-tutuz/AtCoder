@@ -31,18 +31,29 @@ public class C_4 {
 
 	static class TaskX {
 
+		int ans, n;
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			int n = in.nextInt();
-			int[] base = {0, 3, 5, 7};
-
-			int ans = 0;
+			n = in.nextInt();
 			int len = f(n);
+			dfs(0, 0, len, 0);
+			out.println(ans);
 
 		}
 
-		boolean dfs(int ) {
-
+		void dfs(int now, int digit, int len, int bit) {
+			if (digit == len) {
+				if (bit == 7 && now <= n) {
+					ans++;
+				}
+				return;
+			}
+			dfs(now * 10 + 3, digit+1, len, bit | 1 << 0);
+			dfs(now * 10 + 5, digit+1, len, bit | 1 << 1);
+			dfs(now * 10 + 7, digit+1, len, bit | 1 << 2);
+			if (now == 0) {
+				dfs(now * 10 + 0, digit+1, len, bit);
+			}
 		}
 
 		int f(int n) {
