@@ -41,53 +41,19 @@ public class D {
 
 			int n = in.nextInt();
 			long[] x = new long[n], y = new long[n];
-			long[] u = new long[n], v = new long[n];
-
 			for (int i = 0; i < n; i++) {
 				x[i] = in.nextLong();
 				y[i] = in.nextLong();
-				u[i] = x[i] + y[i];
-				v[i] = x[i] - y[i];
-				if (abs(x[i] - y[i]) % 2 != abs(x[0] - y[0]) % 2) {
+				if (abs(x[0] + y[0] - x[i] - y[i]) % 2 != 0) {
 					out.println(-1);
 					return;
 				}
 			}
 
 			List<Long> list = new ArrayList<>();
-			for (int i = 0; i <= 30; i++) {
-				list.add(1L << i);
-			}
-			if (abs(x[0] - y[0]) % 2 == 0) {
-				list.add(1L);
-			}
+			for (int i = 0; i <= 30; i++) list.add(1L << i);
+			if (abs(x[0] + y[0]) % 2 == 0) list.add(1L);
 			Collections.sort(list, Comparator.reverseOrder());
-
-			String[] ans = new String[n];
-			for (int i = 0; i < n; i++) {
-				StringBuilder sb = new StringBuilder();
-				for (int j = 0; j < list.size(); j++) {
-					long d = list.get(j);
-					if (u[i] >= 0 && v[i] >= 0) {
-						sb.append("R");
-						u[i] -= d;
-						v[i] -= d;
-					} else if (u[i] >= 0 && v[i] <= 0) {
-						sb.append("U");
-						u[i] -= d;
-						v[i] += d;
-					} else if (u[i] <= 0 && v[i] >= 0) {
-						sb.append("D");
-						u[i] += d;
-						v[i] -= d;
-					} else if (u[i] <= 0 && v[i] <= 0) {
-						sb.append("L");
-						u[i] += d;
-						v[i] += d;
-					}
-				}
-				ans[i] = sb.toString();
-			}
 
 			out.println(list.size());
 			for (int i = 0; i < list.size(); i++) {
@@ -95,10 +61,36 @@ public class D {
 				out.print(list.get(i));
 			}
 			out.print("\n");
-			for (String str : ans) {
-				out.println(str);
-			}
 
+			for (int i = 0; i < n; i++) {
+
+				long u = x[i] + y[i];
+				long v = x[i] - y[i];
+				StringBuilder sb = new StringBuilder();
+
+				for (int j = 0; j < list.size(); j++) {
+					long d = list.get(j);
+					if (u >= 0 && v >= 0) {
+						u -= d;
+						v -= d;
+						sb.append("R");
+					} else if (u >= 0 && v < 0) {
+						u -= d;
+						v += d;
+						sb.append("U");
+					} else if (u < 0 && v >= 0) {
+						u += d;
+						v -= d;
+						sb.append("D");
+					} else if (u < 0 && v < 0) {
+						u += d;
+						v += d;
+						sb.append("L");
+					}
+				}
+
+				out.println(sb.toString());
+			}
 		}
 	}
 

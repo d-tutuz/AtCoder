@@ -1,4 +1,6 @@
-package abc115;
+package adve;
+
+import static java.lang.Math.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,12 +8,17 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.StringTokenizer;
 
-public class D_2 {
+public class ABC111 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -33,88 +40,39 @@ public class D_2 {
 
 	static class TaskX {
 
-		long[] a;
-		Map<P, Long> memo = new HashMap<>();
 		public void solve(int testNumber, InputReader in, PrintWriter out) {
 
-			a = new long[60];
-			a[0] = 1;
-			for (int i = 1; i < 60; i++) {
-				a[i] = 3 + a[i-1] * 2;
-			}
-
 			int n = in.nextInt();
-			long x = in.nextLong();
-			long sum = func(n, x);
-			out.println(sum);
+			int[] v = in.nextIntArray(n);
 
-		}
+			Map<Integer, Integer> odd = new HashMap<>();
+			Map<Integer, Integer> even = new HashMap<>();
 
-		long func(int L, long k) {
-			if (k == 0) return 0L;
-			if (L == 0) return 1L;
-
-			if (memo.containsKey(new P(L, k))) {
-				return memo.get(new P(L, k));
+			for (int i = 0; i < n; i++) {
+				if (i % 2 == 0) {
+					even.merge(v[i], 1, Integer::sum);
+				} else {
+					odd.merge(v[i], 1, Integer::sum);
+				}
 			}
 
-			long ret = 0;
-			long c = a[L]/2 + 1;
-			if (k < c) {
-				ret += func(L-1, k-1);
-			} else if (k == c) {
-				ret += func(L-1, k-1) + 1;
-			} else if (k > c) {
-				ret += func(L-1, a[L-1]) + 1 + func(L-1, k - c);
+			odd.put(INF, 0);
+			even.put(INF, 0);
+
+			List<Entry<Integer, Integer>> oList = getSortMapList(odd);
+			List<Entry<Integer, Integer>> eList = getSortMapList(even);
+
+			int ans = INF;
+			if (oList.get(0).getKey().equals(eList.get(0).getKey())) {
+				ans = min(ans, n/2 - eList.get(1).getValue() + n/2 - oList.get(0).getValue());
+				ans = min(ans, n/2 - oList.get(1).getValue() + n/2 - eList.get(0).getValue());
+			} else {
+				ans = min(ans, n/2 - eList.get(0).getValue() + n/2 - oList.get(0).getValue());
 			}
 
-			memo.put(new P(L, k), ret);
-			return ret;
-		}
-
-		static class P {
-			int first;
-			long second;
-
-			public P(int first, long second) {
-				super();
-				this.first = first;
-				this.second = second;
-			}
-
-			@Override
-			public String toString() {
-				return "P [first=" + first + ", second=" + second + "]";
-			}
-
-			@Override
-			public int hashCode() {
-				final int prime = 31;
-				int result = 1;
-				result = prime * result + first;
-				result = prime * result + (int) (second ^ (second >>> 32));
-				return result;
-			}
-
-			@Override
-			public boolean equals(Object obj) {
-				if (this == obj)
-					return true;
-				if (obj == null)
-					return false;
-				if (getClass() != obj.getClass())
-					return false;
-				P other = (P) obj;
-				if (first != other.first)
-					return false;
-				if (second != other.second)
-					return false;
-				return true;
-			}
-
+			out.println(ans);
 		}
 	}
-
 
 	static class InputReader {
 		BufferedReader in;
@@ -203,6 +161,21 @@ public class D_2 {
 			in = new BufferedReader(new InputStreamReader(inputStream));
 			tok = new StringTokenizer("");
 		}
+	}
+
+	static <T> List<Map.Entry<T, Integer>> getSortMapList(Map<T, Integer> map) {
+		List<Map.Entry<T, Integer>> list = new ArrayList<Map.Entry<T, Integer>>(
+				map.entrySet());
+		Collections.sort(list, new Comparator<Map.Entry<T, Integer>>() {
+
+			@Override
+			public int compare(Entry<T, Integer> entry1,
+					Entry<T, Integer> entry2) {
+				return ((Integer) entry2.getValue()).compareTo((Integer) entry1
+						.getValue());
+			}
+		});
+		return list;
 	}
 
 }
