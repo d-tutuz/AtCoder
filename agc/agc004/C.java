@@ -1,4 +1,4 @@
-package caddi2018;
+package agc004;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class D_4 {
+public class C {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -32,9 +32,60 @@ public class D_4 {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt();
-			long[] a = in.nextLongArray(n);
+	        int h = in.nextInt(), w = in.nextInt();
+	        char[][] s = new char[h][w];
+	        for (int i = 0; i < h; i++) {
+	            s[i] = in.nextChars();
+	        }
 
+	        char[][] b = new char[h][w], r = new char[h][w];
+	        fill(b, '.');
+	        fill(r, '.');
+
+	        for (int i = 0; i < h; i++) {
+				for (int j = 0; j < (i % 2 == 0 ? w-1 : 1); j++) {
+					b[i][j] = '#';
+				}
+			}
+
+	        for (int i = 0; i < h; i++) {
+				for (int j = w-1; j >= (i % 2 == 0 ? w-1 : 1); j--) {
+					r[i][j] = '#';
+				}
+			}
+
+	        for (int i = 0; i < h; i++) {
+				for (int j = 0; j < w; j++) {
+					if (s[i][j] == '#') {
+						b[i][j] = '#';
+						r[i][j] = '#';
+					}
+				}
+			}
+
+	        print(r, out);
+	        out.print("\n");
+	        print(b, out);
+
+		}
+	}
+
+	static void fill(char[][] a, char v) {
+		for (int i = 0; i < a.length; i++) {
+			for (int j = 0; j < a[0].length; j++) {
+				a[i][j] = v;
+			}
+		}
+	}
+
+	static void print(char[][] a, PrintWriter out) {
+		for (int i = 0; i < a.length; i++) {
+			for (int j = 0; j < a[0].length; j++) {
+				if (j > 0)
+					out.print(" ");
+				out.print(a[i][j]);
+			}
+			out.print("\n");
 		}
 	}
 

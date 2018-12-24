@@ -1,6 +1,4 @@
-package caddi2018;
-
-import static java.lang.Math.*;
+package agc004;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,7 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
 
 public class D {
 
@@ -32,38 +33,44 @@ public class D {
 
 	static class TaskX {
 
+		int n, k, ans;
+		List<Integer>[] g;
+		@SuppressWarnings("unchecked")
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt();
-			long[] a = in.nextLongArray(n);
-			long sum = 0;
-			for (long l : a) {
-				sum += l;
-			}
+			n = in.nextInt(); k = in.nextInt();
+			g = new ArrayList[n+1];
+			g = Stream.generate(ArrayList::new).limit(n+1).toArray(List[]::new);
 
-			boolean win = true;
 			for (int i = 0; i < n; i++) {
-				if (a[i] % 2 == 1) continue;
-				win = false;
+				int t = in.nextInt();
+				if (i == 0) {
+					if (t != 1) ans++;
+					continue;
+				}
+				g[t].add(i+1);
+				g[i+1].add(t);
 			}
 
-			if (win) {
-				out.println("first");
-				return;
-			}
+			dfs(1, -1);
 
-			boolean lose = true;
-			for (int i = 0; i < n; i++) {
-				if (abs(a[i] - a[0]) % 2 == 0) continue;
-				lose = false;
-			}
+			out.println(ans);
+		}
 
-			if (sum % 2 == 0 && lose) {
-				out.println("second");
-			} else {
-				out.println("first");
+		int dfs(int cur, int par) {
+			int m = 0;
+			for (int to : g[cur]) {
+				if (to == par) continue;
+				m = Math.max(m, dfs(to, cur));
 			}
+			m++;
 
+			if (cur == 1 || par == 1) return 0;
+			if (m < k) return m;
+
+			ans++;
+
+			return 0;
 		}
 	}
 

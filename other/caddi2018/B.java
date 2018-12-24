@@ -1,7 +1,5 @@
 package caddi2018;
 
-import static java.lang.Math.*;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,7 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class D {
+public class B {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -34,36 +32,16 @@ public class D {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt();
-			long[] a = in.nextLongArray(n);
-			long sum = 0;
-			for (long l : a) {
-				sum += l;
-			}
-
-			boolean win = true;
+			int n = in.nextInt(), h = in.nextInt(), w = in.nextInt();
+			long[] a = new long[n], b = new long[n];
+			long ans = 0;
 			for (int i = 0; i < n; i++) {
-				if (a[i] % 2 == 1) continue;
-				win = false;
+				a[i] = in.nextLong();
+				b[i] = in.nextLong();
+				ans += Math.min((a[i]/h), (b[i]/w));
 			}
 
-			if (win) {
-				out.println("first");
-				return;
-			}
-
-			boolean lose = true;
-			for (int i = 0; i < n; i++) {
-				if (abs(a[i] - a[0]) % 2 == 0) continue;
-				lose = false;
-			}
-
-			if (sum % 2 == 0 && lose) {
-				out.println("second");
-			} else {
-				out.println("first");
-			}
-
+			out.println(ans);
 		}
 	}
 

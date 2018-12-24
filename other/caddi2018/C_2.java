@@ -35,14 +35,13 @@ public class C_2 {
 
 			long n = in.nextLong(), p = in.nextLong();
 			TreeMap<Long, Long> map = new TreeMap<>();
-			long pp = p;
-			for (long i = 2; i <= Math.sqrt(p)+1; i++) {
-				while (pp % i == 0) {
-					pp /= i;
+			for (long i = 2; i * i <= p; i++) {
+				while (p % i == 0) {
+					p /= i;
 					map.merge(i, 1L, Long::sum);
 				}
 			}
-			if (pp > 1) map.merge(pp, 1L, Long::sum);
+			if (p > 1) map.merge(p, 1L, Long::sum);
 
 			long ans = 1;
 

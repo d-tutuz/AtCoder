@@ -1,7 +1,5 @@
 package caddi2018;
 
-import static java.lang.Math.*;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,23 +33,15 @@ public class D_2 {
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
 			int n = in.nextInt();
-			long[] a = in.nextLongArray(n);
-			long sum = 0;
-			for (long l : a) {
-				sum += l;
-			}
-
+			int[] a = in.nextIntArray(n);
 			boolean lose = true;
 			for (int i = 0; i < n; i++) {
-				if (abs(a[i] - a[0]) % 2 == 0) continue;
+				if (a[i] % 2 == 0) continue;
 				lose = false;
+				break;
 			}
 
-			if (sum % 2 == 0 && lose) {
-				out.println("second");
-			} else {
-				out.println("first");
-			}
+			out.println(lose ? "second" : "first");
 
 		}
 	}

@@ -6,10 +6,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.TreeMap;
 
 public class C {
 
@@ -35,39 +33,23 @@ public class C {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			long n = in.nextLong(), p = in.nextLong();
-			List<Long> list = new ArrayList<>();
-			for (long i = 1; i * i <= p; i++) {
-				long tmp = p;
-				if (tmp % i == 0) {
-					list.add(i);
-					list.add(tmp/i);
-					tmp /= i;
+			long N = in.nextLong(), P = in.nextLong();
+			TreeMap<Long, Long> map = new TreeMap<>();
+			for (long i = 2; i * i <= P; i++) {
+				while (P % i == 0) {
+					map.merge(i, 1L, Long::sum);
+					P /= i;
 				}
 			}
+			if (P > 1) map.merge(P, 1L, Long::sum);
 
-			Collections.sort(list);
-			int l = 0, r = list.size();
-			while (r - l > 1) {
-				int m = (r+l) / 2;
-				long g = list.get(m);
-				long gn = 1;
-				boolean ok = true;
-				for (int i = 0; i < n; i++) {
-					if (gn > p || gn < 0) {
-						ok = false;
-						break;
-					}
-					gn *= g;
-				}
-				if (p % gn == 0 && ok) {
-					l = m;
-				} else {
-					r = m;
-				}
+			long ans = 1;
+			for (long p : map.keySet()) {
+				long e = map.get(p);
+				ans *= (long)Math.pow(p, e/N);
 			}
 
-			out.println(list.get(l));
+			out.println(ans);
 		}
 	}
 

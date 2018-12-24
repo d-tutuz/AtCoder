@@ -1,7 +1,5 @@
 package caddi2018;
 
-import static java.lang.Math.*;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,30 +28,53 @@ public class D_3 {
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
+	static final int WIN = 1, LOSE = 0;
+
 	static class TaskX {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt();
-			long[] a = in.nextLongArray(n);
-			int cnt = 0;
-			for (long l : a) {
-				if (l % 2 == 0) cnt++;
+			int[][] game = new int[10][10];
+			fill(game, -1);
+
+			game[0][0] = WIN;
+			game[1][1] = WIN;
+			for (int i = 1; i < 10; i++) {
+				game[0][i] = i % 2 == 1 ? WIN : LOSE;
+				game[i][0] = i % 2 == 1 ? WIN : LOSE;
 			}
 
-			boolean lose = true;
-			for (int i = 0; i < n; i++) {
-				if (abs(a[i] - a[0]) % 2 == 0) continue;
-				lose = false;
+			for (int h = 1; h < 10; h++) {
+				for (int w = 1; w < 10; w++) {
+					if (game[h][w] != -1) continue;
+					if (game[h-1][w-1] == 0 || game[h-1][w] == 0 || game[h][w-1] == 0) {
+						game[h][w] = WIN;
+					} else {
+						game[h][w] = LOSE;
+					}
+				}
 			}
 
+			print(game, out);
+		}
+	}
 
-			if (cnt >= 2 && lose) {
-				out.println("second");
-			} else {
-				out.println("first");
+	static void fill(int[][] a, int v) {
+		for (int i = 0; i < a.length; i++) {
+			for (int j = 0; j < a[0].length; j++) {
+				a[i][j] = v;
 			}
+		}
+	}
 
+	static void print(int[][] a, PrintWriter out) {
+		for (int i = 0; i < a.length; i++) {
+			for (int j = 0; j < a[0].length; j++) {
+				if (j > 0)
+					out.print(" ");
+				out.print(a[i][j]);
+			}
+			out.print("\n");
 		}
 	}
 
