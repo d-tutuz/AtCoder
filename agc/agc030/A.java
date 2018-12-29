@@ -1,4 +1,4 @@
-package agc017;
+package agc030;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class A_2 {
+public class A {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -32,26 +32,24 @@ public class A_2 {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt(), p = in.nextInt();
-			long[][] dp = new long[n+1][2];
-			int[] a = in.nextIntArray(n);
-
-			dp[0][0] = 1;
-
-			for (int i = 0; i < n; i++) {
-				if (a[i] % 2 == 0) {
-					dp[i+1][0] += dp[i][0];
-					dp[i+1][1] += dp[i][1];
-				} else {
-					dp[i+1][0] += dp[i][1];
-					dp[i+1][1] += dp[i][0];
-				}
-				dp[i+1][0] += dp[i][0];
-				dp[i+1][1] += dp[i][1];
+			long a = in.nextLong(), b = in.nextLong(), c = in.nextLong();
+			long ans = 0;
+			if (b <= c) {
+				ans += 2 * b;
+				c -= b;
+				b = 0;
+			} else {
+				out.println(b + c);
+				return;
 			}
 
-			out.println(dp[n][p]);
-
+			while (c > 0 && a > 0) {
+				c--;
+				a--;
+				ans++;
+			}
+			if (c > 0) ans++;
+			out.println(ans);
 		}
 	}
 

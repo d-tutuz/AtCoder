@@ -1,4 +1,4 @@
-package agc017;
+package agc030;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class A_2 {
+public class B_2 {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -32,25 +32,82 @@ public class A_2 {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt(), p = in.nextInt();
-			long[][] dp = new long[n+1][2];
-			int[] a = in.nextIntArray(n);
-
-			dp[0][0] = 1;
-
-			for (int i = 0; i < n; i++) {
-				if (a[i] % 2 == 0) {
-					dp[i+1][0] += dp[i][0];
-					dp[i+1][1] += dp[i][1];
-				} else {
-					dp[i+1][0] += dp[i][1];
-					dp[i+1][1] += dp[i][0];
-				}
-				dp[i+1][0] += dp[i][0];
-				dp[i+1][1] += dp[i][1];
+			int l = in.nextInt(), n = in.nextInt();
+			long[] x = new long[n+2];
+			for (int i = 1; i < n+1; i++) {
+				x[i] = in.nextLong();
+			}
+			x[n+1] = l;
+			long[] diff = new long[n+1];
+			for (int i = 0; i < n+1; i++) {
+				diff[i] = x[i+1] - x[i];
 			}
 
-			out.println(dp[n][p]);
+			long[] left = new long[n+2];
+			long[] right = new long[n+2];
+			for (int i = 0; i < n+1; i++) {
+				left[i+1] = x[n+1] - x[n-i];
+				right[i+1] = x[i+1];
+			}
+
+			long tmp1 = 0;
+
+			int m = n - 1;
+			int migi = 2, hidari = 1;
+			boolean isFirst = true;
+			while (m > 0) {
+				if (isFirst) {
+					tmp1 += left[migi] * m;
+					isFirst = false;
+				} else {
+					tmp1 += (left[migi] - left[migi-1]) * m;
+				}
+				migi++;
+				m -= 2;
+			}
+
+			m = n - 2;
+			while (m > 0) {
+				if (isFirst) {
+					tmp1 += right[hidari] * m;
+					isFirst = false;
+				} else {
+					tmp1 += (right[hidari] - right[hidari-1]) * m;
+				}
+				hidari++;
+				m -= 2;
+			}
+
+
+			long tmp2 = 0;
+
+			m = n - 2;
+			migi = 2; hidari = 1;
+			isFirst = true;
+			while (m > 0) {
+				if (isFirst) {
+					tmp2 += left[migi] * m;
+					isFirst = false;
+				} else {
+					tmp2 += (left[migi] - left[migi-1]) * m;
+				}
+				migi++;
+				m -= 2;
+			}
+
+			m = n - 1;
+			while (m > 0) {
+				if (isFirst) {
+					tmp2 += right[hidari] * m;
+					isFirst = false;
+				} else {
+					tmp2 += (right[hidari] - right[hidari-1]) * m;
+				}
+				hidari++;
+				m -= 2;
+			}
+
+			out.println(Math.max(tmp1, tmp2));
 
 		}
 	}

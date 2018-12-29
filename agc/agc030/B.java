@@ -1,4 +1,6 @@
-package agc017;
+package agc030;
+
+import static java.lang.Math.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,7 +10,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class A_2 {
+public class B {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -32,25 +34,29 @@ public class A_2 {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt(), p = in.nextInt();
-			long[][] dp = new long[n+1][2];
-			int[] a = in.nextIntArray(n);
+			int l = in.nextInt(), n = in.nextInt();
+			long[] x = new long[n+2];
+			long[] d = new long[n+1];
+			for (int i = 1; i < n+1; i++) {
+				x[i] = in.nextLong();
+			}
+			x[n+1] = l;
 
-			dp[0][0] = 1;
+			for (int i = 0; i < n+1; i++) {
+				d[i] = x[i+1] - x[i];
+			}
+			long[] dc = d.clone();
+			Arrays.parallelPrefix(dc, Math::addExact);
 
-			for (int i = 0; i < n; i++) {
-				if (a[i] % 2 == 0) {
-					dp[i+1][0] += dp[i][0];
-					dp[i+1][1] += dp[i][1];
-				} else {
-					dp[i+1][0] += dp[i][1];
-					dp[i+1][1] += dp[i][0];
-				}
-				dp[i+1][0] += dp[i][0];
-				dp[i+1][1] += dp[i][1];
+			long ans = Math.max(l - d[0], l - d[n]);
+
+			for (int i = 1; i <= n-1; i++) {
+				long max = max(dc[i-1], l - dc[i]);
+				long min = min(dc[i-1], l - dc[i]);
+				ans = max(max * 2 + min, ans);
 			}
 
-			out.println(dp[n][p]);
+			out.println(ans);
 
 		}
 	}
