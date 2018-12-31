@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class B {
+public class B_4 {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -30,51 +30,44 @@ public class B {
 
 	static class TaskX {
 
-		long L;
-		int n;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			L = in.nextInt(); n = in.nextInt();
-			long[] x = new long[n+2], s = new long[n+2];
-
-			for (int i = 1; i < n+1; i++) {
-				x[i] = in.nextLong();
-				s[i] = s[i-1] + x[i];
+			long L = in.nextLong();
+			int N = in.nextInt();
+			long[] r = new long[N+2];
+			for (int i = 1; i < N+1; i++) {
+				r[i] = in.nextLong();
 			}
-			x[n+1] = L;
+			r[N+1] = L;
+			long[] l = new long[N+2];
+			for (int i = 0; i < N+2; i++) {
+				l[i] = L - r[N+1-i];
+			}
+
+			long[][][] dp = new long[N+1][N+1][2];
+			for (int i = 0; i < N; i++) {
+				for (int j = 0; j < N; j++) {
+					dp[i+1][j][0] = max(dp[i+1][j][0], dp[i][j][0] + l[i+1] - l[i], dp[i][j][1] + l[i+1] + r[j]);
+					dp[i][j+1][1] = max(dp[i][j+1][1], dp[i][j][1] + r[j+1] - r[j], dp[i][j][0] + r[j+1] + l[i]);
+				}
+			}
 
 			long ans = 0;
-
-			// 右 左 右 ...
-			for (int i = 1; i <= n; i++) {
-				ans = Math.max(ans, calc(i, x, s));
-			}
-
-			// 左 右 左...
-			long[] rx = new long[n+2];
-			for (int i = 0; i < n+2; i++) {
-				rx[i] = L - x[n+1-i];
-			}
-			long[] rs = rx.clone();
-			Arrays.parallelPrefix(rs, Math::addExact);
-			for (int i = 1; i <= n; i++) {
-				ans = Math.max(ans, calc(i, rx, rs));
+			for (int i = 0; i <= N; i++) {
+				ans = max(ans, dp[i][N-i][0], dp[i][N-i][1]);
 			}
 
 			out.println(ans);
-		}
 
-		long calc(int i, long[] x, long[] s) {
-			long tmp = 0;
-			if ((n + i) % 2 == 0) {
-				int m = (n+i) / 2;
-				tmp = 2 * (s[m-1] - s[i-1]) + x[m] - 2 * (s[n] - s[m]) + (long)(n-i) * L;
-			} else {
-				int m = (n+i+1) / 2;
-				tmp = 2 * (s[m-1] - s[i-1]) - x[m] - 2 * (s[n] - s[m]) + (long)(n-i) * L;
-			}
-			return tmp;
 		}
+	}
+
+	static long max(long... n) {
+		long ret = n[0];
+		for (int i = 0; i < n.length; i++) {
+			ret = Math.max(ret, n[i]);
+		}
+		return ret;
 	}
 
 	static class MyInput {

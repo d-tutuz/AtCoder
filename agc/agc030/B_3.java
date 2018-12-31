@@ -1,5 +1,7 @@
 package agc030;
 
+import static java.lang.Math.*;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,7 +10,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class B {
+public class B_3 {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -34,44 +36,48 @@ public class B {
 		int n;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			L = in.nextInt(); n = in.nextInt();
-			long[] x = new long[n+2], s = new long[n+2];
+			L = in.nextLong();
+			n = in.nextInt();
 
+			if (n > 2000) return;
+
+			long[] x = new long[n+2];
 			for (int i = 1; i < n+1; i++) {
 				x[i] = in.nextLong();
-				s[i] = s[i-1] + x[i];
 			}
 			x[n+1] = L;
 
 			long ans = 0;
-
-			// 右 左 右 ...
-			for (int i = 1; i <= n; i++) {
-				ans = Math.max(ans, calc(i, x, s));
+			// 右にi本進んであとはジグザグに動く
+			for (int i = 1; i < n+1; i++) {
+				ans = max(ans, calc(i, x));
 			}
 
-			// 左 右 左...
+			// 左にi本進んであとはジグザグに動く
 			long[] rx = new long[n+2];
 			for (int i = 0; i < n+2; i++) {
 				rx[i] = L - x[n+1-i];
 			}
-			long[] rs = rx.clone();
-			Arrays.parallelPrefix(rs, Math::addExact);
-			for (int i = 1; i <= n; i++) {
-				ans = Math.max(ans, calc(i, rx, rs));
+			for (int i = n; i >= 1; i--) {
+				ans = max(ans, calc(i, rx));
 			}
 
 			out.println(ans);
 		}
 
-		long calc(int i, long[] x, long[] s) {
+		long calc(int i, long[] x) {
 			long tmp = 0;
-			if ((n + i) % 2 == 0) {
-				int m = (n+i) / 2;
-				tmp = 2 * (s[m-1] - s[i-1]) + x[m] - 2 * (s[n] - s[m]) + (long)(n-i) * L;
-			} else {
-				int m = (n+i+1) / 2;
-				tmp = 2 * (s[m-1] - s[i-1]) - x[m] - 2 * (s[n] - s[m]) + (long)(n-i) * L;
+			int l = i, r = n, c = 0;
+			tmp += abs(x[l] - x[0]);
+			while (r - l >= 1) {
+				if (c % 2 == 0) {
+					tmp += abs(x[l] - x[0]) + abs(x[n+1] - x[r]);
+					l++;
+				} else {
+					tmp += abs(x[l] - x[0]) + abs(x[n+1] - x[r]);
+					r--;
+				}
+				c++;
 			}
 			return tmp;
 		}

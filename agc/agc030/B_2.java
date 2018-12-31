@@ -1,5 +1,7 @@
 package agc030;
 
+import static java.lang.Math.*;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,83 +34,55 @@ public class B_2 {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int l = in.nextInt(), n = in.nextInt();
+			long L = in.nextLong();
+			int n = in.nextInt();
+
+			if (n > 2000) return;
+
 			long[] x = new long[n+2];
 			for (int i = 1; i < n+1; i++) {
 				x[i] = in.nextLong();
 			}
-			x[n+1] = l;
-			long[] diff = new long[n+1];
-			for (int i = 0; i < n+1; i++) {
-				diff[i] = x[i+1] - x[i];
-			}
+			x[n+1] = L;
 
-			long[] left = new long[n+2];
-			long[] right = new long[n+2];
-			for (int i = 0; i < n+1; i++) {
-				left[i+1] = x[n+1] - x[n-i];
-				right[i+1] = x[i+1];
-			}
-
-			long tmp1 = 0;
-
-			int m = n - 1;
-			int migi = 2, hidari = 1;
-			boolean isFirst = true;
-			while (m > 0) {
-				if (isFirst) {
-					tmp1 += left[migi] * m;
-					isFirst = false;
-				} else {
-					tmp1 += (left[migi] - left[migi-1]) * m;
+			long ans = 0;
+			// 右にi本進んであとはジグザグに動く
+			for (int i = 1; i < n+1; i++) {
+				long tmp = 0;
+				int l = i, r = n, c = 0;
+				tmp += abs(x[l] - x[0]);
+				while (r - l >= 1) {
+					if (c % 2 == 0) {
+						tmp += abs(x[l] - x[0]) + abs(x[n+1] - x[r]);
+						l++;
+					} else {
+						tmp += abs(x[l] - x[0]) + abs(x[n+1] - x[r]);
+						r--;
+					}
+					c++;
 				}
-				migi++;
-				m -= 2;
+				ans = max(ans, tmp);
 			}
 
-			m = n - 2;
-			while (m > 0) {
-				if (isFirst) {
-					tmp1 += right[hidari] * m;
-					isFirst = false;
-				} else {
-					tmp1 += (right[hidari] - right[hidari-1]) * m;
+			// 左にi本進んであとはジグザグに動く
+			for (int i = n; i >= 1; i--) {
+				long tmp = 0;
+				int l = 1, r = i, c = 1;
+				tmp += abs(x[n+1] - x[r]);
+				while (r - l >= 1) {
+					if (c % 2 == 0) {
+						tmp += abs(x[l] - x[0]) + abs(x[n+1] - x[r]);
+						l++;
+					} else {
+						tmp += abs(x[l] - x[0]) + abs(x[n+1] - x[r]);
+						r--;
+					}
+					c++;
 				}
-				hidari++;
-				m -= 2;
+				ans = max(ans, tmp);
 			}
 
-
-			long tmp2 = 0;
-
-			m = n - 2;
-			migi = 2; hidari = 1;
-			isFirst = true;
-			while (m > 0) {
-				if (isFirst) {
-					tmp2 += left[migi] * m;
-					isFirst = false;
-				} else {
-					tmp2 += (left[migi] - left[migi-1]) * m;
-				}
-				migi++;
-				m -= 2;
-			}
-
-			m = n - 1;
-			while (m > 0) {
-				if (isFirst) {
-					tmp2 += right[hidari] * m;
-					isFirst = false;
-				} else {
-					tmp2 += (right[hidari] - right[hidari-1]) * m;
-				}
-				hidari++;
-				m -= 2;
-			}
-
-			out.println(Math.max(tmp1, tmp2));
-
+			out.println(ans);
 		}
 	}
 
