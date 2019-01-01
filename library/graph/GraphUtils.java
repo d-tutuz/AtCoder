@@ -95,11 +95,11 @@ public class GraphUtils {
 			cnt[x] = 1;
 		}
 
-		public int findSet(int x) {
-			return p[x] == x ? x : findSet(p[x]);
+		public int root(int x) {
+			return p[x] == x ? x : root(p[x]);
 		}
 
-		public void link(int x, int y) {
+		private void link(int x, int y) {
 			if (rank[x] > rank[y]) {
 				p[y] = x;
 			} else if (rank[x] < rank[y]) {
@@ -115,15 +115,15 @@ public class GraphUtils {
 		}
 
 		public void unite(int x, int y) {
-			link(findSet(x), findSet(y));
+			link(root(x), root(y));
 		}
 
 		public boolean same(int x, int y) {
-			return findSet(x) == findSet(y);
+			return root(x) == root(y);
 		}
 
 		public int getSize(int x) {
-			return cnt[findSet(x)];
+			return cnt[root(x)];
 		}
 	}
 
