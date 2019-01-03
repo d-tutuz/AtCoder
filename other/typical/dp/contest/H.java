@@ -8,11 +8,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
 
-public class C {
+public class H {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		InputStream inputStream = System.in;
 		OutputStream outputStream = System.out;
 		MyInput in = new MyInput(inputStream);
@@ -32,40 +35,94 @@ public class C {
 
 	static class TaskX {
 
+		@SuppressWarnings("unchecked")
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int K = in.nextInt();
-			int N = 1 << K;
-			double[] r = new double[1024];
-			double[][] dp = new double[1024][11];
+			int N = in.nextInt(), W = in.nextInt(), C = in.nextInt();
+			int[][] dp = new int[51][W+1];
+			List<P>[] item = new ArrayList[51];
+			item = Stream.generate(ArrayList::new).limit(51).toArray(List[]::new);
+
 			for (int i = 0; i < N; i++) {
-				r[i] = in.nextDouble();
-				dp[i][0] = 1.0;
+				int w = in.nextInt(), v = in.nextInt(), c = in.nextInt()-1;
+				item[c].add(new P(w, v));
 			}
 
-			for (int j = 0; j <= K; j++) {
-				for (int i = 0; i < N; i++) {
-					int base = (i >> j) << j;
-					for (int k = base; k < base + (1 << j); k++) {
-						if ((i >> (j-1) & 1) == (k >> (j-1) & 1)) continue;
-						dp[i][j] += dp[i][j-1] * dp[k][j-1] * win(r[i], r[k]);
+			for (int i = 0; i < 50; i++) {
+
+				// 色 i についての更新(新色)
+
+				// 色 [0, i-1] を使ったDPの結果
+				int[][] dp2 = copy(dp);
+				for (int l = 0; l < C; l++) {
+					for (int j = 0; j < item[i].size(); j++) {
+						for (int k = W; k - item[i].get(j).w >= 0; k--) {
+							dp2[l][k] = max(dp2[l][k], dp2[l][k - item[i].get(j).w] + item[i].get(j).v);
+						}
+					}
+				}
+
+				for (int l = 0; l < C; l++) {
+					for (int j = 0; j <= W; j++) {
+						dp[l+1][j] = max(dp[l+1][j], dp2[l][j]);
 					}
 				}
 			}
 
-			for (int i = 0; i < N; i++) {
-				out.printf("%.12f\n", dp[i][K]);
-			}
-		}
-
-		// レート rp が勝つ確率
-		double win(double Rp, double Rq) {
-			return 1 / (1 + pow(10, (Rq-Rp)/400));
+			out.println(dp[C][W]);
 		}
 	}
 
-	static String zeroPad(String str, int len) {
-		return String.format("%" + len + "s", str).replace(" ", "0");
+	static int[][] copy(int[][] src) {
+		int n = src.length, m = src[0].length;
+		int[][] dst = new int[n][m];
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < m; j++) {
+				dst[i][j] = src[i][j];
+			}
+		}
+		return dst;
+	}
+
+	static class P {
+		int w, v;
+
+		public P(int w, int v) {
+			super();
+			this.w = w;
+			this.v = v;
+		}
+
+		@Override
+		public String toString() {
+			return "P [w=" + w + ", v=" + v + "]";
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + w;
+			result = prime * result + v;
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			P other = (P) obj;
+			if (w != other.w)
+				return false;
+			if (v != other.v)
+				return false;
+			return true;
+		}
+
 	}
 
 	static class MyInput {

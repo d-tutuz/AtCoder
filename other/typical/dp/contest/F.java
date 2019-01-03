@@ -1,7 +1,5 @@
 package typical.dp.contest;
 
-import static java.lang.Math.*;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,9 +8,9 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class C {
+public class F {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		InputStream inputStream = System.in;
 		OutputStream outputStream = System.out;
 		MyInput in = new MyInput(inputStream);
@@ -32,40 +30,24 @@ public class C {
 
 	static class TaskX {
 
+		int n, k;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int K = in.nextInt();
-			int N = 1 << K;
-			double[] r = new double[1024];
-			double[][] dp = new double[1024][11];
-			for (int i = 0; i < N; i++) {
-				r[i] = in.nextDouble();
-				dp[i][0] = 1.0;
+			n = in.nextInt(); k = in.nextInt();
+			long[] dp = new long[n+1], sum = new long[n+1];
+			sum[1] = 1;
+			dp[0] = 1;
+			for (int i = 1; i < n; i++) {
+				dp[i+1] += sum[i] + dp[i];
+				dp[i+1] %= MOD;
+				sum[i+1] += sum[i] + dp[i] - (i+1-k >= 0 ? dp[i+1-k] : 0) + MOD;
+				sum[i+1] %= MOD;
 			}
 
-			for (int j = 0; j <= K; j++) {
-				for (int i = 0; i < N; i++) {
-					int base = (i >> j) << j;
-					for (int k = base; k < base + (1 << j); k++) {
-						if ((i >> (j-1) & 1) == (k >> (j-1) & 1)) continue;
-						dp[i][j] += dp[i][j-1] * dp[k][j-1] * win(r[i], r[k]);
-					}
-				}
-			}
+			out.println(sum[n]);
 
-			for (int i = 0; i < N; i++) {
-				out.printf("%.12f\n", dp[i][K]);
-			}
 		}
 
-		// レート rp が勝つ確率
-		double win(double Rp, double Rq) {
-			return 1 / (1 + pow(10, (Rq-Rp)/400));
-		}
-	}
-
-	static String zeroPad(String str, int len) {
-		return String.format("%" + len + "s", str).replace(" ", "0");
 	}
 
 	static class MyInput {
