@@ -1,4 +1,4 @@
-package typical.dp.contest;
+package pra_20190105;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,12 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
+import java.util.TreeMap;
 
-public class H {
+public class B {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -33,68 +31,42 @@ public class H {
 
 	static class TaskX {
 
-		@SuppressWarnings("unchecked")
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int N = in.nextInt(), W = in.nextInt(), C = in.nextInt();
-			int[][] dp = new int[51][W+1];
-			List<P>[] item = new ArrayList[51];
-			item = Stream.generate(ArrayList::new).limit(51).toArray(List[]::new);
-
-			for (int i = 0; i < N; i++) {
-				int w = in.nextInt(), v = in.nextInt(), c = in.nextInt()-1;
-				item[c].add(new P(w, v));
+			int n = in.nextInt();
+			int[] a = new int[n];
+			TreeMap<Integer, Integer> map = new TreeMap<Integer, Integer>();
+			for (int i = 0; i < n; i++) {
+				a[i] = in.nextInt();
+				map.merge(a[i], 1, Integer::sum);
 			}
 
-			for (int i = 0; i < 50; i++) {
-				int[][] ndp = new int[51][W+1];
-				for (int l = 0; l < C; l++) {
-					for (int j = 0; j < item[i].size(); j++) {
-						for (int k = W; k - item[i].get(j).w >= 0; k--) {
-							ndp[l+1][k] = max(ndp[l+1][k], ndp[l+1][k - item[i].get(j).w] + item[i].get(j).v, dp[l][k - item[i].get(j).w] + item[i].get(j).v);
-						}
-					}
+			boolean ok = true;
+			if (n % 2 == 1) {
+				if (!map.containsKey(0) || !map.get(0).equals(1)) ok = false;
+				for (int i = 2; i <= n/2; i += 2) {
+					if (!map.containsKey(i) || !map.get(i).equals(2)) ok = false;
 				}
-
-				for (int l = 0; l <= C; l++) {
-					for (int j = 0; j <= W; j++) {
-						dp[l][j] = Math.max(dp[l][j], ndp[l][j]);
-					}
+			} else {
+				for (int i = 1; i <= n/2; i += 2) {
+					if (!map.containsKey(i) || !map.get(i).equals(2)) ok = false;
 				}
 			}
 
-			out.println(dp[C][W]);
+			out.println(!ok ? 0 : power(2, n/2, MOD));
+
 		}
 	}
 
-	static int max(int a, int b, int c) {
-		return Math.max(Math.max(a, b), c);
-	}
-
-	static int[][] copy(int[][] src) {
-		int n = src.length, m = src[0].length;
-		int[][] dst = new int[n][m];
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < m; j++) {
-				dst[i][j] = src[i][j];
+	static long power(long a, long e, long modP) {
+		long ret = 1;
+		for (; e > 0; e /= 2) {
+			if (e % 2 != 0) {
+				ret = (ret * a) % modP;
 			}
+			a = (a * a) % modP;
 		}
-		return dst;
-	}
-
-	static class P {
-		int w, v;
-
-		public P(int w, int v) {
-			super();
-			this.w = w;
-			this.v = v;
-		}
-
-		@Override
-		public String toString() {
-			return "P [w=" + w + ", v=" + v + "]";
-		}
+		return ret;
 	}
 
 	static class MyInput {
@@ -272,5 +244,6 @@ public class H {
 		}
 
 	}
+
 
 }

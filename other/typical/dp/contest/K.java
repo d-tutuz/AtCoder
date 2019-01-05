@@ -6,12 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
 
-public class H {
+public class K {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -33,68 +30,69 @@ public class H {
 
 	static class TaskX {
 
-		@SuppressWarnings("unchecked")
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int N = in.nextInt(), W = in.nextInt(), C = in.nextInt();
-			int[][] dp = new int[51][W+1];
-			List<P>[] item = new ArrayList[51];
-			item = Stream.generate(ArrayList::new).limit(51).toArray(List[]::new);
-
-			for (int i = 0; i < N; i++) {
-				int w = in.nextInt(), v = in.nextInt(), c = in.nextInt()-1;
-				item[c].add(new P(w, v));
+			int n = in.nextInt();
+			P[] ps = new P[n];
+			for (int i = 0; i < n; i++) {
+				int x = in.nextInt(), r = in.nextInt();
+				ps[i] = new P(x-r, -(x+r));
 			}
 
-			for (int i = 0; i < 50; i++) {
-				int[][] ndp = new int[51][W+1];
-				for (int l = 0; l < C; l++) {
-					for (int j = 0; j < item[i].size(); j++) {
-						for (int k = W; k - item[i].get(j).w >= 0; k--) {
-							ndp[l+1][k] = max(ndp[l+1][k], ndp[l+1][k - item[i].get(j).w] + item[i].get(j).v, dp[l][k - item[i].get(j).w] + item[i].get(j).v);
-						}
-					}
-				}
-
-				for (int l = 0; l <= C; l++) {
-					for (int j = 0; j <= W; j++) {
-						dp[l][j] = Math.max(dp[l][j], ndp[l][j]);
-					}
-				}
+			Arrays.sort(ps);
+			long[] b = new long[n];
+			for (int i = 0; i < n; i++) {
+				b[i] = ps[i].r;
 			}
 
-			out.println(dp[C][W]);
+			long[] dp = new long[n+1];
+			Arrays.fill(dp, INF);
+
+			for (int i = 0; i < n; i++) {
+				int idx = lowerBound(dp, ps[i].r);
+				dp[idx] = ps[i].r;
+			}
+
+			out.println(lowerBound(dp, INF));
+
 		}
 	}
 
-	static int max(int a, int b, int c) {
-		return Math.max(Math.max(a, b), c);
-	}
-
-	static int[][] copy(int[][] src) {
-		int n = src.length, m = src[0].length;
-		int[][] dst = new int[n][m];
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < m; j++) {
-				dst[i][j] = src[i][j];
+	public static int lowerBound(long[] a, long obj) {
+		int l = 0, r = a.length - 1;
+		while (r - l >= 0) {
+			int c = (l + r) / 2;
+			if (obj <= a[c]) {
+				r = c - 1;
+			} else {
+				l = c + 1;
 			}
 		}
-		return dst;
+		return l;
 	}
 
-	static class P {
-		int w, v;
-
-		public P(int w, int v) {
-			super();
-			this.w = w;
-			this.v = v;
-		}
+	static class P implements Comparable<P> {
+		int l, r;
 
 		@Override
 		public String toString() {
-			return "P [w=" + w + ", v=" + v + "]";
+			return "P [l=" + l + ", r=" + r + "]";
 		}
+
+		public P(int l, int r) {
+			super();
+			this.l = l;
+			this.r = r;
+		}
+
+		@Override
+		public int compareTo(P o) {
+			int c1 = Integer.compare(this.l, o.l);
+			int c2 = -Integer.compare(this.r, o.r);
+
+			return c1 == 0 ? c2 : c1;
+		}
+
 	}
 
 	static class MyInput {

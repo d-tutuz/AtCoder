@@ -6,12 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
 
-public class H {
+public class E_2 {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -33,67 +30,45 @@ public class H {
 
 	static class TaskX {
 
-		@SuppressWarnings("unchecked")
+		char[] N;
+		int D;
+		int[][][] memo;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int N = in.nextInt(), W = in.nextInt(), C = in.nextInt();
-			int[][] dp = new int[51][W+1];
-			List<P>[] item = new ArrayList[51];
-			item = Stream.generate(ArrayList::new).limit(51).toArray(List[]::new);
+			D = in.nextInt();
+			N = in.nextChars();
+			memo = new int[N.length+1][D+1][2];
+			fill(memo, -1);
 
-			for (int i = 0; i < N; i++) {
-				int w = in.nextInt(), v = in.nextInt(), c = in.nextInt()-1;
-				item[c].add(new P(w, v));
+			int count = f(0, 0, 1);
+			out.println(count-1);
+		}
+
+		int f(int i, int sum, int tight) {
+			if (memo[i][sum][tight] != -1) return memo[i][sum][tight];
+			if (i == N.length) {
+				return sum % D == 0 ? 1 : 0;
 			}
 
-			for (int i = 0; i < 50; i++) {
-				int[][] ndp = new int[51][W+1];
-				for (int l = 0; l < C; l++) {
-					for (int j = 0; j < item[i].size(); j++) {
-						for (int k = W; k - item[i].get(j).w >= 0; k--) {
-							ndp[l+1][k] = max(ndp[l+1][k], ndp[l+1][k - item[i].get(j).w] + item[i].get(j).v, dp[l][k - item[i].get(j).w] + item[i].get(j).v);
-						}
-					}
+			int ret = 0;
+
+			int now = N[i]-'0';
+			for (int j = 0; j <= (tight == 1 ? now : 9); j++) {
+				ret += f(i+1, (sum + j) % D, tight == 1 && j == now ? 1 : 0);
+				ret %= MOD;
+			}
+
+			return memo[i][sum][tight] = ret % MOD;
+		}
+	}
+
+	static void fill(int[][][] a, int v) {
+		for (int i = 0; i < a.length; i++) {
+			for (int j = 0; j < a[0].length; j++) {
+				for (int k = 0; k < a[0][0].length; k++) {
+					a[i][j][k] = v;
 				}
-
-				for (int l = 0; l <= C; l++) {
-					for (int j = 0; j <= W; j++) {
-						dp[l][j] = Math.max(dp[l][j], ndp[l][j]);
-					}
-				}
 			}
-
-			out.println(dp[C][W]);
-		}
-	}
-
-	static int max(int a, int b, int c) {
-		return Math.max(Math.max(a, b), c);
-	}
-
-	static int[][] copy(int[][] src) {
-		int n = src.length, m = src[0].length;
-		int[][] dst = new int[n][m];
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < m; j++) {
-				dst[i][j] = src[i][j];
-			}
-		}
-		return dst;
-	}
-
-	static class P {
-		int w, v;
-
-		public P(int w, int v) {
-			super();
-			this.w = w;
-			this.v = v;
-		}
-
-		@Override
-		public String toString() {
-			return "P [w=" + w + ", v=" + v + "]";
 		}
 	}
 

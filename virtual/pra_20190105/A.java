@@ -1,4 +1,4 @@
-package typical.dp.contest;
+package pra_20190105;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,12 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
 
-public class H {
+public class A {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -33,67 +30,26 @@ public class H {
 
 	static class TaskX {
 
-		@SuppressWarnings("unchecked")
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int N = in.nextInt(), W = in.nextInt(), C = in.nextInt();
-			int[][] dp = new int[51][W+1];
-			List<P>[] item = new ArrayList[51];
-			item = Stream.generate(ArrayList::new).limit(51).toArray(List[]::new);
+			int sx = in.nextInt(), sy = in.nextInt(), tx = in.nextInt(), ty = in.nextInt();
+			StringBuilder sb = new StringBuilder();
 
-			for (int i = 0; i < N; i++) {
-				int w = in.nextInt(), v = in.nextInt(), c = in.nextInt()-1;
-				item[c].add(new P(w, v));
-			}
+			// first
+			for (int i = 0; i < ty - sy; i++) sb.append("U");
+			for (int i = 0; i < tx - sx + 1; i++) sb.append("R");
+			for (int i = 0; i < ty - sy + 1; i++) sb.append("D");
+			for (int i = 0; i < tx - sx + 1; i++) sb.append("L");
+			sb.append("U");
 
-			for (int i = 0; i < 50; i++) {
-				int[][] ndp = new int[51][W+1];
-				for (int l = 0; l < C; l++) {
-					for (int j = 0; j < item[i].size(); j++) {
-						for (int k = W; k - item[i].get(j).w >= 0; k--) {
-							ndp[l+1][k] = max(ndp[l+1][k], ndp[l+1][k - item[i].get(j).w] + item[i].get(j).v, dp[l][k - item[i].get(j).w] + item[i].get(j).v);
-						}
-					}
-				}
+			// second
+			sb.append("L");
+			for (int i = 0; i < ty - sy + 1; i++) sb.append("U");
+			for (int i = 0; i < tx - sx + 1; i++) sb.append("R");
+			for (int i = 0; i < ty - sy + 1; i++) sb.append("D");
+			for (int i = 0; i < tx - sx; i++) sb.append("L");
 
-				for (int l = 0; l <= C; l++) {
-					for (int j = 0; j <= W; j++) {
-						dp[l][j] = Math.max(dp[l][j], ndp[l][j]);
-					}
-				}
-			}
-
-			out.println(dp[C][W]);
-		}
-	}
-
-	static int max(int a, int b, int c) {
-		return Math.max(Math.max(a, b), c);
-	}
-
-	static int[][] copy(int[][] src) {
-		int n = src.length, m = src[0].length;
-		int[][] dst = new int[n][m];
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < m; j++) {
-				dst[i][j] = src[i][j];
-			}
-		}
-		return dst;
-	}
-
-	static class P {
-		int w, v;
-
-		public P(int w, int v) {
-			super();
-			this.w = w;
-			this.v = v;
-		}
-
-		@Override
-		public String toString() {
-			return "P [w=" + w + ", v=" + v + "]";
+			out.println(sb.toString());
 		}
 	}
 
