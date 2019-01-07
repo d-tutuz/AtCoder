@@ -6,9 +6,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
-public class K {
+public class N {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -30,27 +32,39 @@ public class K {
 
 	static class TaskX {
 
-		final int L = -1, W = 1;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt(), k = in.nextInt();
-			int[] a = in.nextIntArray(n);
-			int min = Arrays.stream(a).min().getAsInt();
-
-			int[] res = new int[100010];
-			for (int i = 0; i < min; i++) {
-				res[i] = L;
+			int n = in.nextInt();
+			List<Long> list = new ArrayList<>();
+			for (int i = 0; i < n; i++) {
+				list.add(in.nextLong());
 			}
-			for (int i = min; i < 100010; i++) {
-				res[i] = L;
-				for (int j : a) {
-					if (i - j >= 0 && res[i-j] == L) {
-						res[i] = W;
+
+			long cost = 0;
+			while (list.size() > 1) {
+				int idx = -1;
+				long min = LINF;
+				for (int i = 0; i < list.size(); i++) {
+					if (list.get(i) < min) {
+						min = list.get(i);
+						idx = i;
 					}
+				}
+
+				// 右
+				if (idx == list.size()-1 || (0 < idx && list.get(idx-1) <= list.get(idx+1))) {
+					cost += list.get(idx) + list.get(idx-1);
+					list.set(idx, list.get(idx) + list.get(idx-1));
+					list.remove(idx-1);
+				// 左
+				} else {
+					cost += list.get(idx) + list.get(idx+1);
+					list.set(idx, list.get(idx) + list.get(idx+1));
+					list.remove(idx+1);
 				}
 			}
 
-			out.println(res[k] == W ? "First" : "Second");
+			out.println(cost);
 
 		}
 	}

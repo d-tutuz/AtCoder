@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class K {
+public class M {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -30,29 +30,33 @@ public class K {
 
 	static class TaskX {
 
-		final int L = -1, W = 1;
+		int n, k;
+		int[] a;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt(), k = in.nextInt();
-			int[] a = in.nextIntArray(n);
-			int min = Arrays.stream(a).min().getAsInt();
+			n = in.nextInt(); k = in.nextInt();
+			a = in.nextIntArray(n);
 
-			int[] res = new int[100010];
-			for (int i = 0; i < min; i++) {
-				res[i] = L;
+			long[][] dp = new long[n+1][100010];
+			for (int i = 0; i < n+1; i++) {
+				dp[i][0] = 1;
 			}
-			for (int i = min; i < 100010; i++) {
-				res[i] = L;
-				for (int j : a) {
-					if (i - j >= 0 && res[i-j] == L) {
-						res[i] = W;
+			for (int i = 0; i < n; i++) {
+				for (int j = 1; j < 100010; j++) {
+					if (j - a[i] - 1 >= 0) {
+						dp[i+1][j] = dp[i+1][j-1] + dp[i][j] - dp[i][j-1-a[i]] + MOD;
+						dp[i+1][j] %= MOD;
+					} else {
+						dp[i+1][j] = dp[i+1][j-1] + dp[i][j] + MOD;
+						dp[i+1][j] %= MOD;
 					}
 				}
 			}
 
-			out.println(res[k] == W ? "First" : "Second");
+			out.println(dp[n][k]);
 
 		}
+
 	}
 
 	static class MyInput {

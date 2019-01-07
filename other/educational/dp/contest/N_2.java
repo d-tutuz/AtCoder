@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class K {
+public class N_2 {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -30,28 +30,33 @@ public class K {
 
 	static class TaskX {
 
-		final int L = -1, W = 1;
+		int n;
+		long[] a, sum;
+		long[][] memo = new long[401][401];
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt(), k = in.nextInt();
-			int[] a = in.nextIntArray(n);
-			int min = Arrays.stream(a).min().getAsInt();
-
-			int[] res = new int[100010];
-			for (int i = 0; i < min; i++) {
-				res[i] = L;
-			}
-			for (int i = min; i < 100010; i++) {
-				res[i] = L;
-				for (int j : a) {
-					if (i - j >= 0 && res[i-j] == L) {
-						res[i] = W;
-					}
-				}
+			n = in.nextInt();
+			a = in.nextLongArray(n);
+			sum = a.clone();
+			Arrays.parallelPrefix(sum, Math::addExact);
+			for (int i = 0; i < 401; i++) {
+				Arrays.fill(memo[i], -1);
 			}
 
-			out.println(res[k] == W ? "First" : "Second");
+			out.println(rec(0, n));
 
+		}
+
+		long rec(int l, int r) {
+			if (l+1 == r) return 0;
+			if (memo[l][r] != -1) return memo[l][r];
+
+			long ret = LINF;
+			for (int k = l+1; k < r; k++) {
+				ret = Math.min(ret, rec(l, k) + rec(k, r) + sum[r-1] - (l > 0 ? sum[l-1] : 0));
+			}
+
+			return memo[l][r] = ret;
 		}
 	}
 

@@ -1,5 +1,7 @@
 package educational.dp.contest;
 
+import static java.lang.Math.*;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,7 +10,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class K {
+public class Q {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -30,28 +32,23 @@ public class K {
 
 	static class TaskX {
 
-		final int L = -1, W = 1;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt(), k = in.nextInt();
-			int[] a = in.nextIntArray(n);
-			int min = Arrays.stream(a).min().getAsInt();
+			int n = in.nextInt();
+			int[] h = in.nextIntArray(n);
+			long[] a = in.nextLongArray(n);
 
-			int[] res = new int[100010];
-			for (int i = 0; i < min; i++) {
-				res[i] = L;
-			}
-			for (int i = min; i < 100010; i++) {
-				res[i] = L;
-				for (int j : a) {
-					if (i - j >= 0 && res[i-j] == L) {
-						res[i] = W;
+			long[] dp = new long[n+1];
+			for (int i = 0; i < n; i++) {
+				dp[i] = a[i];
+				for (int j = 0; j < i; j++) {
+					if (h[j] <= h[i]) {
+						dp[i] = max(dp[i], dp[j] + a[i]);
 					}
 				}
 			}
 
-			out.println(res[k] == W ? "First" : "Second");
-
+			out.println(dp[n-1]);
 		}
 	}
 

@@ -6,9 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
 
-public class K {
+public class P {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -30,28 +33,42 @@ public class K {
 
 	static class TaskX {
 
-		final int L = -1, W = 1;
+		int n;
+		List<Integer>[] g;
+		long[][] memo;
+		@SuppressWarnings("unchecked")
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt(), k = in.nextInt();
-			int[] a = in.nextIntArray(n);
-			int min = Arrays.stream(a).min().getAsInt();
+			n = in.nextInt();
+			g = new ArrayList[n];
+			g = Stream.generate(ArrayList::new).limit(n).toArray(List[]::new);
 
-			int[] res = new int[100010];
-			for (int i = 0; i < min; i++) {
-				res[i] = L;
+			for (int i = 0; i < n-1; i++) {
+				int x = in.nextInt()-1, y = in.nextInt()-1;
+				g[x].add(y);
+				g[y].add(x);
 			}
-			for (int i = min; i < 100010; i++) {
-				res[i] = L;
-				for (int j : a) {
-					if (i - j >= 0 && res[i-j] == L) {
-						res[i] = W;
-					}
+
+			memo = new long[100010][2];
+
+			long ans = rec(0, -1, 0) + rec(0, -1, 1);
+			out.println(ans % MOD);
+		}
+
+		long rec(int now, int par, int color) {
+
+			if (memo[now][color] != 0) return memo[now][color];
+			long ret = 1;
+			for (int to : g[now]) {
+				if (to == par) continue;
+				if (color == 1) {
+					ret = (ret * ((rec(to, now, 1) + rec(to, now, 0)) % MOD)) % MOD;
+				} else {
+					ret = (ret * rec(to, now, 1)) % MOD;
 				}
 			}
 
-			out.println(res[k] == W ? "First" : "Second");
-
+			return memo[now][color] = ret % MOD;
 		}
 	}
 

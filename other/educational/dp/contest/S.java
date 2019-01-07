@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class K {
+public class S {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -30,28 +30,43 @@ public class K {
 
 	static class TaskX {
 
-		final int L = -1, W = 1;
+		char[] s;
+		int d;
+		long[][][] memo;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt(), k = in.nextInt();
-			int[] a = in.nextIntArray(n);
-			int min = Arrays.stream(a).min().getAsInt();
+			s = in.nextChars();
+			d = in.nextInt();
+			memo = new long[s.length+1][d][2];
+			fill(memo, -1);
 
-			int[] res = new int[100010];
-			for (int i = 0; i < min; i++) {
-				res[i] = L;
+			out.println((rec(0, 0, 1) - 1 + MOD) % MOD);
+
+		}
+
+		long rec(int i, int sum, int tight) {
+			if (i == s.length) {
+				return sum % d == 0 ? 1 : 0;
 			}
-			for (int i = min; i < 100010; i++) {
-				res[i] = L;
-				for (int j : a) {
-					if (i - j >= 0 && res[i-j] == L) {
-						res[i] = W;
-					}
+			if (memo[i][sum][tight] != -1) return memo[i][sum][tight];
+			long ret = 0;
+			int c = s[i]-'0';
+			for (int j = 0; j <= (tight == 1 ? c : 9); j++) {
+				ret += rec(i+1, (sum + j) % d, tight == 1 && j == c ? 1 : 0);
+				ret %= MOD;
+			}
+
+			return memo[i][sum][tight] = ret % MOD;
+		}
+	}
+
+	static void fill(long[][][] a, long v) {
+		for (int i = 0; i < a.length; i++) {
+			for (int j = 0; j < a[0].length; j++) {
+				for (int k = 0; k < a[0][0].length; k++) {
+					a[i][j][k] = v;
 				}
 			}
-
-			out.println(res[k] == W ? "First" : "Second");
-
 		}
 	}
 
