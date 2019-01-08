@@ -1,5 +1,5 @@
 package educational.dp.contest;
 
-public class W {
+public class R_2 {
 
 }

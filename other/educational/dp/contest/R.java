@@ -1,7 +1,5 @@
 package educational.dp.contest;
 
-import static java.lang.Math.*;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,7 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class Q {
+public class R {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -35,66 +33,43 @@ public class Q {
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
 			int n = in.nextInt();
-			int[] h = in.nextIntArray(n);
-			long[] a = in.nextLongArray(n);
-
-			long[] dp = new long[200010];
-			long ans = -INF;
-			RangeMinimumQuery rmq = new RangeMinimumQuery(200010);
-			rmq.update(0, 0);
+			long k = in.nextLong();
+			int[][] a = new int[n][n];
 			for (int i = 0; i < n; i++) {
-				dp[i] = a[i] - rmq.query(0, h[i]);
-				rmq.update(h[i], -dp[i]);
-				ans = max(ans, dp[i]);
+				for (int j = 0; j < n; j++) {
+					a[i][j] = in.nextInt();
+				}
 			}
 
+			long[][] dp = new long[63][n];
+			Arrays.fill(dp[0], 1);
+
+			for (int i = 0; i < 62; i++) {
+				for (int c = 0; c < n; c++) {
+					for (int r = 0; r < n; r++) {
+						dp[i+1][c] += dp[i][r] * a[r][c];
+						dp[i+1][c] %= MOD;
+					}
+				}
+			}
+
+			long[] tmp = new long[n];
+			Arrays.fill(tmp, 1);
+			for (int i = 62; i >= 0; i--) {
+				if ((k >> i & 1) == 1) {
+					for (int c = 0; c < n; c++) {
+						tmp[c] = tmp[c] * dp[i+1][c];
+						tmp[c] %= MOD;
+					}
+				}
+			}
+
+			long ans = 0;
+			for (int i = 0; i < n; i++) {
+				ans += tmp[i];
+				ans %= MOD;
+			}
 			out.println(ans);
-		}
-	}
-
-	private static class RangeMinimumQuery {
-		final int inf = (1 << 31) - 1;
-
-		int size;
-		long[] dat;
-
-		// 初期化
-		public RangeMinimumQuery(int n) {
-			size = 1;
-			while (size < n) {
-				size *= 2;
-			}
-			dat = new long[size * 2];
-			for (int i = 0; i < size * 2; i++) {
-				dat[i] = inf;
-			}
-		}
-
-		// k 番目(0-indexed) を a に更新
-		void update(int k, long a) {
-			k += size;
-			dat[k] = a;
-			while (k > 0) {
-				k /= 2;
-				dat[k] = Math.min(dat[2 * k], dat[2 * k + 1]);
-			}
-		}
-
-		// [a, b) の最小値を求める
-		private long query(int a, int b, int k, int l, int r) {
-			if (r <= a || b <= l) return inf;
-
-			if (a <= l && r <= b) {
-				return dat[k];
-			} else {
-				long vl = query(a, b, 2 * k, l, (l+r)/2);
-				long vr = query(a, b, 2 * k + 1, (l+r)/2, r);
-				return Math.min(vl, vr);
-			}
-		}
-
-		long query(int a, int b) {
-			return query(a, b, 1, 0, size);
 		}
 	}
 

@@ -1,7 +1,5 @@
 package educational.dp.contest;
 
-import static java.lang.Math.*;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,7 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class Q {
+public class U_2 {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -32,69 +30,42 @@ public class Q {
 
 	static class TaskX {
 
+		int n;
+		int[][] a = new int[16][16];
+		long[] memo = new long[1<<16];
+
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt();
-			int[] h = in.nextIntArray(n);
-			long[] a = in.nextLongArray(n);
-
-			long[] dp = new long[200010];
-			long ans = -INF;
-			RangeMinimumQuery rmq = new RangeMinimumQuery(200010);
-			rmq.update(0, 0);
+			n = in.nextInt();
 			for (int i = 0; i < n; i++) {
-				dp[i] = a[i] - rmq.query(0, h[i]);
-				rmq.update(h[i], -dp[i]);
-				ans = max(ans, dp[i]);
+				for (int j = 0; j < n; j++) {
+					a[i][j] = in.nextInt();
+				}
 			}
+			Arrays.fill(memo, -1);
 
-			out.println(ans);
-		}
-	}
+			out.println(rec((1 << n) - 1));
 
-	private static class RangeMinimumQuery {
-		final int inf = (1 << 31) - 1;
-
-		int size;
-		long[] dat;
-
-		// 初期化
-		public RangeMinimumQuery(int n) {
-			size = 1;
-			while (size < n) {
-				size *= 2;
-			}
-			dat = new long[size * 2];
-			for (int i = 0; i < size * 2; i++) {
-				dat[i] = inf;
-			}
 		}
 
-		// k 番目(0-indexed) を a に更新
-		void update(int k, long a) {
-			k += size;
-			dat[k] = a;
-			while (k > 0) {
-				k /= 2;
-				dat[k] = Math.min(dat[2 * k], dat[2 * k + 1]);
+		long rec(int s) {
+			if (memo[s] != -1) return memo[s];
+
+			long ret = 0;
+			for (int i = 0; i < n; i++) {
+				for (int j = i+1; j < n; j++) {
+					if ((s >> i & 1) == 1 && (s >> j & 1) == 1) {
+						ret += a[i][j];
+					}
+				}
 			}
-		}
 
-		// [a, b) の最小値を求める
-		private long query(int a, int b, int k, int l, int r) {
-			if (r <= a || b <= l) return inf;
-
-			if (a <= l && r <= b) {
-				return dat[k];
-			} else {
-				long vl = query(a, b, 2 * k, l, (l+r)/2);
-				long vr = query(a, b, 2 * k + 1, (l+r)/2, r);
-				return Math.min(vl, vr);
+			for (int t = 1; t < s; t++) {
+				if (t != (t & s)) continue;
+				ret = Math.max(ret, rec(t) + rec(s ^ t));
 			}
-		}
 
-		long query(int a, int b) {
-			return query(a, b, 1, 0, size);
+			return memo[s] = ret;
 		}
 	}
 
