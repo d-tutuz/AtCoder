@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class R_2 {
+public class T {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -33,69 +33,11 @@ public class R_2 {
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
 			int n = in.nextInt();
-			long k = in.nextLong();
+			char[] s = in.nextChars();
 
-			long[][] a = new long[n][n];
-			for (int i = 0; i < n; i++) {
-				for (int j = 0; j < n; j++) {
-					a[i][j] = in.nextLong();
-				}
-			}
 
-			long[][] ret = MatrixUtils.pow(a, k, MOD);
-
-			long ans = 0;
-			for (int i = 0; i < n; i++) {
-				ans += Arrays.stream(ret[i]).sum();
-				ans %= MOD;
-			}
-
-			out.println(ans);
 		}
 	}
-
-	private static class MatrixUtils {
-
-		static long[][] mul(long[][] a, long[][] b , int mod) {
-
-			int n = a.length, k = a[0].length, m = b[0].length;
-			if (a[0].length != b.length) new RuntimeException("Input Matrix is invalid.");
-
-			long[][] ret = new long[n][m];
-			for (int i = 0; i < n; i++) {
-				for (int t = 0; t < k; t++) {
-					for (int j = 0; j < m; j++) {
-						ret[i][j] += a[i][t] * b[t][j];
-						ret[i][j] %= mod;
-					}
-				}
-			}
-			return ret;
-		}
-
-		static long[][] pow(long[][] a, long e, int mod) {
-
-			if (a.length != a[0].length) new RuntimeException("Matrix is not square.");
-			int n = a.length;
-
-			if (e == 0) {
-				long[][] ret = new long[n][n];
-				for (int i = 0; i < n; i++) Arrays.fill(ret[i], 1);
-				return ret;
-			} else if (e == 1) {
-				return a;
-			}
-
-			if (e % 2 == 0) {
-				long[][] ret = pow(a, e/2, mod);
-				return mul(ret, ret, mod);
-			} else {
-				return mul(a, pow(a, e-1, mod), mod);
-			}
-		}
-
-	}
-
 
 	static class MyInput {
 		private final BufferedReader in;
@@ -272,4 +214,5 @@ public class R_2 {
 		}
 
 	}
+
 }

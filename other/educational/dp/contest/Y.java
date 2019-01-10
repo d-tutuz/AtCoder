@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class R_2 {
+public class Y {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -32,70 +32,93 @@ public class R_2 {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt();
-			long k = in.nextLong();
-
-			long[][] a = new long[n][n];
+			int h = in.nextInt(), w = in.nextInt(), n = in.nextInt();
+			P[] p = new P[n+1];
 			for (int i = 0; i < n; i++) {
-				for (int j = 0; j < n; j++) {
-					a[i][j] = in.nextLong();
+				p[i] = new P(in.nextInt()-1, in.nextInt()-1);
+			}
+			p[n] = new P(h-1, w-1);
+			Arrays.sort(p);
+
+			long[] dp = new long[n+1];
+			dp[0] = f(p[0].h, p[0].w);
+			for (int i = 1; i < n+1; i++) {
+				dp[i] = f(p[i].h, p[i].w);
+				for (int j = 0; j < i; j++) {
+					 dp[i] = MOD + dp[i] - (dp[j] * (f(p[i].h - p[j].h, p[i].w - p[j].w))) % MOD;
+					 dp[i] %= MOD;
 				}
 			}
 
-			long[][] ret = MatrixUtils.pow(a, k, MOD);
+			out.println(dp[n]);
 
-			long ans = 0;
-			for (int i = 0; i < n; i++) {
-				ans += Arrays.stream(ret[i]).sum();
-				ans %= MOD;
-			}
+		}
 
-			out.println(ans);
+		long f(int h, int w) {
+			return comb(h + w, h);
 		}
 	}
 
-	private static class MatrixUtils {
+	public static long comb(int n, int r) {
+		if (r < 0 || r > n)
+			return 0L;
+		return fact[n] % MOD * factInv[r] % MOD * factInv[n - r] % MOD;
+	}
 
-		static long[][] mul(long[][] a, long[][] b , int mod) {
+	public static int MAXN = 200000;
 
-			int n = a.length, k = a[0].length, m = b[0].length;
-			if (a[0].length != b.length) new RuntimeException("Input Matrix is invalid.");
+	static long[] fact = factorialArray(MAXN, MOD);
+	static long[] factInv = factorialInverseArray(MAXN, MOD,
+			inverseArray(MAXN, MOD));
 
-			long[][] ret = new long[n][m];
-			for (int i = 0; i < n; i++) {
-				for (int t = 0; t < k; t++) {
-					for (int j = 0; j < m; j++) {
-						ret[i][j] += a[i][t] * b[t][j];
-						ret[i][j] %= mod;
-					}
-				}
-			}
-			return ret;
+	public static long[] factorialArray(int maxN, long mod) {
+		long[] fact = new long[maxN + 1];
+		fact[0] = 1 % mod;
+		for (int i = 1; i <= maxN; i++) {
+			fact[i] = fact[i - 1] * i % mod;
+		}
+		return fact;
+	}
+
+	public static long[] inverseArray(int maxN, long modP) {
+		long[] inv = new long[maxN + 1];
+		inv[1] = 1;
+		for (int i = 2; i <= maxN; i++) {
+			inv[i] = modP - (modP / i) * inv[(int) (modP % i)] % modP;
+		}
+		return inv;
+	}
+
+	public static long[] factorialInverseArray(int maxN, long modP,
+			long[] inverseArray) {
+		long[] factInv = new long[maxN + 1];
+		factInv[0] = 1;
+		for (int i = 1; i <= maxN; i++) {
+			factInv[i] = factInv[i - 1] * inverseArray[i] % modP;
+		}
+		return factInv;
+	}
+
+	static class P implements Comparable<P> {
+		int h, w;
+
+		public P(int h, int w) {
+			super();
+			this.h = h;
+			this.w = w;
 		}
 
-		static long[][] pow(long[][] a, long e, int mod) {
+		@Override
+		public int compareTo(P o) {
+			return Integer.compare(this.h + this.w, o.h + o.w);
+		}
 
-			if (a.length != a[0].length) new RuntimeException("Matrix is not square.");
-			int n = a.length;
-
-			if (e == 0) {
-				long[][] ret = new long[n][n];
-				for (int i = 0; i < n; i++) Arrays.fill(ret[i], 1);
-				return ret;
-			} else if (e == 1) {
-				return a;
-			}
-
-			if (e % 2 == 0) {
-				long[][] ret = pow(a, e/2, mod);
-				return mul(ret, ret, mod);
-			} else {
-				return mul(a, pow(a, e-1, mod), mod);
-			}
+		@Override
+		public String toString() {
+			return "P [h=" + h + ", w=" + w + "]";
 		}
 
 	}
-
 
 	static class MyInput {
 		private final BufferedReader in;
@@ -272,4 +295,5 @@ public class R_2 {
 		}
 
 	}
+
 }
