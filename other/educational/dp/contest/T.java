@@ -35,6 +35,30 @@ public class T {
 			int n = in.nextInt();
 			char[] s = in.nextChars();
 
+			long[][] dp = new long[n+1][n+1];
+			Arrays.fill(dp[0], 1);
+
+			for (int i = 0; i < n-1; i++) {
+				if (s[i] == '<') {
+					for (int j = 0; j < n-i; j++) {
+						dp[i+1][j] += dp[i][j];
+						dp[i+1][j] %= MOD;
+					}
+				} else {
+					for (int j = 0; j < n-i; j++) {
+						dp[i+1][0] += dp[i][j];
+						dp[i+1][j] -= dp[i][j] - MOD;
+						dp[i+1][0] %= MOD;
+						dp[i+1][j] %= MOD;
+					}
+				}
+				for (int j = 1; j < n-1-i; j++) {
+					dp[i+1][j] += dp[i+1][j-1];
+					dp[i+1][j] %= MOD;
+				}
+			}
+
+			out.println(dp[n-1][0]);
 
 		}
 	}
