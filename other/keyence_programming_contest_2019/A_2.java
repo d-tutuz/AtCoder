@@ -1,4 +1,4 @@
-package aisingprogrammingcontest2019;
+package keyence_programming_contest_2019;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,11 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
-public class C_6 {
+public class A_2 {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -32,226 +30,15 @@ public class C_6 {
 
 	static class TaskX {
 
-		int h, w;
-		char[][] s;
-		final int B = 0, W = 1;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			h = in.nextInt(); w = in.nextInt();
-			List<P> list = new ArrayList<>();
-			s = new char[h][w];
-			for (int i = 0; i < h; i++) {
-				for (int j = 0; j < w; j++) {
-					s[i][j] = in.nextChar();
-					if (s[i][j] == '#') list.add(new P(i, j));
-				}
+			int[] a = in.nextIntArray(4);
+			Arrays.sort(a);
+			
+			if (a[0] == 1 && a[1] == 4 && a[2] == 7 && a[3] == 9) {
+				
 			}
 
-			DisjointSet disjointset = new DisjointSet(h*w+10);
-			for (int i = 0; i < h; i++) {
-				for (int j = 0; j < w; j++) {
-					for (int k = 0; k < 4; k++) {
-						int mh = i + mh4[k];
-						int mw = j + mw4[k];
-						if (0 <= mh && mh < h && 0 <= mw && mw < w) {
-							if ((s[i][j] == '#' && s[mh][mw] == '.') || (s[i][j] == '.' && s[mh][mw] == '#')) {
-								disjointset.unite(f(i, j), f(mh, mw));
-							}
-						}
-					}
-				}
-			}
-
-			long ans = 0;
-			boolean[][] used = new boolean[h][w];
-			int[] memo = new int[h*w+10];
-			boolean[] did = new boolean[h*w+10];
-			for (int i = 0; i < list.size(); i++) {
-
-				int tmp = disjointset.root(f(list.get(i).h, list.get(i).w));
-				if (did[tmp]) {
-					ans += memo[tmp];
-					continue;
-				}
-				memo[tmp] = dfs(list.get(i).h, list.get(i).w, used, B);
-				ans += memo[tmp];
-
-				did[tmp] = true;
-			}
-
-			out.println(ans);
-
-		}
-
-		int f(int i, int j) {
-			return i * w + j;
-		}
-
-		int dfs(int nh, int nw, boolean[][] used, int stat) {
-
-			used[nh][nw] = true;
-
-			int ret = 0;
-			for (int i = 0; i < 4; i++) {
-				int mh = nh + mh4[i];
-				int mw = nw + mw4[i];
-				if (0 <= mh && mh < h && 0 <= mw && mw < w && !used[mh][mw]) {
-					if (stat == B && s[mh][mw] == '.') {
-						ret += dfs(mh, mw, used, W) + 1;
-					}
-					if (stat == W && s[mh][mw] == '#') {
-						ret += dfs(mh, mw, used, B);
-					}
-				}
-			}
-			return ret;
-		}
-	}
-
-	public static class DisjointSet {
-
-		int[] p, rank, cnt;
-
-		public DisjointSet(int size) {
-			p = new int[size];
-			rank = new int[size];
-			cnt = new int[size];
-
-			for (int j = 0; j < size; j++) {
-				makeSet(j);
-			}
-		}
-
-		private void makeSet(int x) {
-			p[x] = x;
-			rank[x] = 0;
-			cnt[x] = 1;
-		}
-
-		public int root(int x) {
-			return p[x] == x ? x : root(p[x]);
-		}
-
-		private void link(int x, int y) {
-			if (rank[x] > rank[y]) {
-				p[y] = x;
-			} else if (rank[x] < rank[y]) {
-				p[x] = y;
-			} else if (rank[x] == rank[y]) {
-				p[x] = y;
-				rank[y]++;
-			}
-
-			if (x != y) {
-				cnt[x] = cnt[y] += cnt[x];
-			}
-		}
-
-		public void unite(int x, int y) {
-			link(root(x), root(y));
-		}
-
-		public boolean same(int x, int y) {
-			return root(x) == root(y);
-		}
-
-		public int getSize(int x) {
-			return cnt[root(x)];
-		}
-	}
-
-	static class T {
-		int th, tw, sh, sw;
-
-		public T(int th, int tw, int sh, int sw) {
-			super();
-			this.th = th;
-			this.tw = tw;
-			this.sh = sh;
-			this.sw = sw;
-		}
-
-		@Override
-		public String toString() {
-			return "T [th=" + th + ", tw=" + tw + ", sh=" + sh + ", sw=" + sw
-					+ "]";
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + sh;
-			result = prime * result + sw;
-			result = prime * result + th;
-			result = prime * result + tw;
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			T other = (T) obj;
-			if (sh != other.sh)
-				return false;
-			if (sw != other.sw)
-				return false;
-			if (th != other.th)
-				return false;
-			if (tw != other.tw)
-				return false;
-			return true;
-		}
-
-	}
-
-	static class P implements Comparable<P> {
-		int h, w;
-
-		public P(int h, int w) {
-			super();
-			this.h = h;
-			this.w = w;
-		}
-
-		@Override
-		public int compareTo(P o) {
-			return Integer.compare(this.h * 1000 + this.w, o.h * 1000 + o.w);
-		}
-
-		@Override
-		public String toString() {
-			return "P [h=" + h + ", w=" + w + "]";
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + h;
-			result = prime * result + w;
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			P other = (P) obj;
-			if (h != other.h)
-				return false;
-			if (w != other.w)
-				return false;
-			return true;
 		}
 	}
 
@@ -430,5 +217,4 @@ public class C_6 {
 		}
 
 	}
-
 }

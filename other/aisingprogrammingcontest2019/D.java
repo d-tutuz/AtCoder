@@ -1,19 +1,20 @@
 package aisingprogrammingcontest2019;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
-public class C_6 {
+public class D {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
+		inputStream = new FileInputStream(new File("/workspace/Atcoder/other/aisingprogrammingcontest2019/D_input1.txt"));
 		OutputStream outputStream = System.out;
 		MyInput in = new MyInput(inputStream);
 		PrintWriter out = new PrintWriter(outputStream);
@@ -32,226 +33,122 @@ public class C_6 {
 
 	static class TaskX {
 
-		int h, w;
-		char[][] s;
-		final int B = 0, W = 1;
+		int n, q;
+		long[] a, b, takasm;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			h = in.nextInt(); w = in.nextInt();
-			List<P> list = new ArrayList<>();
-			s = new char[h][w];
-			for (int i = 0; i < h; i++) {
-				for (int j = 0; j < w; j++) {
-					s[i][j] = in.nextChar();
-					if (s[i][j] == '#') list.add(new P(i, j));
-				}
+			n = in.nextInt(); q = in.nextInt();
+			a = in.nextLongArray(n);
+			b = a.clone();
+			takasm = new long[n];
+			Arrays.parallelPrefix(b, Math::addExact);
+
+			// 交互にとる数は n の数に依存する
+			for (int i = 0; i < n; i++) {
+				if (n % 2 == 1 && i % 2 == 0) takasm[i] = a[i];
+				if (n % 2 == 0 && i % 2 == 1) takasm[i] = a[i];
 			}
+			Arrays.parallelPrefix(takasm, Math::addExact);
 
-			DisjointSet disjointset = new DisjointSet(h*w+10);
-			for (int i = 0; i < h; i++) {
-				for (int j = 0; j < w; j++) {
-					for (int k = 0; k < 4; k++) {
-						int mh = i + mh4[k];
-						int mw = j + mw4[k];
-						if (0 <= mh && mh < h && 0 <= mw && mw < w) {
-							if ((s[i][j] == '#' && s[mh][mw] == '.') || (s[i][j] == '.' && s[mh][mw] == '#')) {
-								disjointset.unite(f(i, j), f(mh, mw));
-							}
-						}
-					}
-				}
+			while (q-- > 0) {
+				int x = in.nextInt();
+
+				// 二分探索で条件を満たす青木の範囲を求める
+				int ng = -1, ok = 10;
+				P p = calc(ng, ok, x);
+
+				// 1つ重なっているときに右側を調整
+				int L = p.l, R = p.r;
+			    int taka = n - 1 - R;
+			    int aoki = R - L + 1;
+			    if (taka != aoki) {
+			        R--;
+			        aoki--;
+			    }
+
+				long res = get(R + 1, n - 1);
+				if (L > 0) res += takasm[L-1];
+				out.println(res);
+
 			}
+		}
 
-			long ans = 0;
-			boolean[][] used = new boolean[h][w];
-			int[] memo = new int[h*w+10];
-			boolean[] did = new boolean[h*w+10];
-			for (int i = 0; i < list.size(); i++) {
+		P calc(int ng, int ok, int x) {
 
-				int tmp = disjointset.root(f(list.get(i).h, list.get(i).w));
-				if (did[tmp]) {
-					ans += memo[tmp];
+			while (ok - ng > 1) {
+				int k = (ng + ok) / 2;
+				P p = f(x, k);
+				if (p.l > p.r) {
+					ng = k;
 					continue;
 				}
-				memo[tmp] = dfs(list.get(i).h, list.get(i).w, used, B);
-				ans += memo[tmp];
 
-				did[tmp] = true;
-			}
+				int len = p.r - p.l + 1;
 
-			out.println(ans);
-
-		}
-
-		int f(int i, int j) {
-			return i * w + j;
-		}
-
-		int dfs(int nh, int nw, boolean[][] used, int stat) {
-
-			used[nh][nw] = true;
-
-			int ret = 0;
-			for (int i = 0; i < 4; i++) {
-				int mh = nh + mh4[i];
-				int mw = nw + mw4[i];
-				if (0 <= mh && mh < h && 0 <= mw && mw < w && !used[mh][mw]) {
-					if (stat == B && s[mh][mw] == '.') {
-						ret += dfs(mh, mw, used, W) + 1;
-					}
-					if (stat == W && s[mh][mw] == '#') {
-						ret += dfs(mh, mw, used, B);
-					}
+				/*
+				 * 青木のとる範囲を [La, Ra] とすると高橋の範囲 [Lt, Rt] について
+				 * n-1 <= Rt = Ra + len であれば条件を満たす高橋のとる範囲となる
+				 * */
+				if (n - 1 <= p.r + len) {
+					ok = k;
+				} else {
+					ng = k;
 				}
 			}
-			return ret;
+
+			return f(x, ok);
+		}
+
+		// [x-len, x+len] なる index l, r を求める
+		P f(int x, int len) {
+			int l = lowerBound(a, x - len);     // x+len 以上の最小のidx
+			int r = upperBound(a, x + len) - 1; // x+len 以下の最大のidx
+			return new P(l, r);
+		}
+
+		long get(int l, int r) {
+			return b[r] - (l > 0 ? b[l-1] : 0);
 		}
 	}
 
-	public static class DisjointSet {
-
-		int[] p, rank, cnt;
-
-		public DisjointSet(int size) {
-			p = new int[size];
-			rank = new int[size];
-			cnt = new int[size];
-
-			for (int j = 0; j < size; j++) {
-				makeSet(j);
+	public static int lowerBound(long[] a, long obj) {
+		int l = 0, r = a.length - 1;
+		while (r - l >= 0) {
+			int c = (l + r) / 2;
+			if (obj <= a[c]) {
+				r = c - 1;
+			} else {
+				l = c + 1;
 			}
 		}
-
-		private void makeSet(int x) {
-			p[x] = x;
-			rank[x] = 0;
-			cnt[x] = 1;
-		}
-
-		public int root(int x) {
-			return p[x] == x ? x : root(p[x]);
-		}
-
-		private void link(int x, int y) {
-			if (rank[x] > rank[y]) {
-				p[y] = x;
-			} else if (rank[x] < rank[y]) {
-				p[x] = y;
-			} else if (rank[x] == rank[y]) {
-				p[x] = y;
-				rank[y]++;
-			}
-
-			if (x != y) {
-				cnt[x] = cnt[y] += cnt[x];
-			}
-		}
-
-		public void unite(int x, int y) {
-			link(root(x), root(y));
-		}
-
-		public boolean same(int x, int y) {
-			return root(x) == root(y);
-		}
-
-		public int getSize(int x) {
-			return cnt[root(x)];
-		}
+		return l;
 	}
 
-	static class T {
-		int th, tw, sh, sw;
+	public static int upperBound(long[] a, long obj) {
+		int l = 0, r = a.length - 1;
+		while (r - l >= 0) {
+			int c = (l + r) / 2;
+			if (a[c] <= obj) {
+				l = c + 1;
+			} else {
+				r = c - 1;
+			}
+		}
+		return l;
+	}
 
-		public T(int th, int tw, int sh, int sw) {
+	static class P {
+		int l, r;
+
+		public P(int l, int r) {
 			super();
-			this.th = th;
-			this.tw = tw;
-			this.sh = sh;
-			this.sw = sw;
+			this.l = l;
+			this.r = r;
 		}
 
 		@Override
 		public String toString() {
-			return "T [th=" + th + ", tw=" + tw + ", sh=" + sh + ", sw=" + sw
-					+ "]";
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + sh;
-			result = prime * result + sw;
-			result = prime * result + th;
-			result = prime * result + tw;
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			T other = (T) obj;
-			if (sh != other.sh)
-				return false;
-			if (sw != other.sw)
-				return false;
-			if (th != other.th)
-				return false;
-			if (tw != other.tw)
-				return false;
-			return true;
-		}
-
-	}
-
-	static class P implements Comparable<P> {
-		int h, w;
-
-		public P(int h, int w) {
-			super();
-			this.h = h;
-			this.w = w;
-		}
-
-		@Override
-		public int compareTo(P o) {
-			return Integer.compare(this.h * 1000 + this.w, o.h * 1000 + o.w);
-		}
-
-		@Override
-		public String toString() {
-			return "P [h=" + h + ", w=" + w + "]";
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + h;
-			result = prime * result + w;
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			P other = (P) obj;
-			if (h != other.h)
-				return false;
-			if (w != other.w)
-				return false;
-			return true;
+			return "P [l=" + l + ", r=" + r + "]";
 		}
 	}
 

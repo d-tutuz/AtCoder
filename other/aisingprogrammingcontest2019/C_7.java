@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class C_6 {
+public class C_7 {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -38,53 +38,38 @@ public class C_6 {
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
 			h = in.nextInt(); w = in.nextInt();
-			List<P> list = new ArrayList<>();
 			s = new char[h][w];
+
+			DisjointSet set = new DisjointSet(h * w);
+			List<P> list = new ArrayList<>();
 			for (int i = 0; i < h; i++) {
 				for (int j = 0; j < w; j++) {
 					s[i][j] = in.nextChar();
 					if (s[i][j] == '#') list.add(new P(i, j));
-				}
-			}
-
-			DisjointSet disjointset = new DisjointSet(h*w+10);
-			for (int i = 0; i < h; i++) {
-				for (int j = 0; j < w; j++) {
 					for (int k = 0; k < 4; k++) {
 						int mh = i + mh4[k];
 						int mw = j + mw4[k];
-						if (0 <= mh && mh < h && 0 <= mw && mw < w) {
-							if ((s[i][j] == '#' && s[mh][mw] == '.') || (s[i][j] == '.' && s[mh][mw] == '#')) {
-								disjointset.unite(f(i, j), f(mh, mw));
-							}
+						if (isInside(mh, mw) && ((s[i][j] == '#' && s[mh][mw] == '.') || (s[i][j] == '.' && s[mh][mw] == '#'))) {
+							set.unite(f(i, j), f(mh, mw));
 						}
 					}
 				}
 			}
 
 			long ans = 0;
+			long[] memo = new long[h * w];
+			Arrays.fill(memo, -1);
 			boolean[][] used = new boolean[h][w];
-			int[] memo = new int[h*w+10];
-			boolean[] did = new boolean[h*w+10];
-			for (int i = 0; i < list.size(); i++) {
-
-				int tmp = disjointset.root(f(list.get(i).h, list.get(i).w));
-				if (did[tmp]) {
-					ans += memo[tmp];
+			for (P p : list) {
+				int root = set.root(f(p.h, p.w));
+				if (memo[root] != -1) {
+					ans += memo[root];
 					continue;
 				}
-				memo[tmp] = dfs(list.get(i).h, list.get(i).w, used, B);
-				ans += memo[tmp];
-
-				did[tmp] = true;
+				ans += memo[root] = dfs(p.h, p.w, used, B);
 			}
 
 			out.println(ans);
-
-		}
-
-		int f(int i, int j) {
-			return i * w + j;
 		}
 
 		int dfs(int nh, int nw, boolean[][] used, int stat) {
@@ -95,7 +80,7 @@ public class C_6 {
 			for (int i = 0; i < 4; i++) {
 				int mh = nh + mh4[i];
 				int mw = nw + mw4[i];
-				if (0 <= mh && mh < h && 0 <= mw && mw < w && !used[mh][mw]) {
+				if (isInside(mh, mw) && !used[mh][mw]) {
 					if (stat == B && s[mh][mw] == '.') {
 						ret += dfs(mh, mw, used, W) + 1;
 					}
@@ -104,7 +89,16 @@ public class C_6 {
 					}
 				}
 			}
+
 			return ret;
+		}
+
+		int f(int i, int j) {
+			return i * w + j;
+		}
+
+		boolean isInside(int i, int j) {
+			return 0 <= i && i < h && 0 <= j && j < w;
 		}
 	}
 
@@ -160,57 +154,7 @@ public class C_6 {
 		}
 	}
 
-	static class T {
-		int th, tw, sh, sw;
-
-		public T(int th, int tw, int sh, int sw) {
-			super();
-			this.th = th;
-			this.tw = tw;
-			this.sh = sh;
-			this.sw = sw;
-		}
-
-		@Override
-		public String toString() {
-			return "T [th=" + th + ", tw=" + tw + ", sh=" + sh + ", sw=" + sw
-					+ "]";
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + sh;
-			result = prime * result + sw;
-			result = prime * result + th;
-			result = prime * result + tw;
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			T other = (T) obj;
-			if (sh != other.sh)
-				return false;
-			if (sw != other.sw)
-				return false;
-			if (th != other.th)
-				return false;
-			if (tw != other.tw)
-				return false;
-			return true;
-		}
-
-	}
-
-	static class P implements Comparable<P> {
+	static class P {
 		int h, w;
 
 		public P(int h, int w) {
@@ -220,39 +164,10 @@ public class C_6 {
 		}
 
 		@Override
-		public int compareTo(P o) {
-			return Integer.compare(this.h * 1000 + this.w, o.h * 1000 + o.w);
-		}
-
-		@Override
 		public String toString() {
 			return "P [h=" + h + ", w=" + w + "]";
 		}
 
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + h;
-			result = prime * result + w;
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			P other = (P) obj;
-			if (h != other.h)
-				return false;
-			if (w != other.w)
-				return false;
-			return true;
-		}
 	}
 
 	static class MyInput {
