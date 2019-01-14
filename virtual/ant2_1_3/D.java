@@ -1,4 +1,4 @@
-package keyence_programming_contest_2019;
+package ant2_1_3;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,13 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.Deque;
 
-public class C {
+
+public class D {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -34,35 +33,82 @@ public class C {
 
 	static class TaskX {
 
+		int h, w;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt();
-			long[] a = in.nextLongArray(n), b = in.nextLongArray(n);
-			long sa = 0;
-			int ans = 0, idx = 0;
-			List<Long> list = new ArrayList<>();
-			for (int i = 0; i < n; i++) {
-				if (a[i] < b[i]) {
-					 sa += Math.abs(b[i] - a[i]);
-					 ans++;
-				} else {
-					list.add(a[i] - b[i]);
+			h = in.nextInt(); w = in.nextInt();
+			int sh = -1, sw = -1, gh = -1, gw = -1;
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				for (int j = 0; j < w; j++) {
+					s[i][j] = in.nextChar();
+					if (s[i][j] == 's') {
+						sh = i;
+						sw = j;
+					}
+					if (s[i][j] == 'g') {
+						gh = i;
+						gw = j;
+					}
 				}
 			}
-			Collections.sort(list, Comparator.reverseOrder());
 
-			while (sa > 0 && idx < list.size()) {
-				sa -= list.get(idx);
-				idx++;
-				ans++;
+			int[][] c = new int[h][w];
+			fill(c, INF);
+
+			Deque<P> q = new ArrayDeque<>();
+			q.add(new P(sh, sw));
+			c[sh][sw] = 0;
+			while (!q.isEmpty()) {
+				P p = q.remove();
+
+				for (int i = 0; i < 4; i++) {
+					int mh = p.h + mh4[i];
+					int mw = p.w + mw4[i];
+					if (!inside(mh, mw)) continue;
+					int cost = s[mh][mw] == '#' ? 1 : 0;
+					if (c[p.h][p.w] + cost < c[mh][mw] && c[p.h][p.w] + cost <= 2) {
+						c[mh][mw] = c[p.h][p.w] + cost;
+//						if (cost == 0) {
+//							q.addFirst(new P(mh, mw));
+//						} else {
+//							q.addLast(new P(mh, mw));
+//						}
+						q.add(new P(mh, mw));
+					}
+				}
 			}
 
-			if (sa > 0) {
-				out.println(-1);
-				return;
-			}
+//			out.println(c[gh][gw]);
+			out.println(c[gh][gw] <= 2 ? "YES" : "NO");
+		}
 
-			out.println(ans);
+		boolean inside(int i, int j) {
+			return 0 <= i && i < h && 0 <= j && j < w;
+		}
+	}
+
+	static class P {
+		int h, w;
+
+		public P(int h, int w) {
+			super();
+			this.h = h;
+			this.w = w;
+		}
+
+		@Override
+		public String toString() {
+			return "P [h=" + h + ", w=" + w + "]";
+		}
+
+	}
+
+	static void fill(int[][] a, int v) {
+		for (int i = 0; i < a.length; i++) {
+			for (int j = 0; j < a[0].length; j++) {
+				a[i][j] = v;
+			}
 		}
 	}
 
@@ -156,6 +202,14 @@ public class C {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {

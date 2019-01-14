@@ -6,13 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
-public class C {
+public class D_3 {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -36,33 +32,47 @@ public class C {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt();
-			long[] a = in.nextLongArray(n), b = in.nextLongArray(n);
-			long sa = 0;
-			int ans = 0, idx = 0;
-			List<Long> list = new ArrayList<>();
-			for (int i = 0; i < n; i++) {
-				if (a[i] < b[i]) {
-					 sa += Math.abs(b[i] - a[i]);
-					 ans++;
-				} else {
-					list.add(a[i] - b[i]);
-				}
-			}
-			Collections.sort(list, Comparator.reverseOrder());
-
-			while (sa > 0 && idx < list.size()) {
-				sa -= list.get(idx);
-				idx++;
-				ans++;
-			}
-
-			if (sa > 0) {
-				out.println(-1);
+			int n = in.nextInt(), m = in.nextInt();
+			int[] a = in.nextIntArray(n);
+			int[] b = in.nextIntArray(m);
+			long[] ax = new long[m * n + 1];
+			long[] bx = new long[m * n + 1];
+			for (int i : a) ax[i]++;
+			for (int i : b) bx[i]++;
+			if (ng(ax) || ng(bx)) {
+				out.println(0);
 				return;
 			}
 
+			long[] asum = ax.clone();
+			long[] bsum = bx.clone();
+			Arrays.parallelPrefix(asum, Math::addExact);
+			Arrays.parallelPrefix(bsum, Math::addExact);
+
+			long ans = 1;
+			for (int i = n * m, cnt = 0; i >= 1; i--, cnt++) {
+				if (ax[i] == 1 && bx[i] == 1) {
+					ans *= 1;
+				} else if (ax[i] == 1 && bx[i] == 0) {
+					ans *= bsum[n * m] - bsum[i - 1];
+					ans %= MOD;
+				} else if (ax[i] == 0 && bx[i] == 1) {
+					ans *= asum[n * m] - asum[i - 1];
+					ans %= MOD;
+				} else if (ax[i] == 0 && bx[i] == 0) {
+					ans *= (asum[n * m] - asum[i - 1]) * (bsum[n * m] - bsum[i - 1]) - cnt;
+					ans %= MOD;
+				}
+ 			}
+
 			out.println(ans);
+		}
+
+		boolean ng(long[] a) {
+			for (long l : a) {
+				if (l > 1) return true;
+			}
+			return false;
 		}
 	}
 

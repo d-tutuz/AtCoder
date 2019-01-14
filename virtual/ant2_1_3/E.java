@@ -1,4 +1,4 @@
-package keyence_programming_contest_2019;
+package ant2_1_3;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,13 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
-public class C {
+public class E {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -34,35 +30,43 @@ public class C {
 
 	static class TaskX {
 
+		long[] pow3 = new long[20];
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt();
-			long[] a = in.nextLongArray(n), b = in.nextLongArray(n);
-			long sa = 0;
-			int ans = 0, idx = 0;
-			List<Long> list = new ArrayList<>();
-			for (int i = 0; i < n; i++) {
-				if (a[i] < b[i]) {
-					 sa += Math.abs(b[i] - a[i]);
-					 ans++;
-				} else {
-					list.add(a[i] - b[i]);
+			pow3[0] = 1;
+			for (int i = 1; i < 20; i++) {
+				pow3[i] = pow3[i-1] * 3;
+			}
+
+			int n = in.nextInt(), m = in.nextInt();
+			while (!(m == 0 && n == 0)) {
+
+				int[] c = new int[20];
+				for (int i = 0; i < 3; i++) {
+					int j = in.nextInt();
+					while (j-- > 0) {
+						int k = in.nextInt();
+						c[n-k] = i;
+					}
 				}
-			}
-			Collections.sort(list, Comparator.reverseOrder());
 
-			while (sa > 0 && idx < list.size()) {
-				sa -= list.get(idx);
-				idx++;
-				ans++;
+				int p = 0, d = 0;
+				long x = 0;
+				for (int i = n-1; i >= 0; i--) {
+					d = Math.abs(p - c[i]);
+					x += pow3[i] * d;
+					if (d == 1) {
+						p = 2 - p;
+					}
+				}
+
+				long ans = Math.min(pow3[n] - 1 - x, x);
+				out.println(ans > m ? -1 : ans);
+
+				n = in.nextInt(); m = in.nextInt();
+
 			}
 
-			if (sa > 0) {
-				out.println(-1);
-				return;
-			}
-
-			out.println(ans);
 		}
 	}
 
@@ -156,6 +160,14 @@ public class C {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {

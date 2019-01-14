@@ -1,4 +1,4 @@
-package keyence_programming_contest_2019;
+package sample;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,13 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.Random;
 
-public class C {
+public class Sample {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -34,36 +31,14 @@ public class C {
 
 	static class TaskX {
 
+		Random r = new Random();
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt();
-			long[] a = in.nextLongArray(n), b = in.nextLongArray(n);
-			long sa = 0;
-			int ans = 0, idx = 0;
-			List<Long> list = new ArrayList<>();
-			for (int i = 0; i < n; i++) {
-				if (a[i] < b[i]) {
-					 sa += Math.abs(b[i] - a[i]);
-					 ans++;
-				} else {
-					list.add(a[i] - b[i]);
-				}
-			}
-			Collections.sort(list, Comparator.reverseOrder());
+			String s = "hogehoge";
+			out.println(s.substring(1, 1+3));
 
-			while (sa > 0 && idx < list.size()) {
-				sa -= list.get(idx);
-				idx++;
-				ans++;
-			}
-
-			if (sa > 0) {
-				out.println(-1);
-				return;
-			}
-
-			out.println(ans);
 		}
+
 	}
 
 	static class MyInput {

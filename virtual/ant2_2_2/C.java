@@ -1,4 +1,4 @@
-package keyence_programming_contest_2019;
+package ant2_2_2;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class A_2 {
+public class C {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -32,11 +32,47 @@ public class A_2 {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int[] a = in.nextIntArray(4);
-			Arrays.sort(a);
-			
-			if (a[0] == 1 && a[1] == 4 && a[2] == 7 && a[3] == 9) {
-				
+			int n = in.nextInt();
+			long[] x = new long[n], w = new long[n];
+			for (int i = 0; i < n; i++) {
+				x[i] = in.nextLong();
+				w[i] = in.nextLong();
+			}
+			P[] p = new P[n];
+			for (int i = 0; i < n; i++) {
+				p[i] = new P(x[i] - w[i], x[i] + w[i]);
+			}
+			Arrays.sort(p);
+
+			int ans = 0;
+			long min = -LINF;
+			for (int i = 0; i < n; i++) {
+				if (min <= p[i].l) {
+					min = p[i].r;
+					ans++;
+				}
+			}
+
+			out.println(ans);
+		}
+
+		class P implements Comparable<P> {
+			long l, r;
+
+			public P(long l, long r) {
+				super();
+				this.l = l;
+				this.r = r;
+			}
+
+			@Override
+			public int compareTo(P o) {
+				return Long.compare(this.r, o.r);
+			}
+
+			@Override
+			public String toString() {
+				return "P [l=" + l + ", r=" + r + "]";
 			}
 
 		}
@@ -134,6 +170,14 @@ public class A_2 {
 			return Arrays.copyOf(str, len);
 		}
 
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
+		}
+
 		int reads(int len, boolean[] accept) {
 			try {
 				while (true) {
@@ -217,4 +261,5 @@ public class A_2 {
 		}
 
 	}
+
 }

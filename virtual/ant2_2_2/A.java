@@ -1,4 +1,4 @@
-package keyence_programming_contest_2019;
+package ant2_2_2;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,13 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
-public class C {
+public class A {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -36,33 +32,19 @@ public class C {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt();
-			long[] a = in.nextLongArray(n), b = in.nextLongArray(n);
-			long sa = 0;
-			int ans = 0, idx = 0;
-			List<Long> list = new ArrayList<>();
-			for (int i = 0; i < n; i++) {
-				if (a[i] < b[i]) {
-					 sa += Math.abs(b[i] - a[i]);
-					 ans++;
-				} else {
-					list.add(a[i] - b[i]);
+			int t = in.nextInt();
+			while (t-- > 0) {
+				String s = in.nextString();
+				int cnt = 0;
+				for (int i = 0; i + 4 < s.length(); i++) {
+					if ("tokyo".equals(s.substring(i, i+5)) || "kyoto".equals(s.substring(i, i+5))) {
+						cnt++;
+						i += 4;
+					}
 				}
-			}
-			Collections.sort(list, Comparator.reverseOrder());
-
-			while (sa > 0 && idx < list.size()) {
-				sa -= list.get(idx);
-				idx++;
-				ans++;
+				out.println(cnt);
 			}
 
-			if (sa > 0) {
-				out.println(-1);
-				return;
-			}
-
-			out.println(ans);
 		}
 	}
 
@@ -156,6 +138,14 @@ public class C {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {

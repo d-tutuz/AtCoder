@@ -1,5 +1,7 @@
 package array;
 
+import java.util.Arrays;
+
 
 public class ArrayUtils {
 
@@ -33,6 +35,27 @@ public class ArrayUtils {
 			}
 		}
 		return l;
+	}
+
+	/**
+	 * 逆順ソート
+	 * */
+	void revSort(int[] a) {
+		int n = a.length;
+		int[] tmp = a.clone();
+		Arrays.sort(tmp);
+		for (int i = 0; i < n; i++) {
+			a[i] = tmp[n-1-i];
+		}
+	}
+
+	void revSort(long[] a) {
+		int n = a.length;
+		long[] tmp = a.clone();
+		Arrays.sort(tmp);
+		for (int i = 0; i < n; i++) {
+			a[i] = tmp[n-1-i];
+		}
 	}
 
 

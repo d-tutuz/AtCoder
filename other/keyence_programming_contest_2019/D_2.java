@@ -61,9 +61,6 @@ public class D_2 {
 					ac[amap.get(i)]++;
 					bc[bmap.get(i)]++;
 					used[amap.get(i)][bmap.get(i)] = true;
-					ac[amap.get(i)]++;
-					bc[bmap.get(i)]++;
-
 				} else if (amap.containsKey(i)) {
 					long cnt = 0;
 					for (int k = 0; k < m; k++) {
