@@ -1,4 +1,4 @@
-package sample;
+package ant2_2_2;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class Sample {
+public class B {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -32,38 +32,38 @@ public class Sample {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt();
-			int[] a = in.nextIntArray(n);
+			int n = in.nextInt(), m = in.nextInt();
+			P[] p = new P[m];
+			for (int i = 0; i < m; i++) {
+				int l = in.nextInt(), r = in.nextInt();
+				p[i] = new P(l, r);
+			}
+			Arrays.sort(p);
 
-			out.println(LIS(a));
+			int ans = 0;
+			int min = -INF;
+			for (int i = 0; i < m; i++) {
+				if (p[i].l < min) continue;
+				min = p[i].r;
+				ans++;
+			}
+			out.println(ans);
 		}
 
-		int LIS(int[] a) {
-			int inf = 1 << 30;
-			int n = a.length;
-			int[] dp = new int[n];
-			Arrays.fill(dp, inf);
+		class P implements Comparable<P> {
+			int l, r;
 
-			for (int i = 0; i < n; i++) {
-				int idx = lowerBound(dp, a[i]);
-				dp[idx] = a[i];
+			public P(int l, int r) {
+				super();
+				this.l = l;
+				this.r = r;
 			}
 
-			int ans = lowerBound(dp, inf);
-			return ans;
-		}
-
-		public static int lowerBound(int[] a, int obj) {
-			int l = 0, r = a.length - 1;
-			while (r - l >= 0) {
-				int c = (l + r) / 2;
-				if (obj <= a[c]) {
-					r = c - 1;
-				} else {
-					l = c + 1;
-				}
+			@Override
+			public int compareTo(P o) {
+				return Integer.compare(this.r, o.r);
 			}
-			return l;
+
 		}
 	}
 
@@ -157,6 +157,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {
