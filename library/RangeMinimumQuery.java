@@ -1,6 +1,6 @@
-package math;
 
-public class RangeMinimumQuery {
+
+class RangeMinimumQuery {
 	final int inf = (1 << 31) - 1;
 
 	int size;
@@ -35,8 +35,8 @@ public class RangeMinimumQuery {
 		if (a <= l && r <= b) {
 			return dat[k];
 		} else {
-			int vl = query(a, b, 2 * k, l, (l+r)/2);
-			int vr = query(a, b, 2 * k + 1, (l+r)/2, r);
+			int vl = query(a, b, 2 * k, l, (l + r) / 2);
+			int vr = query(a, b, 2 * k + 1, (l + r) / 2, r);
 			return Math.min(vl, vr);
 		}
 	}

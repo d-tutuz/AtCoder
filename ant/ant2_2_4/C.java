@@ -1,4 +1,4 @@
-package ant2_2_3;
+package ant2_2_4;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.TreeMap;
 
 public class C {
 
@@ -31,59 +30,25 @@ public class C {
 
 	static class TaskX {
 
-		int n, k;
-		char[] s;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			n = in.nextInt(); k = in.nextInt();
-			s = in.nextChars();
-			TreeMap<Character, Integer> map = new TreeMap<>();
-			for (int i = 0; i < n; i++) {
-				map.merge(s[i], 1, Integer::sum);
-			}
+			int t = in.nextInt();
+			int n = in.nextInt();
+			int[] a = in.nextIntArray(n);
+			int m = in.nextInt();
+			int[] b = in.nextIntArray(m);
 
-			int idx = 0;
-			StringBuilder sb = new StringBuilder();
-			while (idx < n) {
-				char tmp = check(idx, map, k);
-				sb.append(tmp);
-				idx++;
-			}
-
-			out.println(sb.toString());
-		}
-
-		char check(int idx, TreeMap<Character, Integer> map, int diff) {
-
-			int[] sc = new int[26], tc = new int[26];
-			char key = '*';
-			// i 文字目を決める
-			for (char c : map.keySet()) {
-				int sa = 0;
-				if (s[idx] != c) sa++;
-
-				// i 文字目以降の差を求める。元分
-				for (int i = idx+1; i < n; i++) sc[s[i]-'a']++;
-
-				// i 文字目以降の差を求める。残り分
-				for (char x : map.keySet()) tc[x - 'a'] += map.get(x) - (c == x ? 1 : 0);
-				for (int i = 0; i < 26; i++) sa += Math.abs(sc[i] - tc[i]);
-
-				if (sa <= diff) {
-					key = c;
-					break;
+			int cnt = 0;
+			for (int i = 0, j = 0; i < n && j < m; i++) {
+				if (a[i] <= b[j] && b[j] <= a[i] + t) {
+					j++;
+					cnt++;
 				}
 			}
 
-			if (key != '*') {
-				map.merge(key, -1, Integer::sum);
-				if (map.containsKey(key) && map.get(key) == 0) map.remove(key);
-			}
-			if (s[idx] != key) k--;
+			out.println(cnt == m ? "yes" : "no");
 
-			return key;
 		}
-
 	}
 
 	static class MyInput {
