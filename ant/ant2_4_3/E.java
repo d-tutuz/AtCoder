@@ -1,4 +1,4 @@
-package sample;
+package ant2_4_3;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,9 +7,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.Random;
 
-public class Sample {
+public class E {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -31,19 +30,93 @@ public class Sample {
 
 	static class TaskX {
 
-		Random r = new Random();
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = 10;
-			int[] a = new int[n];
-			for (int i = 0; i < n; i++) {
-				a[i] = r.nextInt(100);
+			int n = in.nextInt(), m = in.nextInt();
+			WeightedUnionFind uf = new WeightedUnionFind(n);
+			for (int i = 0; i < m; i++) {
+				int l = in.nextInt()-1, r = in.nextInt()-1, d = in.nextInt();
+				if (uf.same(l, r)) {
+					if (uf.diff(r, l) != d) {
+						out.println("No");
+						return;
+					}
+				} else {
+					uf.union(l, r, d);
+				}
 			}
+
+			out.println("Yes");
 		}
-		
-		
 	}
 
+	public static class WeightedUnionFind {
+		int[] par;
+		int[] ws;
+
+		public WeightedUnionFind(int n) {
+			par = new int[n];
+			ws = new int[n];
+			for (int i = 0; i < n; i++) {
+				par[i] = -1;
+			}
+		}
+
+		public int root(int x) {
+			if (par[x] < 0) {
+				return x;
+			} else {
+				final int parent = root(par[x]);
+				ws[x] += ws[par[x]];
+				par[x] = parent;
+				return parent;
+			}
+		}
+
+		public int weight(int x) {
+			root(x);
+			return ws[x];
+		}
+
+		public boolean union(int x, int y, int w) {
+			w += weight(x);
+			w -= weight(y);
+			x = root(x);
+			y = root(y);
+
+			if (x != y) {
+				if (par[y] < par[x]) {
+					int tmp = x;
+					x = y;
+					y = tmp;
+					w = -w;
+				}
+				par[x] += par[y];
+				par[y] = x;
+				ws[y] = w;
+
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		public boolean same(int x, int y) {
+			return root(x) == root(y);
+		}
+
+		public Integer diff(int x, int y) {
+			if (!same(x, y)) {
+				return null;
+			} else {
+				return this.weight(x) - this.weight(y);
+			}
+		}
+
+		public int size(int x) {
+			return -par[root(x)];
+		}
+	}
 
 	static class MyInput {
 		private final BufferedReader in;
@@ -135,6 +208,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {

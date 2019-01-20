@@ -1,4 +1,4 @@
-package sample;
+package ant2_4_3;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,9 +7,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.Random;
 
-public class Sample {
+public class C {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -31,19 +30,67 @@ public class Sample {
 
 	static class TaskX {
 
-		Random r = new Random();
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = 10;
-			int[] a = new int[n];
+			int n = in.nextInt(), m = in.nextInt();
+			int[] p = in.nextIntArrayDec(n);
+
+			UnionFind uf = new UnionFind(n);
+			for (int i = 0; i < m; i++) {
+				int x = in.nextInt()-1, y = in.nextInt()-1;
+				uf.union(x, y);
+			}
+
+			int cnt = 0;
 			for (int i = 0; i < n; i++) {
-				a[i] = r.nextInt(100);
+				if (uf.same(i, p[i])) cnt++;
+			}
+			out.println(cnt);
+		}
+
+		class UnionFind {
+			int[] data;
+
+			public UnionFind(int size) {
+				data = new int[size];
+				clear();
+			}
+
+			public void clear() {
+				Arrays.fill(data, -1);
+			}
+
+			// data[x] < 0 の場合は x 自身が根になっている
+			public int root(int x) {
+				return data[x] < 0 ? x : (data[x] = root(data[x]));
+			}
+
+			public void union(int x, int y) {
+				x = root(x);
+				y = root(y);
+
+				if (x != y) {
+					if (data[y] > data[x]) {
+						final int t = x;
+						x = y;
+						y = t;
+					}
+
+					// 負数の合計が連結成分の要素数
+					data[x] += data[y];
+					data[y] = x;
+				}
+			}
+
+			boolean same(int x, int y) {
+				return root(x) == root(y);
+			}
+
+			public int size(int x) {
+				return -data[root(x)];
 			}
 		}
-		
-		
 	}
-
 
 	static class MyInput {
 		private final BufferedReader in;
@@ -135,6 +182,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {

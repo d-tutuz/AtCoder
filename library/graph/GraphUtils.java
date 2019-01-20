@@ -216,11 +216,11 @@ public class GraphUtils {
 			}
 		}
 
-		public int find(int x) {
+		public int root(int x) {
 			if (par[x] < 0) {
 				return x;
 			} else {
-				final int parent = find(par[x]);
+				final int parent = root(par[x]);
 				ws[x] += ws[par[x]];
 				par[x] = parent;
 				return parent;
@@ -228,15 +228,15 @@ public class GraphUtils {
 		}
 
 		public int weight(int x) {
-			find(x);
+			root(x);
 			return ws[x];
 		}
 
-		public boolean union(int x, int y, int w) {
+		public void union(int x, int y, int w) {
 			w += weight(x);
 			w -= weight(y);
-			x = find(x);
-			y = find(y);
+			x = root(x);
+			y = root(y);
 
 			if (x != y) {
 				if (par[y] < par[x]) {
@@ -248,27 +248,20 @@ public class GraphUtils {
 				par[x] += par[y];
 				par[y] = x;
 				ws[y] = w;
-
-				return true;
-			} else {
-				return false;
 			}
 		}
 
 		public boolean same(int x, int y) {
-			return find(x) == find(y);
+			return root(x) == root(y);
 		}
 
-		public Integer diff(int x, int y) {
-			if (!same(x, y)) {
-				return null;
-			} else {
-				return this.weight(x) - this.weight(y);
-			}
+		public int diff(int x, int y) {
+			if (!same(x, y)) new RuntimeException();
+			return this.weight(y) - this.weight(x);
 		}
 
 		public int size(int x) {
-			return -par[find(x)];
+			return -par[root(x)];
 		}
 	}
 

@@ -1,4 +1,4 @@
-package sample;
+package agc027;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +6,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Random;
+import java.util.List;
+import java.util.Queue;
+import java.util.stream.Stream;
 
-public class Sample {
+public class C_4 {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -31,19 +35,56 @@ public class Sample {
 
 	static class TaskX {
 
-		Random r = new Random();
+		@SuppressWarnings("unchecked")
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = 10;
-			int[] a = new int[n];
-			for (int i = 0; i < n; i++) {
-				a[i] = r.nextInt(100);
-			}
-		}
-		
-		
-	}
+			int n = in.nextInt(), m = in.nextInt();
+			char[] s = in.nextChars();
 
+			int[][] cnt = new int[n][2];
+			List<Integer>[] g = new ArrayList[n];
+			g = Stream.generate(ArrayList::new).limit(n).toArray(List[]::new);
+
+			for (int i = 0; i < m; i++) {
+				int a = in.nextInt()-1, b = in.nextInt()-1;
+				g[a].add(b);
+				g[b].add(a);
+			}
+
+			boolean[] ng = new boolean[n];
+			Queue<Integer> q = new ArrayDeque<>();
+			for (int i = 0; i < n; i++) {
+				for (int t : g[i]) {
+					cnt[i][s[t]-'A']++;
+				}
+				if (cnt[i][0] > 0 && cnt[i][1] > 0) continue;
+				ng[i] = true;
+				q.add(i);
+			}
+
+			while (!q.isEmpty()) {
+				int cur = q.remove();
+				for (int t : g[cur]) {
+					cnt[t][s[cur]-'A']--;
+
+					if (cnt[t][0] > 0 && cnt[t][1] > 0) continue;
+					if (ng[t]) continue;
+					ng[t] = true;
+					q.add(t);
+				}
+			}
+
+			out.println(cycle(ng) ? "Yes" : "No");
+
+		}
+
+		boolean cycle(boolean[] ng) {
+			for (boolean b : ng) {
+				if (!b) return true;
+			}
+			return false;
+		}
+	}
 
 	static class MyInput {
 		private final BufferedReader in;
@@ -135,6 +176,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {

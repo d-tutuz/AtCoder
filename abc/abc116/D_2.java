@@ -1,4 +1,4 @@
-package sample;
+package abc116;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,9 +7,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.Random;
+import java.util.Set;
+import java.util.TreeSet;
 
-public class Sample {
+public class D_2 {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -31,19 +32,66 @@ public class Sample {
 
 	static class TaskX {
 
-		Random r = new Random();
+		int n, k;
+		P[] p;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = 10;
-			int[] a = new int[n];
+			n = in.nextInt(); k = in.nextInt();
+			p = new P[n];
 			for (int i = 0; i < n; i++) {
-				a[i] = r.nextInt(100);
+				p[i] = new P(in.nextInt(), in.nextLong());
+			}
+			Arrays.sort(p);
+
+			long ans = 0;
+			for (int s = 1; s <= n; s++) {
+				Set<Integer> set = new TreeSet<>();
+				long tmp = 0;
+				int cnt = k;
+				for (int i = 0; i < n && cnt > 0; i++) {
+
+					// すでに食べている時
+					if (set.contains(p[i].t)) {
+						if (cnt - 1 + set.size() >= s) {
+							tmp += p[i].d;
+							cnt--;
+						}
+
+					// まだ食べていないとき
+					} else if (set.size() < s) {
+						tmp += p[i].d;
+						cnt--;
+						set.add(p[i].t);
+					}
+				}
+
+				long v = set.size();
+				ans = Math.max(ans, tmp + v * v);
+			}
+
+			out.println(ans);
+		}
+
+		class P implements Comparable<P> {
+			int t;
+			long d;
+			public P(int t, long d) {
+				super();
+				this.t = t;
+				this.d = d;
+			}
+			@Override
+			public String toString() {
+				return "P [t=" + t + ", d=" + d + "]";
+			}
+			@Override
+			public int compareTo(P o) {
+				int c1 = Integer.compare(this.t, o.t);
+				int c2 = -Long.compare(this.d, o.d);
+				return c2 == 0 ? c1 : c2;
 			}
 		}
-		
-		
 	}
-
 
 	static class MyInput {
 		private final BufferedReader in;
@@ -135,6 +183,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {

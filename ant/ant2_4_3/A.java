@@ -1,4 +1,4 @@
-package sample;
+package ant2_4_3;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,9 +7,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.Random;
 
-public class Sample {
+public class A {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -31,19 +30,60 @@ public class Sample {
 
 	static class TaskX {
 
-		Random r = new Random();
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = 10;
-			int[] a = new int[n];
-			for (int i = 0; i < n; i++) {
-				a[i] = r.nextInt(100);
+			int n = in.nextInt(), q = in.nextInt();
+
+			UnionFind uf = new UnionFind(n);
+
+			while (q-- > 0) {
+				int p = in.nextInt(), a = in.nextInt(), b = in.nextInt();
+				if (p == 0) {
+					uf.union(a, b);
+				} else {
+					out.println(uf.same(a, b) ? "Yes" : "No");
+				}
+			}
+
+		}
+
+		class UnionFind {
+
+			int[] data;
+
+			public UnionFind(int size) {
+				data = new int[size];
+				Arrays.fill(data, -1);
+			}
+
+			int root(int i) {
+				return data[i] < 0 ? i : (data[i] = root(data[i]));
+			}
+
+			void union(int i, int j) {
+				i = root(i);
+				j = root(j);
+
+				if (i != j) {
+					if (data[j] > data[i]) {
+						int t = i;
+						i = j;
+						j = t;
+					}
+					data[i] += data[j];
+					data[j] = i;
+				}
+			}
+
+			boolean same(int i, int j) {
+				return root(i) == root(j);
+			}
+
+			int size(int i) {
+				return -data[root(i)];
 			}
 		}
-		
-		
 	}
-
 
 	static class MyInput {
 		private final BufferedReader in;
@@ -135,6 +175,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {

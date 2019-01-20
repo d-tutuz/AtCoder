@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.TreeMap;
+import java.util.HashMap;
 
 public class A_4 {
 
@@ -34,41 +34,33 @@ public class A_4 {
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
 			int n = in.nextInt(), m = in.nextInt();
-			P[] p = new P[m];
-			for (int i = 0; i < m; i++) {
-				int a = in.nextInt(), b = in.nextInt(), l = in.nextInt();
-				p[i] = new P(a, b, l);
+			HashMap<Integer, Long>[] map = new HashMap[n];
+			for (int i = 0; i < n; i++) {
+				map[i] = new HashMap<Integer, Long>();
 			}
-			Arrays.sort(p);
+			for (int i = 0; i < m; i++) {
+				int a = in.nextInt()-1, b = in.nextInt()-1, l = in.nextInt() - 1000;
+				map[a].merge(l, 1L, Long::sum);
+				map[b].merge(l, 1L, Long::sum);
+			}
 
 			long ans = 0;
-
-			TreeMap<Integer, Long> map = new TreeMap<>();
-			for (int i = 0; i < m; i++) {
-				ans += map.containsKey(2540-p[i].l) ? map.get(2540-p[i].l) : 0;
-				map.merge(p[i].l, 1L, Long::sum);
+			for (int i = 0; i < n; i++) {
+				for (int l = 0; l <= 540; l++) {
+					if (l == 540/2) {
+						if (map[i].containsKey(l)) {
+							long v = map[i].get(l);
+							ans += v * (v-1);
+						}
+					} else {
+						if (map[i].containsKey(l) && map[i].containsKey(540 - l)) {
+							ans += map[i].get(l) * map[i].get(540 - l);
+						}
+					}
+				}
 			}
 
-			out.println(ans);
-
-		}
-
-		class P implements Comparable<P> {
-			int a, b , l;
-
-			@Override
-			public int compareTo(P o) {
-
-				return Integer.compare(this.a, o.a);
-			}
-
-			public P(int a, int b, int l) {
-				super();
-				this.a = a;
-				this.b = b;
-				this.l = l;
-			}
-
+			out.println(ans / 2);
 		}
 	}
 

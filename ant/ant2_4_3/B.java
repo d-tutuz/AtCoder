@@ -1,4 +1,4 @@
-package sample;
+package ant2_4_3;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,9 +7,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.Random;
+import java.util.HashMap;
+import java.util.Map;
 
-public class Sample {
+public class B {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -31,19 +32,124 @@ public class Sample {
 
 	static class TaskX {
 
-		Random r = new Random();
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = 10;
-			int[] a = new int[n];
+			int n = in.nextInt(), k = in.nextInt(), l = in.nextInt();
+			UnionFind road = new UnionFind(n);
+			UnionFind rail = new UnionFind(n);
+			for (int i = 0; i < k; i++) {
+				int x = in.nextInt()-1, y = in.nextInt()-1;
+				road.union(x, y);
+			}
+			for (int i = 0; i < l; i++) {
+				int x = in.nextInt()-1, y = in.nextInt()-1;
+				rail.union(x, y);
+			}
+
+			Map<P, Integer> map = new HashMap<>();
 			for (int i = 0; i < n; i++) {
-				a[i] = r.nextInt(100);
+				P p = new P(road.root(i), rail.root(i));
+				map.merge(p, 1, Integer::sum);
+			}
+
+			for (int i = 0; i < n; i++) {
+				if (i > 0) out.print(" ");
+				out.print(map.get(new P(road.root(i), rail.root(i))));
+			}
+			out.print("\n");
+		}
+
+		class P {
+			int x, y;
+
+			public P(int x, int y) {
+				super();
+				this.x = x;
+				this.y = y;
+			}
+
+			@Override
+			public String toString() {
+				return "P [x=" + x + ", y=" + y + "]";
+			}
+
+			@Override
+			public int hashCode() {
+				final int prime = 31;
+				int result = 1;
+				result = prime * result + getOuterType().hashCode();
+				result = prime * result + x;
+				result = prime * result + y;
+				return result;
+			}
+
+			@Override
+			public boolean equals(Object obj) {
+				if (this == obj)
+					return true;
+				if (obj == null)
+					return false;
+				if (getClass() != obj.getClass())
+					return false;
+				P other = (P) obj;
+				if (!getOuterType().equals(other.getOuterType()))
+					return false;
+				if (x != other.x)
+					return false;
+				if (y != other.y)
+					return false;
+				return true;
+			}
+
+			private TaskX getOuterType() {
+				return TaskX.this;
+			}
+
+		}
+
+		class UnionFind {
+			int[] data;
+
+			public UnionFind(int size) {
+				data = new int[size];
+				clear();
+			}
+
+			public void clear() {
+				Arrays.fill(data, -1);
+			}
+
+			// data[x] < 0 の場合は x 自身が根になっている
+			public int root(int x) {
+				return data[x] < 0 ? x : (data[x] = root(data[x]));
+			}
+
+			public void union(int x, int y) {
+				x = root(x);
+				y = root(y);
+
+				if (x != y) {
+					if (data[y] > data[x]) {
+						final int t = x;
+						x = y;
+						y = t;
+					}
+
+					// 負数の合計が連結成分の要素数
+					data[x] += data[y];
+					data[y] = x;
+				}
+			}
+
+			boolean same(int x, int y) {
+				return root(x) == root(y);
+			}
+
+			public int size(int x) {
+				return -data[root(x)];
 			}
 		}
-		
-		
 	}
-
 
 	static class MyInput {
 		private final BufferedReader in;
@@ -135,6 +241,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {

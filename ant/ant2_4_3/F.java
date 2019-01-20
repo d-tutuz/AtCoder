@@ -1,4 +1,4 @@
-package sample;
+package ant2_4_3;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,9 +7,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.Random;
 
-public class Sample {
+public class F {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -31,19 +30,84 @@ public class Sample {
 
 	static class TaskX {
 
-		Random r = new Random();
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = 10;
-			int[] a = new int[n];
-			for (int i = 0; i < n; i++) {
-				a[i] = r.nextInt(100);
+			int n = in.nextInt(), m = in.nextInt();
+			UnionFind uf = new UnionFind(n);
+			int[] a = new int[m], b = new int[m];
+			for (int i = 0; i < m; i++) {
+				a[i] = in.nextInt()-1;
+				b[i] = in.nextInt()-1;
 			}
+
+			int q = in.nextInt();
+			int[] x = new int[q], y = new int[q];
+			for (int i = 0; i < q; i++) {
+				x[i] = in.nextInt()-1;
+				y[i] = in.nextInt()-1;
+			}
+
+			int[] ans = new int[q];
+			Arrays.fill(ans, INF);
+
+			for (int i = 0; i < m; i++) {
+				uf.union(a[i], b[i]);
+				for (int j = 0; j < q; j++) {
+					if (uf.same(x[j], y[j])) {
+						ans[j] = Math.min(i+1, ans[j]);
+					}
+				}
+			}
+
+			for (int i : ans) {
+				out.println(i == INF ? -1 : i);
+			}
+
 		}
-		
-		
 	}
 
+	static class UnionFind {
+		int[] data;
+
+		public UnionFind(int size) {
+			data = new int[size];
+			clear();
+		}
+
+		public void clear() {
+			Arrays.fill(data, -1);
+		}
+
+		// data[x] < 0 の場合は x 自身が根になっている
+		public int root(int x) {
+			return data[x] < 0 ? x : (data[x] = root(data[x]));
+		}
+
+		public void union(int x, int y) {
+			x = root(x);
+			y = root(y);
+
+			if (x != y) {
+				if (data[y] > data[x]) {
+					final int t = x;
+					x = y;
+					y = t;
+				}
+
+				// 負数の合計が連結成分の要素数
+				data[x] += data[y];
+				data[y] = x;
+			}
+		}
+
+		boolean same(int x, int y) {
+			return root(x) == root(y);
+		}
+
+		public int size(int x) {
+			return -data[root(x)];
+		}
+	}
 
 	static class MyInput {
 		private final BufferedReader in;
@@ -135,6 +199,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {

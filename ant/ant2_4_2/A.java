@@ -1,4 +1,4 @@
-package sample;
+package ant2_4_2;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,9 +7,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.Random;
+import java.util.TreeSet;
 
-public class Sample {
+public class A {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -31,19 +31,17 @@ public class Sample {
 
 	static class TaskX {
 
-		Random r = new Random();
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = 10;
-			int[] a = new int[n];
+			int n = in.nextInt();
+			TreeSet<Integer> set = new TreeSet<>();
 			for (int i = 0; i < n; i++) {
-				a[i] = r.nextInt(100);
+				set.add(in.nextInt());
 			}
-		}
-		
-		
-	}
+			out.println(set.size());
 
+		}
+	}
 
 	static class MyInput {
 		private final BufferedReader in;
@@ -137,6 +135,14 @@ public class Sample {
 			return Arrays.copyOf(str, len);
 		}
 
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
+		}
+
 		int reads(int len, boolean[] accept) {
 			try {
 				while (true) {
@@ -220,5 +226,4 @@ public class Sample {
 		}
 
 	}
-
 }
