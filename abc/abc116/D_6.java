@@ -1,16 +1,18 @@
 package abc116;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Stream;
 
-public class D_5 {
+public class D_6 {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -32,90 +34,54 @@ public class D_5 {
 
 	static class TaskX {
 
-		int n, k;
-		P[] p;
-		long[] memo;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			n = in.nextInt(); k = in.nextInt();
-			p = new P[n];
+			int n = in.nextInt(), k = in.nextInt();
+			List<Long>[] g = new ArrayList[100010];
+			g = Stream.generate(ArrayList::new).limit(100010).toArray(List[]::new);
+			int[] t = new int[n];
+			long[] d = new long[n];
+			int kind = 0;
 			for (int i = 0; i < n; i++) {
-				p[i] = new P(in.nextInt(), in.nextLong());
-			}
-			Arrays.sort(p);
-
-			memo = new long[(int)1e7];
-			Arrays.fill(memo, -1);
-
-			long ans = 0;
-
-			int left = 0;
-			int right = n+1;
-
-			for (int i = 0; i < 100; i++) {
-				int c1 = (left * 2 + right) / 3;
-				int c2 = (left + right * 2) / 3;
-
-				if (func(c1) < func(c2)) {
-					left = c1;
-				} else {
-					right = c2;
-				}
+				t[i] = in.nextInt()-1;
+				d[i] = in.nextLong();
+				g[t[i]].add(d[i]);
+				if (g[t[i]].size() == 1) kind++;
 			}
 
-			for (int b = left; b <= right; b++) {
-				ans = Math.max(ans, func(b));
+			for (int i = 0; i < n; i++) {
+				Collections.sort(g[i], Comparator.reverseOrder());
 			}
 
-			out.println(ans);
-		}
-
-		long func(int s) {
-			if (memo[s] != -1) return memo[s];
-			long ans = 0;
-			Set<Integer> set = new TreeSet<>();
-			long tmp = 0;
-			int cnt = k;
-			for (int i = 0; i < n && cnt > 0; i++) {
-
-				// すでに食べている時
-				if (set.contains(p[i].t)) {
-					if (cnt - 1 + set.size() >= s) {
-						tmp += p[i].d;
-						cnt--;
+			List<Long> top = new ArrayList<>(), other = new ArrayList<>();
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < g[i].size(); j++) {
+					if (j == 0) {
+						top.add(g[i].get(j));
+					} else {
+						other.add(g[i].get(j));
 					}
-
-				// まだ食べていないとき
-				} else if (set.size() < s) {
-					tmp += p[i].d;
-					cnt--;
-					set.add(p[i].t);
 				}
 			}
 
-			long v = set.size();
-			ans = Math.max(ans, tmp + v * v);
-			return memo[s] = ans;
-		}
+			Collections.sort(top, Comparator.reverseOrder());
+			Collections.sort(other, Comparator.reverseOrder());
 
-		class P implements Comparable<P> {
-			int t;
-			long d;
-			public P(int t, long d) {
-				super();
-				this.t = t;
-				this.d = d;
+			long[] topsum = new long[100010], othersum = new long[100010];
+			for (int i = 1; i <= top.size(); i++) {
+				topsum[i] += topsum[i-1] + top.get(i-1);
 			}
-			@Override
-			public String toString() {
-				return "P [t=" + t + ", d=" + d + "]";
+
+			for (int i = 1; i <= other.size(); i++) {
+				othersum[i] += othersum[i-1] + other.get(i-1);
 			}
-			@Override
-			public int compareTo(P o) {
-				int c1 = Integer.compare(this.t, o.t);
-				int c2 = -Long.compare(this.d, o.d);
-				return c2 == 0 ? c1 : c2;
+
+			long max = 0;
+			for (int i = 1; i <= Math.min(kind, k); i++) {
+				max = Math.max(max, topsum[i] + othersum[k-i] + (long)i * i);
 			}
+
+			out.println(max);
 		}
 	}
 

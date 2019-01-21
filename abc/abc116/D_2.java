@@ -66,10 +66,12 @@ public class D_2 {
 				}
 
 				long v = set.size();
+//				out.printf("%4d -> %d\n", s, tmp + v * v);
+				out.printf("%d\t%d\n", s, tmp + v * v);
 				ans = Math.max(ans, tmp + v * v);
 			}
 
-			out.println(ans);
+//			out.println(ans);
 		}
 
 		class P implements Comparable<P> {

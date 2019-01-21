@@ -7,10 +7,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class D_5 {
+public class D_7 {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -34,7 +36,7 @@ public class D_5 {
 
 		int n, k;
 		P[] p;
-		long[] memo;
+		Map<Integer, Long> memo = new HashMap<>();
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
 			n = in.nextInt(); k = in.nextInt();
@@ -44,15 +46,12 @@ public class D_5 {
 			}
 			Arrays.sort(p);
 
-			memo = new long[(int)1e7];
-			Arrays.fill(memo, -1);
-
 			long ans = 0;
 
 			int left = 0;
 			int right = n+1;
 
-			for (int i = 0; i < 100; i++) {
+			while (right - left <= 10) {
 				int c1 = (left * 2 + right) / 3;
 				int c2 = (left + right * 2) / 3;
 
@@ -71,7 +70,7 @@ public class D_5 {
 		}
 
 		long func(int s) {
-			if (memo[s] != -1) return memo[s];
+			if (memo.containsKey(s)) return memo.get(s);
 			long ans = 0;
 			Set<Integer> set = new TreeSet<>();
 			long tmp = 0;
@@ -95,7 +94,8 @@ public class D_5 {
 
 			long v = set.size();
 			ans = Math.max(ans, tmp + v * v);
-			return memo[s] = ans;
+			memo.put(s, ans);
+			return ans;
 		}
 
 		class P implements Comparable<P> {

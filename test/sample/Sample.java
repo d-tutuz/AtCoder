@@ -34,14 +34,20 @@ public class Sample {
 		Random r = new Random();
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = 10;
-			int[] a = new int[n];
+			int n = 10000, k = 400;
+			out.printf("%d %d\n", n, k);
+			int[] t = new int[n];
+			int[] d = new int[n];
 			for (int i = 0; i < n; i++) {
-				a[i] = r.nextInt(100);
+				t[i] = r.nextInt(1000);
+				d[i] = r.nextInt(10000);
+			}
+			for (int i = 0; i < n; i++) {
+				out.printf("%d %d\n", t[i], d[i]);
 			}
 		}
-		
-		
+
+
 	}
 
 

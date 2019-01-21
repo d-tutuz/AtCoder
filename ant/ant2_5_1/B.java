@@ -1,4 +1,4 @@
-package abc116;
+package ant2_5_1;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,10 +7,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.Set;
-import java.util.TreeSet;
 
-public class D_5 {
+public class B {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -32,90 +30,57 @@ public class D_5 {
 
 	static class TaskX {
 
-		int n, k;
-		P[] p;
-		long[] memo;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			n = in.nextInt(); k = in.nextInt();
-			p = new P[n];
+			int n = in.nextInt();
+			UnionFind uf = new UnionFind(n);
 			for (int i = 0; i < n; i++) {
-				p[i] = new P(in.nextInt(), in.nextLong());
+				int a = in.nextInt()-1;
+				uf.union(i, a);
 			}
-			Arrays.sort(p);
+		}
+	}
 
-			memo = new long[(int)1e7];
-			Arrays.fill(memo, -1);
+	static class UnionFind {
+		int[] data;
 
-			long ans = 0;
-
-			int left = 0;
-			int right = n+1;
-
-			for (int i = 0; i < 100; i++) {
-				int c1 = (left * 2 + right) / 3;
-				int c2 = (left + right * 2) / 3;
-
-				if (func(c1) < func(c2)) {
-					left = c1;
-				} else {
-					right = c2;
-				}
-			}
-
-			for (int b = left; b <= right; b++) {
-				ans = Math.max(ans, func(b));
-			}
-
-			out.println(ans);
+		public UnionFind(int size) {
+			data = new int[size];
+			clear();
 		}
 
-		long func(int s) {
-			if (memo[s] != -1) return memo[s];
-			long ans = 0;
-			Set<Integer> set = new TreeSet<>();
-			long tmp = 0;
-			int cnt = k;
-			for (int i = 0; i < n && cnt > 0; i++) {
-
-				// すでに食べている時
-				if (set.contains(p[i].t)) {
-					if (cnt - 1 + set.size() >= s) {
-						tmp += p[i].d;
-						cnt--;
-					}
-
-				// まだ食べていないとき
-				} else if (set.size() < s) {
-					tmp += p[i].d;
-					cnt--;
-					set.add(p[i].t);
-				}
-			}
-
-			long v = set.size();
-			ans = Math.max(ans, tmp + v * v);
-			return memo[s] = ans;
+		public void clear() {
+			Arrays.fill(data, -1);
 		}
 
-		class P implements Comparable<P> {
-			int t;
-			long d;
-			public P(int t, long d) {
-				super();
-				this.t = t;
-				this.d = d;
+		// data[x] < 0 の場合は x 自身が根になっている
+		public int root(int x) {
+			return data[x] < 0 ? x : (data[x] = root(data[x]));
+		}
+
+		public void union(int x, int y) {
+			x = root(x);
+			y = root(y);
+
+			if (x != y) {
+				if (data[y] > data[x]) {
+					final int t = x;
+					x = y;
+					y = t;
+				}
+
+				// 負数の合計が連結成分の要素数
+				data[x] += data[y];
+				data[y] = x;
 			}
-			@Override
-			public String toString() {
-				return "P [t=" + t + ", d=" + d + "]";
-			}
-			@Override
-			public int compareTo(P o) {
-				int c1 = Integer.compare(this.t, o.t);
-				int c2 = -Long.compare(this.d, o.d);
-				return c2 == 0 ? c1 : c2;
-			}
+		}
+
+		boolean same(int x, int y) {
+			return root(x) == root(y);
+		}
+
+		public int size(int x) {
+			return -data[root(x)];
 		}
 	}
 
