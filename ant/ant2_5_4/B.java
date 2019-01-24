@@ -1,4 +1,4 @@
-package ant2_5_1;
+package ant2_5_4;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,64 +32,33 @@ public class B {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt();
-			UnionFind uf = new UnionFind(n);
-			for (int i = 0; i < n; i++) {
-				int a = in.nextInt()-1;
-				uf.union(i, a);
+			int n = in.nextInt(), m = in.nextInt();
+			int[] a = new int[m], b = new int[m];
+			long[] c = new long[m];
+			for (int i = 0; i < m; i++) {
+				a[i] = in.nextInt()-1;
+				b[i] = in.nextInt()-1;
+				c[i] = -in.nextLong();
 			}
 
+			long[] cost = new long[n];
+			Arrays.fill(cost, LINF);
+			cost[0] = 0;
+
 			for (int i = 0; i < n; i++) {
-				int v = uf.root(i);
-				if (uf.size(v) % 2 == 0) continue;
-				out.println(-1);
-				return;
-			}
-
-			out.println(n/2);
-		}
-	}
-
-	static class UnionFind {
-		int[] data;
-
-		public UnionFind(int size) {
-			data = new int[size];
-			clear();
-		}
-
-		public void clear() {
-			Arrays.fill(data, -1);
-		}
-
-		// data[x] < 0 の場合は x 自身が根になっている
-		public int root(int x) {
-			return data[x] < 0 ? x : (data[x] = root(data[x]));
-		}
-
-		public void union(int x, int y) {
-			x = root(x);
-			y = root(y);
-
-			if (x != y) {
-				if (data[y] > data[x]) {
-					final int t = x;
-					x = y;
-					y = t;
+				for (int j = 0; j < m; j++) {
+					if (cost[a[j]] != LINF && cost[a[j]] + c[j] < cost[b[j]]) {
+						cost[b[j]] = cost[a[j]] + c[j];
+						if (i == n-1 && b[j] == n-1) {
+							out.println("inf");
+							return;
+						}
+					}
 				}
-
-				// 負数の合計が連結成分の要素数
-				data[x] += data[y];
-				data[y] = x;
 			}
-		}
 
-		boolean same(int x, int y) {
-			return root(x) == root(y);
-		}
+			out.println(-cost[n-1]);
 
-		public int size(int x) {
-			return -data[root(x)];
 		}
 	}
 

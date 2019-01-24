@@ -1,4 +1,4 @@
-package ant2_5_1;
+package ant2_5_4;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,9 +6,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
-public class B {
+public class C {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -32,64 +34,69 @@ public class B {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt();
-			UnionFind uf = new UnionFind(n);
+			int n = in.nextInt(), m = in.nextInt();
+			List<T> g = new ArrayList<>();
+
+			long[] cost = new long[2 * n + 1];
+			int z = 2 * n;
 			for (int i = 0; i < n; i++) {
-				int a = in.nextInt()-1;
-				uf.union(i, a);
+				long p = in.nextLong();
+				g.add(new T(i, z, 0));
+				g.add(new T(z, i, p));
+			}
+			for (int i = 0; i < n; i++) {
+				long q = in.nextLong();
+				g.add(new T(i + n, z, q));
+				g.add(new T(z, i + n, 0));
+			}
+			for (int i = 0; i < m; i++) {
+				int x = in.nextInt()-1, y = in.nextInt()-1;
+				long a = in.nextLong(), b = in.nextLong();
+				g.add(new T(x, y + n, -a));
+				g.add(new T(y + n, x, b));
 			}
 
-			for (int i = 0; i < n; i++) {
-				int v = uf.root(i);
-				if (uf.size(v) % 2 == 0) continue;
-				out.println(-1);
-				return;
-			}
+			Arrays.fill(cost, LINF);
+			cost[z] = 0;
 
-			out.println(n/2);
-		}
-	}
-
-	static class UnionFind {
-		int[] data;
-
-		public UnionFind(int size) {
-			data = new int[size];
-			clear();
-		}
-
-		public void clear() {
-			Arrays.fill(data, -1);
-		}
-
-		// data[x] < 0 の場合は x 自身が根になっている
-		public int root(int x) {
-			return data[x] < 0 ? x : (data[x] = root(data[x]));
-		}
-
-		public void union(int x, int y) {
-			x = root(x);
-			y = root(y);
-
-			if (x != y) {
-				if (data[y] > data[x]) {
-					final int t = x;
-					x = y;
-					y = t;
+			int cnt = 0;
+			boolean update = true;
+			while (update) {
+				update = false;
+				for (int i = 0; i < g.size(); i++) {
+					if (cost[g.get(i).s] != LINF && cost[g.get(i).s] + g.get(i).d < cost[g.get(i).t]) {
+						cost[g.get(i).t] = cost[g.get(i).s] + g.get(i).d;
+						update = true;
+					}
 				}
 
-				// 負数の合計が連結成分の要素数
-				data[x] += data[y];
-				data[y] = x;
+				if (update) {
+					cnt++;
+					if (cnt == 2 * n) {
+						out.println("no");
+						return;
+					}
+				}
+
+				if (cost[z] < 0) {
+					out.println("no");
+					return;
+				}
 			}
+
+			out.println("yes");
+
 		}
 
-		boolean same(int x, int y) {
-			return root(x) == root(y);
-		}
-
-		public int size(int x) {
-			return -data[root(x)];
+		class T {
+			int s, t;
+			long d;
+			public T(int s, int t, long d) {
+				super();
+				this.s = s;
+				this.t = t;
+				this.d = d;
+			}
 		}
 	}
 
@@ -276,5 +283,4 @@ public class B {
 		}
 
 	}
-
 }

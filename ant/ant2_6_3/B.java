@@ -1,4 +1,4 @@
-package ant2_5_1;
+package ant2_6_3;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,63 +33,26 @@ public class B {
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
 			int n = in.nextInt();
-			UnionFind uf = new UnionFind(n);
-			for (int i = 0; i < n; i++) {
-				int a = in.nextInt()-1;
-				uf.union(i, a);
-			}
-
-			for (int i = 0; i < n; i++) {
-				int v = uf.root(i);
-				if (uf.size(v) % 2 == 0) continue;
-				out.println(-1);
-				return;
-			}
-
-			out.println(n/2);
-		}
-	}
-
-	static class UnionFind {
-		int[] data;
-
-		public UnionFind(int size) {
-			data = new int[size];
-			clear();
-		}
-
-		public void clear() {
-			Arrays.fill(data, -1);
-		}
-
-		// data[x] < 0 の場合は x 自身が根になっている
-		public int root(int x) {
-			return data[x] < 0 ? x : (data[x] = root(data[x]));
-		}
-
-		public void union(int x, int y) {
-			x = root(x);
-			y = root(y);
-
-			if (x != y) {
-				if (data[y] > data[x]) {
-					final int t = x;
-					x = y;
-					y = t;
+			long[] cnt = new long[10010];
+			for (int i = 2; i <= n; i++) {
+				int t = i;
+				for (int j = 2; j <= t; j++) {
+					while (t % j == 0) {
+						t /= j;
+						cnt[j]++;
+					}
 				}
-
-				// 負数の合計が連結成分の要素数
-				data[x] += data[y];
-				data[y] = x;
 			}
-		}
 
-		boolean same(int x, int y) {
-			return root(x) == root(y);
-		}
+			long ans = 1;
+			for (int i = 0; i < 10010; i++) {
+				if (cnt[i] > 0) {
+					ans *= (cnt[i] + 1);
+					ans %= MOD;
+				}
+			}
 
-		public int size(int x) {
-			return -data[root(x)];
+			out.println(ans);
 		}
 	}
 

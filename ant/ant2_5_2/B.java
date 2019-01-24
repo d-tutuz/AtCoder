@@ -1,4 +1,4 @@
-package ant2_5_1;
+package ant2_5_2;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.PriorityQueue;
 
 public class B {
 
@@ -32,64 +33,64 @@ public class B {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt();
-			UnionFind uf = new UnionFind(n);
+			int n = in.nextInt(), m = in.nextInt();
+			int[][] mat = new int[n][n];
 			for (int i = 0; i < n; i++) {
-				int a = in.nextInt()-1;
-				uf.union(i, a);
+				Arrays.fill(mat[i], -1);
 			}
 
-			for (int i = 0; i < n; i++) {
-				int v = uf.root(i);
-				if (uf.size(v) % 2 == 0) continue;
-				out.println(-1);
-				return;
-			}
+			for (int i = 0; i < m; i++) {
+				int q = in.nextInt();
+				if (q == 0) {
+					int a = in.nextInt()-1, b = in.nextInt()-1;
 
-			out.println(n/2);
-		}
-	}
+					int[] cost = new int[n];
+					Arrays.fill(cost, INF);
+					PriorityQueue<P> pq = new PriorityQueue<>();
+					cost[a] = 0;
+					pq.add(new P(a, 0));
 
-	static class UnionFind {
-		int[] data;
+					while (!pq.isEmpty()) {
+						P p = pq.remove();
+						if (cost[p.t] != p.c) continue;
 
-		public UnionFind(int size) {
-			data = new int[size];
-			clear();
-		}
+						for (int j = 0; j < n; j++) {
+							if (mat[p.t][j] == -1) continue;
+							if (cost[p.t] + mat[p.t][j] < cost[j]) {
+								cost[j] = cost[p.t] + mat[p.t][j];
+								pq.add(new P(j, cost[j]));
+							}
+						}
+					}
 
-		public void clear() {
-			Arrays.fill(data, -1);
-		}
+					out.println(cost[b] == INF ? -1 : cost[b]);
 
-		// data[x] < 0 の場合は x 自身が根になっている
-		public int root(int x) {
-			return data[x] < 0 ? x : (data[x] = root(data[x]));
-		}
-
-		public void union(int x, int y) {
-			x = root(x);
-			y = root(y);
-
-			if (x != y) {
-				if (data[y] > data[x]) {
-					final int t = x;
-					x = y;
-					y = t;
+				} else {
+					int c = in.nextInt()-1, d = in.nextInt()-1, e = in.nextInt();
+					mat[c][d] = mat[c][d] != -1 ? Math.min(mat[c][d], e) : e;
+					mat[d][c] = mat[d][c] != -1 ? Math.min(mat[d][c], e) : e;
 				}
-
-				// 負数の合計が連結成分の要素数
-				data[x] += data[y];
-				data[y] = x;
 			}
 		}
 
-		boolean same(int x, int y) {
-			return root(x) == root(y);
-		}
+		class P implements Comparable<P> {
+			int t, c;
 
-		public int size(int x) {
-			return -data[root(x)];
+			public P(int t, int c) {
+				super();
+				this.t = t;
+				this.c = c;
+			}
+
+			@Override
+			public int compareTo(P o) {
+				return Integer.compare(this.c, o.c);
+			}
+
+			@Override
+			public String toString() {
+				return "P [t=" + t + ", c=" + c + "]";
+			}
 		}
 	}
 

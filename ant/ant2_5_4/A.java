@@ -1,4 +1,4 @@
-package ant2_5_1;
+package ant2_5_4;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class B {
+public class A {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -30,66 +30,46 @@ public class B {
 
 	static class TaskX {
 
+		@SuppressWarnings("unchecked")
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt();
-			UnionFind uf = new UnionFind(n);
-			for (int i = 0; i < n; i++) {
-				int a = in.nextInt()-1;
-				uf.union(i, a);
+			int v = in.nextInt(), e = in.nextInt(), r = in.nextInt();
+			int[] s = new int[e], t = new int[e], d = new int[e];
+			for (int i = 0; i < e; i++) {
+				s[i] = in.nextInt();
+				t[i] = in.nextInt();
+				d[i] = in.nextInt();
 			}
+			int[] cost = new int[v];
+			Arrays.fill(cost, INF);
+			cost[r] = 0;
 
-			for (int i = 0; i < n; i++) {
-				int v = uf.root(i);
-				if (uf.size(v) % 2 == 0) continue;
-				out.println(-1);
-				return;
-			}
-
-			out.println(n/2);
-		}
-	}
-
-	static class UnionFind {
-		int[] data;
-
-		public UnionFind(int size) {
-			data = new int[size];
-			clear();
-		}
-
-		public void clear() {
-			Arrays.fill(data, -1);
-		}
-
-		// data[x] < 0 の場合は x 自身が根になっている
-		public int root(int x) {
-			return data[x] < 0 ? x : (data[x] = root(data[x]));
-		}
-
-		public void union(int x, int y) {
-			x = root(x);
-			y = root(y);
-
-			if (x != y) {
-				if (data[y] > data[x]) {
-					final int t = x;
-					x = y;
-					y = t;
+			for (int i = 0; i < v; i++) {
+				for (int k = 0; k < e; k++) {
+					if (cost[s[k]] != INF && cost[s[k]] + d[k] < cost[t[k]]) {
+						cost[t[k]] = cost[s[k]] + d[k];
+						if (i == v-1) {
+							out.println("NEGATIVE CYCLE");
+							return;
+						}
+					}
 				}
+			}
 
-				// 負数の合計が連結成分の要素数
-				data[x] += data[y];
-				data[y] = x;
+			for (int i : cost) {
+				out.println(i == INF ? "INF" : Integer.toString(i));
 			}
 		}
 
-		boolean same(int x, int y) {
-			return root(x) == root(y);
-		}
+		class P {
+			int t, w;
 
-		public int size(int x) {
-			return -data[root(x)];
+			public P(int t, int w) {
+				super();
+				this.t = t;
+				this.w = w;
+			}
+
 		}
 	}
 

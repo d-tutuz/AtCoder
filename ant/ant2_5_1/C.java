@@ -6,9 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
 
-public class B {
+public class C {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -30,66 +33,68 @@ public class B {
 
 	static class TaskX {
 
+		int n, m;
+		List<Integer>[] g;
+		int[] c = new int[2010];
+		int[] used = new int[2010];
+		int[] tar = new int[2010];
+		int[][] mat = new int[2010][2010];
+
+		@SuppressWarnings("unchecked")
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt();
-			UnionFind uf = new UnionFind(n);
-			for (int i = 0; i < n; i++) {
-				int a = in.nextInt()-1;
-				uf.union(i, a);
+			int n = in.nextInt(); m = in.nextInt();
+			g = new ArrayList[n];
+			g = Stream.generate(ArrayList::new).limit(n).toArray(List[]::new);
+
+			for (int i = 0; i < m; i++) {
+				int a = in.nextInt()-1, b = in.nextInt()-1;
+				char t = in.nextChar();
+				g[a].add(b);
+				g[b].add(a);
+				c[i] = t == 'r' ? 0 : 1;
+				mat[a][b] = mat[b][a] = i;
 			}
 
 			for (int i = 0; i < n; i++) {
-				int v = uf.root(i);
-				if (uf.size(v) % 2 == 0) continue;
-				out.println(-1);
+				for (int j = 0; j < 2; j++) {
+					Arrays.fill(used, -1);
+					Arrays.fill(tar, -1);
+					dfs(i, j , 0);
+					if (comp(tar)) {
+						out.println("Yes");
+						return;
+					}
+				}
+			}
+
+			out.println("No");
+		}
+
+		void dfs(int cur, int color, int count) {
+
+			if (used[cur] != -1) {
+				if ((count - used[cur]) % 2 == 1) {
+					System.out.println("Yes");
+					System.exit(0);
+				}
 				return;
 			}
+			used[cur] = count;
 
-			out.println(n/2);
-		}
-	}
-
-	static class UnionFind {
-		int[] data;
-
-		public UnionFind(int size) {
-			data = new int[size];
-			clear();
-		}
-
-		public void clear() {
-			Arrays.fill(data, -1);
-		}
-
-		// data[x] < 0 の場合は x 自身が根になっている
-		public int root(int x) {
-			return data[x] < 0 ? x : (data[x] = root(data[x]));
-		}
-
-		public void union(int x, int y) {
-			x = root(x);
-			y = root(y);
-
-			if (x != y) {
-				if (data[y] > data[x]) {
-					final int t = x;
-					x = y;
-					y = t;
+			for (int t : g[cur]) {
+				int idx = mat[cur][t];
+				if (c[idx] == color) {
+					tar[idx] = color;
+					dfs(t, color^1, count + 1);
 				}
-
-				// 負数の合計が連結成分の要素数
-				data[x] += data[y];
-				data[y] = x;
 			}
 		}
 
-		boolean same(int x, int y) {
-			return root(x) == root(y);
-		}
-
-		public int size(int x) {
-			return -data[root(x)];
+		boolean comp(int[] used) {
+			int cnt = 0;
+			for (int i : used) if (i != -1) cnt++;
+			return cnt == m;
 		}
 	}
 
