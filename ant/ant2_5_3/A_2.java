@@ -1,4 +1,4 @@
-package ant2_5_4;
+package ant2_5_3;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,8 +9,10 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.PriorityQueue;
+import java.util.stream.Stream;
 
-public class D {
+public class A_2 {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -25,7 +27,6 @@ public class D {
 	static int INF = 1 << 30;
 	static long LINF = 1L << 55;
 	static int MOD = 1000000007;
-	static double EPS = 1e-9;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
@@ -33,88 +34,50 @@ public class D {
 
 	static class TaskX {
 
-		int n, m, k;
-		int[] v, fix, u, w, c;
+		@SuppressWarnings("unchecked")
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			n = in.nextInt(); m = in.nextInt(); k = in.nextInt();
-			v = new int[3000];
-			fix = new int[3000];
-			u = new int[3000];
-			w = new int[3000];
-			c = new int[3000];
+			int v = in.nextInt(), e = in.nextInt();
+			List<P>[] g = new ArrayList[v];
+			g = Stream.generate(ArrayList::new).limit(v).toArray(List[]::new);
 
-			Arrays.fill(fix, INF);
-			for (int i = 0; i < k; i++) {
-				v[i] = in.nextInt();
-				fix[i] = in.nextInt();
+			for (int i = 0; i < e; i++) {
+				int s = in.nextInt(), t = in.nextInt(), w = in.nextInt();
+				g[s].add(new P(t, w));
+				g[t].add(new P(s, w));
 			}
 
-			for (int i = 0; i < m; i++) {
-				u[i] = in.nextInt();
-				w[i] = in.nextInt();
-				c[i] = in.nextInt();
-			}
+			boolean[] used = new boolean[v];
+			PriorityQueue<P> pq = new PriorityQueue<>();
+			pq.add(new P(0, 0));
 
-			double l = -1e12, r = 1e12;
-			while (r - l > EPS) {
-				double mid = (r + l) / 2;
-				if (ok(mid)) {
-					r = mid;
-				} else {
-					l = mid;
+			long ans = 0;
+
+			while (!pq.isEmpty()) {
+				P p = pq.remove();
+				if (used[p.n]) continue;
+				used[p.n] = true;
+				ans += p.cost;
+				for (P pp : g[p.n]) {
+					pq.add(new P(pp.n, pp.cost));
 				}
 			}
 
-			if (l < -1e11) {
-				out.println("#");
-				return;
-			}
-			out.println(r);
-
+			out.println(ans);
 		}
 
-		boolean ok(double T) {
+		class P implements Comparable<P> {
+			int n, cost;
 
-			List<T> g = new ArrayList<>();
-			for (int i = 0; i < k; i++) {
-				g.add(new T(0, v[i], fix[i]));
-				g.add(new T(v[i], 0, -fix[i]));
-			}
-			for (int i = 0; i < m; i++) {
-				g.add(new T(w[i], u[i], T - c[i]));
-			}
-
-			double[] cost = new double[3000];
-			Arrays.fill(cost, INF);
-			cost[0] = 0;
-
-			for (int i = 0; i < n; i++) {
-				boolean update = false;
-				for (int j = 0; j < g.size(); j++) {
-					if (cost[g.get(j).s] + g.get(j).c < cost[g.get(j).t]) {
-						cost[g.get(j).t] = cost[g.get(j).s] + g.get(j).c;
-						update = true;
-					}
-				}
-				if (!update) return true;
-			}
-
-			return false;
-		}
-
-		class T {
-			int s, t;
-			double c;
-			public T(int s, int t, double c) {
+			public P(int n, int cost) {
 				super();
-				this.s = s;
-				this.t = t;
-				this.c = c;
+				this.n = n;
+				this.cost = cost;
 			}
+
 			@Override
-			public String toString() {
-				return "T [s=" + s + ", t=" + t + ", c=" + c + "]";
+			public int compareTo(P o) {
+				return Integer.compare(this.cost, o.cost);
 			}
 		}
 	}

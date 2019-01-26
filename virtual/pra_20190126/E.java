@@ -1,4 +1,4 @@
-package ant2_5_4;
+package pra_20190126;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,8 +9,10 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.PriorityQueue;
+import java.util.stream.Stream;
 
-public class D {
+public class E {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -25,98 +27,160 @@ public class D {
 	static int INF = 1 << 30;
 	static long LINF = 1L << 55;
 	static int MOD = 1000000007;
-	static double EPS = 1e-9;
-	static int[] mh4 = { 0, -1, 1, 0 };
-	static int[] mw4 = { -1, 0, 0, 1 };
+//	static int[] mh4 = { 0, -1, 1, 0 };
+//	static int[] mw4 = { -1, 0, 0, 1 };
+	static int[] mh4 = { -1, 1, 0,  0 };
+	static int[] mw4 = {  0, 0, 1, -1 };
+
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
 	static class TaskX {
 
 		int n, m, k;
-		int[] v, fix, u, w, c;
+		@SuppressWarnings("unchecked")
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
 			n = in.nextInt(); m = in.nextInt(); k = in.nextInt();
-			v = new int[3000];
-			fix = new int[3000];
-			u = new int[3000];
-			w = new int[3000];
-			c = new int[3000];
-
-			Arrays.fill(fix, INF);
-			for (int i = 0; i < k; i++) {
-				v[i] = in.nextInt();
-				fix[i] = in.nextInt();
-			}
-
-			for (int i = 0; i < m; i++) {
-				u[i] = in.nextInt();
-				w[i] = in.nextInt();
-				c[i] = in.nextInt();
-			}
-
-			double l = -1e12, r = 1e12;
-			while (r - l > EPS) {
-				double mid = (r + l) / 2;
-				if (ok(mid)) {
-					r = mid;
-				} else {
-					l = mid;
-				}
-			}
-
-			if (l < -1e11) {
-				out.println("#");
-				return;
-			}
-			out.println(r);
-
-		}
-
-		boolean ok(double T) {
-
-			List<T> g = new ArrayList<>();
-			for (int i = 0; i < k; i++) {
-				g.add(new T(0, v[i], fix[i]));
-				g.add(new T(v[i], 0, -fix[i]));
-			}
-			for (int i = 0; i < m; i++) {
-				g.add(new T(w[i], u[i], T - c[i]));
-			}
-
-			double[] cost = new double[3000];
-			Arrays.fill(cost, INF);
-			cost[0] = 0;
-
+			char[] d = in.nextChars();
+			char[][] s = new char[n][m];
+			int sh = -1, sw = -1, gh = -1, gw = -1;
 			for (int i = 0; i < n; i++) {
-				boolean update = false;
-				for (int j = 0; j < g.size(); j++) {
-					if (cost[g.get(j).s] + g.get(j).c < cost[g.get(j).t]) {
-						cost[g.get(j).t] = cost[g.get(j).s] + g.get(j).c;
-						update = true;
+				for (int j = 0; j < m; j++) {
+					s[i][j] = in.nextChar();
+					if (s[i][j] == 'S') {
+						sh = i;
+						sw = j;
+					}
+					if (s[i][j] == 'G') {
+						gh = i;
+						gw = j;
 					}
 				}
-				if (!update) return true;
+			}
+			List<Integer>[] g = new ArrayList[4];
+			g = Stream.generate(ArrayList::new).limit(4).toArray(List[]::new);
+			for (int i = 0; i < 2*k; i++) {
+				if (d[i%k] == 'U') g[0].add(i);
+				if (d[i%k] == 'D') g[1].add(i);
+				if (d[i%k] == 'R') g[2].add(i);
+				if (d[i%k] == 'L') g[3].add(i);
 			}
 
-			return false;
+			long[][] w = new long[k][4];
+			for (int t = 0; t < k; t++) {
+				for (int i = 0; i < 4; i++) {
+					int idx = lowerBound(g[i], t);
+					if (g[i].isEmpty()) {
+						w[t][i] = LINF;
+						continue;
+					}
+					int v = g[i].get(idx);
+					w[t][i] = v - t + 1;
+				}
+			}
+
+			long[][] cost = new long[n][m];
+			PriorityQueue<T> pq = new PriorityQueue<>();
+			fill(cost, LINF);
+			cost[sh][sw] = 0;
+			pq.add(new T(new P(sh, sw), 0));
+
+			while (!pq.isEmpty()) {
+				T tup = pq.remove();
+				if (tup.c > cost[tup.p.h][tup.p.w]) continue;
+
+				int nh = tup.p.h, nw = tup.p.w;
+				int ntime = (int)(cost[tup.p.h][tup.p.w] % k);
+				for (int i = 0; i < 4; i++) {
+					int mh = nh + mh4[i];
+					int mw = nw + mw4[i];
+					if (isInside(mh, mw) && s[mh][mw] != '#') {
+						if (cost[nh][nw] + w[ntime][i] < cost[mh][mw]) {
+							cost[mh][mw] = cost[nh][nw] + w[ntime][i];
+							pq.add(new T(new P(mh, mw), cost[mh][mw]));
+						}
+					}
+				}
+			}
+
+			out.println(cost[gh][gw] == LINF ? -1 : cost[gh][gw]);
 		}
 
-		class T {
-			int s, t;
-			double c;
-			public T(int s, int t, double c) {
+		boolean isInside(int i, int j) {
+			return 0 <= i && i < n && 0 <= j && j < m;
+		}
+
+		class P {
+			int h, w;
+
+			public P(int h, int w) {
 				super();
-				this.s = s;
-				this.t = t;
-				this.c = c;
+				this.h = h;
+				this.w = w;
 			}
+
 			@Override
 			public String toString() {
-				return "T [s=" + s + ", t=" + t + ", c=" + c + "]";
+				return "P [h=" + h + ", w=" + w + "]";
+			}
+
+		}
+
+		class T implements Comparable<T> {
+			P p;
+			long c;
+
+			@Override
+			public int compareTo(T o) {
+				return Long.compare(this.c, o.c);
+			}
+
+			public T(P p, long c) {
+				super();
+				this.p = p;
+				this.c = c;
+			}
+
+
+			@Override
+			public String toString() {
+				return "T [p=" + p + ", c=" + c + "]";
+			}
+
+		}
+	}
+
+	static void fill(long[][] a, long v) {
+		for (int i = 0; i < a.length; i++) {
+			for (int j = 0; j < a[0].length; j++) {
+				a[i][j] = v;
 			}
 		}
+	}
+
+	static void print(int[][] a, PrintWriter out) {
+		for (int i = 0; i < a.length; i++) {
+			for (int j = 0; j < a[0].length; j++) {
+				if (j > 0)
+					out.print(" ");
+				out.print(a[i][j]);
+			}
+			out.print("\n");
+		}
+	}
+
+	public static int lowerBound(List<Integer> a, int obj) {
+		int l = 0, r = a.size() - 1;
+		while (r - l >= 0) {
+			int c = (l + r) / 2;
+			if (obj <= a.get(c)) {
+				r = c - 1;
+			} else {
+				l = c + 1;
+			}
+		}
+		return l;
 	}
 
 	static class MyInput {

@@ -1,4 +1,4 @@
-package ant2_5_4;
+package ant2_5_2;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,8 +9,10 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.PriorityQueue;
+import java.util.stream.Stream;
 
-public class D {
+public class E_5 {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -25,7 +27,6 @@ public class D {
 	static int INF = 1 << 30;
 	static long LINF = 1L << 55;
 	static int MOD = 1000000007;
-	static double EPS = 1e-9;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
@@ -33,88 +34,100 @@ public class D {
 
 	static class TaskX {
 
-		int n, m, k;
-		int[] v, fix, u, w, c;
+		int n, m;
+		@SuppressWarnings("unchecked")
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			n = in.nextInt(); m = in.nextInt(); k = in.nextInt();
-			v = new int[3000];
-			fix = new int[3000];
-			u = new int[3000];
-			w = new int[3000];
-			c = new int[3000];
-
-			Arrays.fill(fix, INF);
-			for (int i = 0; i < k; i++) {
-				v[i] = in.nextInt();
-				fix[i] = in.nextInt();
-			}
+			n = in.nextInt(); m =in.nextInt();
+			List<P>[] g = new ArrayList[n];
+			g = Stream.generate(ArrayList::new).limit(n).toArray(List[]::new);
 
 			for (int i = 0; i < m; i++) {
-				u[i] = in.nextInt();
-				w[i] = in.nextInt();
-				c[i] = in.nextInt();
+				int f = in.nextInt(), t = in.nextInt();
+				long c = in.nextLong();
+				g[f].add(new P(t, c));
+				g[t].add(new P(f, c));
 			}
 
-			double l = -1e12, r = 1e12;
-			while (r - l > EPS) {
-				double mid = (r + l) / 2;
-				if (ok(mid)) {
-					r = mid;
-				} else {
-					l = mid;
-				}
-			}
+			long[][] cost = new long[n][28];
+			fill(cost, LINF);
+			cost[0][0] = 0;
 
-			if (l < -1e11) {
-				out.println("#");
-				return;
-			}
-			out.println(r);
+			PriorityQueue<T> pq = new PriorityQueue<>();
+			pq.add(new T(0, 0, 0));
 
-		}
+			while (!pq.isEmpty()) {
+				T p = pq.remove();
 
-		boolean ok(double T) {
+				if (p.cost > cost[p.n][p.time]) continue;
+				if (p.n == n - 1) continue;
 
-			List<T> g = new ArrayList<>();
-			for (int i = 0; i < k; i++) {
-				g.add(new T(0, v[i], fix[i]));
-				g.add(new T(v[i], 0, -fix[i]));
-			}
-			for (int i = 0; i < m; i++) {
-				g.add(new T(w[i], u[i], T - c[i]));
-			}
-
-			double[] cost = new double[3000];
-			Arrays.fill(cost, INF);
-			cost[0] = 0;
-
-			for (int i = 0; i < n; i++) {
-				boolean update = false;
-				for (int j = 0; j < g.size(); j++) {
-					if (cost[g.get(j).s] + g.get(j).c < cost[g.get(j).t]) {
-						cost[g.get(j).t] = cost[g.get(j).s] + g.get(j).c;
-						update = true;
+				for (P pp : g[p.n]) {
+					int tt = (int)((p.time + pp.c) % 28);
+					if (cost[p.n][p.time] + pp.c < cost[pp.t][tt]) {
+						cost[pp.t][tt] = cost[p.n][p.time] + pp.c;
+						pq.add(new T(pp.t, tt, cost[pp.t][tt]));
 					}
 				}
-				if (!update) return true;
 			}
 
-			return false;
+			long ans = LINF;
+			for (int i = 0; i < 28; i++) {
+				if (i % 4 == 0 || i % 7 == 0) {
+					ans = Math.min(ans, cost[n-1][i]);
+				}
+			}
+
+			out.println(ans);
 		}
 
-		class T {
-			int s, t;
-			double c;
-			public T(int s, int t, double c) {
+		class T implements Comparable<T> {
+			int n, time;
+			long cost;
+
+			public T(int n, int time, long cost) {
 				super();
-				this.s = s;
+				this.n = n;
+				this.time = time;
+				this.cost = cost;
+			}
+
+			@Override
+			public int compareTo(T o) {
+				int c1 = Long.compare(this.cost, o.cost);
+				int c2 = Integer.compare(this.n, o.n);
+				return c1 == 0 ? c2 : c1;
+			}
+
+			@Override
+			public String toString() {
+				return "T [n=" + n + ", time=" + time + ", cost=" + cost + "]";
+			}
+
+		}
+
+		class P {
+			int t;
+			long c;
+
+			public P(int t, long c) {
+				super();
 				this.t = t;
 				this.c = c;
 			}
+
 			@Override
 			public String toString() {
-				return "T [s=" + s + ", t=" + t + ", c=" + c + "]";
+				return "P [t=" + t + ", c=" + c + "]";
+			}
+
+		}
+	}
+
+	static void fill(long[][] a, long v) {
+		for (int i = 0; i < a.length; i++) {
+			for (int j = 0; j < a[0].length; j++) {
+				a[i][j] = v;
 			}
 		}
 	}
@@ -304,3 +317,4 @@ public class D {
 	}
 
 }
+

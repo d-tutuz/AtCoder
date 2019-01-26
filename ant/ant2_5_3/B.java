@@ -1,4 +1,4 @@
-package ant2_5_4;
+package ant2_5_3;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,9 +8,10 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-public class D {
+public class B {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -25,7 +26,6 @@ public class D {
 	static int INF = 1 << 30;
 	static long LINF = 1L << 55;
 	static int MOD = 1000000007;
-	static double EPS = 1e-9;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
@@ -33,89 +33,116 @@ public class D {
 
 	static class TaskX {
 
-		int n, m, k;
-		int[] v, fix, u, w, c;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			n = in.nextInt(); m = in.nextInt(); k = in.nextInt();
-			v = new int[3000];
-			fix = new int[3000];
-			u = new int[3000];
-			w = new int[3000];
-			c = new int[3000];
-
-			Arrays.fill(fix, INF);
-			for (int i = 0; i < k; i++) {
-				v[i] = in.nextInt();
-				fix[i] = in.nextInt();
-			}
-
-			for (int i = 0; i < m; i++) {
-				u[i] = in.nextInt();
-				w[i] = in.nextInt();
-				c[i] = in.nextInt();
-			}
-
-			double l = -1e12, r = 1e12;
-			while (r - l > EPS) {
-				double mid = (r + l) / 2;
-				if (ok(mid)) {
-					r = mid;
-				} else {
-					l = mid;
-				}
-			}
-
-			if (l < -1e11) {
-				out.println("#");
-				return;
-			}
-			out.println(r);
-
-		}
-
-		boolean ok(double T) {
-
-			List<T> g = new ArrayList<>();
-			for (int i = 0; i < k; i++) {
-				g.add(new T(0, v[i], fix[i]));
-				g.add(new T(v[i], 0, -fix[i]));
-			}
-			for (int i = 0; i < m; i++) {
-				g.add(new T(w[i], u[i], T - c[i]));
-			}
-
-			double[] cost = new double[3000];
-			Arrays.fill(cost, INF);
-			cost[0] = 0;
-
+			int n = in.nextInt();
+			P[] p = new P[n];
 			for (int i = 0; i < n; i++) {
-				boolean update = false;
-				for (int j = 0; j < g.size(); j++) {
-					if (cost[g.get(j).s] + g.get(j).c < cost[g.get(j).t]) {
-						cost[g.get(j).t] = cost[g.get(j).s] + g.get(j).c;
-						update = true;
-					}
-				}
-				if (!update) return true;
+				int x = in.nextInt(), y = in.nextInt();
+				p[i] = new P(i, x, y);
 			}
 
-			return false;
+			List<T> list = new ArrayList<>();
+
+			Arrays.sort(p, (p1, p2) -> p1.x - p2.x);
+			for (int i = 0; i < n-1; i++) {
+				list.add(new T(p[i+1].idx, p[i].idx, p[i+1].x - p[i].x));
+			}
+
+			Arrays.sort(p, (p1, p2) -> p1.y - p2.y);
+			for (int i = 0; i < n-1; i++) {
+				list.add(new T(p[i+1].idx, p[i].idx, p[i+1].y - p[i].y));
+			}
+
+			Collections.sort(list);
+
+			long ans = 0;
+			UnionFind uf = new UnionFind(2 * n);
+			for (int i = 0; i < list.size(); i++) {
+				if (uf.same(list.get(i).s, list.get(i).t)) continue;
+				uf.union(list.get(i).s, list.get(i).t);
+				ans += list.get(i).w;
+			}
+
+			out.println(ans);
 		}
 
-		class T {
+		class P {
+			int idx, x, y;
+
+			public P(int idx, int x, int y) {
+				super();
+				this.idx = idx;
+				this.x = x;
+				this.y = y;
+			}
+
+
+			@Override
+			public String toString() {
+				return "P [x=" + x + ", y=" + y + "]";
+			}
+		}
+
+		class T implements Comparable<T> {
 			int s, t;
-			double c;
-			public T(int s, int t, double c) {
+			long w;
+			public T(int s, int t, long w) {
 				super();
 				this.s = s;
 				this.t = t;
-				this.c = c;
+				this.w = w;
 			}
 			@Override
 			public String toString() {
-				return "T [s=" + s + ", t=" + t + ", c=" + c + "]";
+				return "Edge [s=" + s + ", t=" + t + ", w=" + w + "]";
 			}
+
+			@Override
+			public int compareTo(T o) {
+				return Long.compare(this.w, o.w);
+			}
+		}
+	}
+
+	static class UnionFind {
+		int[] data;
+
+		public UnionFind(int size) {
+			data = new int[size];
+			clear();
+		}
+
+		public void clear() {
+			Arrays.fill(data, -1);
+		}
+
+		public int root(int x) {
+			return data[x] < 0 ? x : (data[x] = root(data[x]));
+		}
+
+		public void union(int x, int y) {
+			x = root(x);
+			y = root(y);
+
+			if (x != y) {
+				if (data[y] > data[x]) {
+					final int t = x;
+					x = y;
+					y = t;
+				}
+
+				data[x] += data[y];
+				data[y] = x;
+			}
+		}
+
+		boolean same(int x, int y) {
+			return root(x) == root(y);
+		}
+
+		public int size(int x) {
+			return -data[root(x)];
 		}
 	}
 

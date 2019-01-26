@@ -1,4 +1,4 @@
-package ant2_5_4;
+package ant2_5_3;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,8 +9,10 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.PriorityQueue;
+import java.util.stream.Stream;
 
-public class D {
+public class C {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -25,7 +27,6 @@ public class D {
 	static int INF = 1 << 30;
 	static long LINF = 1L << 55;
 	static int MOD = 1000000007;
-	static double EPS = 1e-9;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
@@ -33,89 +34,135 @@ public class D {
 
 	static class TaskX {
 
-		int n, m, k;
-		int[] v, fix, u, w, c;
+		int h, w;
+		@SuppressWarnings("unchecked")
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			n = in.nextInt(); m = in.nextInt(); k = in.nextInt();
-			v = new int[3000];
-			fix = new int[3000];
-			u = new int[3000];
-			w = new int[3000];
-			c = new int[3000];
+			h = in.nextInt(); w = in.nextInt();
+			int sw = in.nextInt()-1, sh = in.nextInt()-1;
+			int gw = in.nextInt()-1, gh = in.nextInt()-1;
 
-			Arrays.fill(fix, INF);
-			for (int i = 0; i < k; i++) {
-				v[i] = in.nextInt();
-				fix[i] = in.nextInt();
-			}
-
-			for (int i = 0; i < m; i++) {
-				u[i] = in.nextInt();
-				w[i] = in.nextInt();
-				c[i] = in.nextInt();
-			}
-
-			double l = -1e12, r = 1e12;
-			while (r - l > EPS) {
-				double mid = (r + l) / 2;
-				if (ok(mid)) {
-					r = mid;
-				} else {
-					l = mid;
+			long[][] mat = new long[h][w];
+			for (int i = 0; i < h; i++) {
+				for (int j = 0; j < w; j++) {
+					mat[i][j] = in.nextInt();
 				}
 			}
 
-			if (l < -1e11) {
-				out.println("#");
-				return;
-			}
-			out.println(r);
+			List<P>[] g = new ArrayList[h * w];
+			g = Stream.generate(ArrayList::new).limit(h * w).toArray(List[]::new);
 
-		}
-
-		boolean ok(double T) {
-
-			List<T> g = new ArrayList<>();
-			for (int i = 0; i < k; i++) {
-				g.add(new T(0, v[i], fix[i]));
-				g.add(new T(v[i], 0, -fix[i]));
-			}
-			for (int i = 0; i < m; i++) {
-				g.add(new T(w[i], u[i], T - c[i]));
-			}
-
-			double[] cost = new double[3000];
-			Arrays.fill(cost, INF);
-			cost[0] = 0;
-
-			for (int i = 0; i < n; i++) {
-				boolean update = false;
-				for (int j = 0; j < g.size(); j++) {
-					if (cost[g.get(j).s] + g.get(j).c < cost[g.get(j).t]) {
-						cost[g.get(j).t] = cost[g.get(j).s] + g.get(j).c;
-						update = true;
+			for (int i = 0; i < h; i++) {
+				for (int j = 0; j < w; j++) {
+					if (isInside(i+1, j)) {
+						int s = f(i, j), t = f(i+1, j);
+						long w = mat[i][j] * mat[i+1][j];
+						g[s].add(new P(t, -w));
+						g[t].add(new P(s, -w));
+					}
+					if (isInside(i, j+1)) {
+						int s = f(i, j), t = f(i, j+1);
+						long w = mat[i][j] * mat[i][j+1];
+						g[s].add(new P(t, -w));
+						g[t].add(new P(s, -w));
 					}
 				}
-				if (!update) return true;
 			}
 
-			return false;
+			PriorityQueue<P> pq = new PriorityQueue<>();
+			pq.add(new P(f(sh, sw), 0));
+			boolean[] used = new boolean[h * w];
+
+			long ans = 0;
+			while (!pq.isEmpty()) {
+				P p = pq.remove();
+				if (used[p.n]) continue;
+				used[p.n] = true;
+				ans += p.cost;
+
+				for (P pp : g[p.n]) {
+					pq.add(new P(pp.n, pp.cost));
+				}
+			}
+
+			for (int i = 0; i < h; i++) {
+				for (int j = 0; j < w; j++) {
+					ans -= mat[i][j];
+				}
+			}
+
+			out.println(-ans);
 		}
 
-		class T {
-			int s, t;
-			double c;
-			public T(int s, int t, double c) {
+		class P implements Comparable<P> {
+			int n;
+			long cost;
+
+			public P(int n, long cost) {
 				super();
-				this.s = s;
-				this.t = t;
-				this.c = c;
+				this.n = n;
+				this.cost = cost;
 			}
+
+			@Override
+			public int compareTo(P o) {
+				return Long.compare(this.cost, o.cost);
+			}
+
 			@Override
 			public String toString() {
-				return "T [s=" + s + ", t=" + t + ", c=" + c + "]";
+				return "P [n=" + n + ", cost=" + cost + "]";
 			}
+
+		}
+
+		boolean isInside(int i, int j) {
+			return 0 <= i && i < h && 0 <= j && j < w;
+		}
+
+		int f(int i, int j) {
+			return i * w + j;
+		}
+	}
+
+	static class UnionFind {
+		int[] data;
+
+		public UnionFind(int size) {
+			data = new int[size];
+			clear();
+		}
+
+		public void clear() {
+			Arrays.fill(data, -1);
+		}
+
+		public int root(int x) {
+			return data[x] < 0 ? x : (data[x] = root(data[x]));
+		}
+
+		public void union(int x, int y) {
+			x = root(x);
+			y = root(y);
+
+			if (x != y) {
+				if (data[y] > data[x]) {
+					final int t = x;
+					x = y;
+					y = t;
+				}
+
+				data[x] += data[y];
+				data[y] = x;
+			}
+		}
+
+		boolean same(int x, int y) {
+			return root(x) == root(y);
+		}
+
+		public int size(int x) {
+			return -data[root(x)];
 		}
 	}
 
