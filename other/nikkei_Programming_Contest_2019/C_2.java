@@ -1,4 +1,4 @@
-package sample;
+package nikkei_Programming_Contest_2019;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,8 +7,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
-public class Sample {
+public class C_2 {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -30,98 +32,88 @@ public class Sample {
 
 	static class TaskX {
 
+		int n;
+		P[] p;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			RMQ rmq = new RMQ(100, new P(0, LINF));
+			n = in.nextInt();
+			P[] pa = new P[n], pb = new P[n];
+			long taka = 0, aoki = 0;
+			TreeMap<P, Integer> sa = new TreeMap<>();
+			TreeMap<P, Integer> sb = new TreeMap<>();
 
-		}
-
-		class RMQ extends AbstractRMQ<P> {
-
-			public RMQ(int size, P initial_value) {
-				super(size, initial_value);
+			for (int i = 0; i < n; i++) {
+				long a = in.nextLong(), b = in.nextLong();
+				pa[i] = new P(i, a);
+				pb[i] = new P(i, b);
+				taka += a;
+				aoki += b;
+				sa.merge(pa[i], 1, Integer::sum);
+				sb.merge(pb[i], 1, Integer::sum);
 			}
 
-			@Override
-			P merge(P x, P y) {
-				return x.cost < y.cost ? x : y;
+			for (int i = 0; i < n; i++) {
+				if (i % 2 == 0) {
+					Entry<P, Integer> e = sb.firstEntry();
+					aoki -= e.getKey().num;
+					sa.merge(pb[e.getKey().idx], -1, Integer::sum);
+					if (sa.get(pb[e.getKey().idx]) <= 0) sa.remove(pb[e.getKey().idx]);
+				} else {
+					Entry<P, Integer> e = sa.firstEntry();
+					taka -= e.getKey().num;
+					sb.merge(pa[e.getKey().idx], -1, Integer::sum);
+					if (sb.get(pa[e.getKey().idx]) <= 0) sb.remove(pa[e.getKey().idx]);
+				}
 			}
 
-			@Override
-			void updateNode(int k, P x) {
-				super.dat[k] = x;
-			}
-
+			out.println(taka - aoki);
 		}
 
 		class P implements Comparable<P> {
 			int idx;
-			long cost;
-
-			public P(int idx, long cost) {
+			long num;
+			public P(int idx, long num) {
 				super();
 				this.idx = idx;
-				this.cost = cost;
+				this.num = num;
 			}
-
 			@Override
 			public int compareTo(P o) {
-				return Long.compare(this.cost, o.cost);
+				return -Long.compare(this.num, o.num);
 			}
-
 			@Override
 			public String toString() {
-				return "P [idx=" + idx + ", cost=" + cost + "]";
+				return "P [idx=" + idx + ", num=" + num + "]";
 			}
-
-		}
-
-	}
-
-	@SuppressWarnings("unchecked")
-	static abstract class AbstractRMQ<T> {
-		int size;
-		T[] dat;
-		T INITIAL_VALUE;
-
-		abstract T merge(T x, T y);
-		abstract void updateNode(int k, T x);
-
-		public AbstractRMQ(int size, T initial_value) {
-			this.size = size;
-			this.INITIAL_VALUE = initial_value;
-			dat = (T[])new Object[size * 2];
-			for (int i = 0; i < size * 2; i++) {
-				dat[i] = INITIAL_VALUE;
+			@Override
+			public int hashCode() {
+				final int prime = 31;
+				int result = 1;
+				result = prime * result + getOuterType().hashCode();
+				result = prime * result + idx;
+				result = prime * result + (int) (num ^ (num >>> 32));
+				return result;
 			}
-		}
-
-		// k 番目(0-indexed) を a に更新
-		void update(int k, T a) {
-			k += size;
-			dat[k] = a;
-			while (k > 0) {
-				k /= 2;
-				dat[k] = merge(dat[2 * k], dat[2 * k + 1]);
+			@Override
+			public boolean equals(Object obj) {
+				if (this == obj)
+					return true;
+				if (obj == null)
+					return false;
+				if (getClass() != obj.getClass())
+					return false;
+				P other = (P) obj;
+				if (!getOuterType().equals(other.getOuterType()))
+					return false;
+				if (idx != other.idx)
+					return false;
+				if (num != other.num)
+					return false;
+				return true;
 			}
-		}
-
-		// [a, b) の最小値を求める
-		private T query(int a, int b, int k, int l, int r) {
-			if (r <= a || b <= l) return INITIAL_VALUE;
-
-			if (a <= l && r <= b) {
-				return dat[k];
-			} else {
-				T vl = query(a, b, 2 * k, l, (l + r) / 2);
-				T vr = query(a, b, 2 * k + 1, (l + r) / 2, r);
-				return merge(vl, vr);
+			private TaskX getOuterType() {
+				return TaskX.this;
 			}
-		}
-
-		// [a, b) の最小値を求める
-		T query(int a, int b) {
-			return query(a, b, 1, 0, size);
 		}
 	}
 
@@ -215,6 +207,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {

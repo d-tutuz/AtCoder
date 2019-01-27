@@ -1,4 +1,4 @@
-package sample;
+package nikkei_Programming_Contest_2019;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,8 +7,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
-public class Sample {
+public class C_4 {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -32,96 +34,93 @@ public class Sample {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			RMQ rmq = new RMQ(100, new P(0, LINF));
+			int n = in.nextInt();
+			T[] t = new T[n];
+			TreeMap<T, Integer> ma = new TreeMap<>((t1, t2) -> (t1.a - t2.a == 0 ? -(t1.b - t2.b) : -(t1.a - t2.a)));
+			TreeMap<T, Integer> mb = new TreeMap<>((t1, t2) -> (t1.b - t2.b == 0 ? -(t1.a - t2.a) : -(t1.b - t2.b)));
 
+			long taka = 0, ao = 0;
+			for (int i = 0; i < n; i++) {
+				int a = in.nextInt(), b = in.nextInt();
+				T tt = new T(i, a, b);
+				ma.merge(tt, 1, Integer::sum);
+				mb.merge(tt, 1, Integer::sum);
+				taka += a;
+				ao += b;
+			}
+
+			for (int i = 0; i < n; i++) {
+				if (i % 2 == 0) {
+					Entry<T, Integer> e = mb.pollFirstEntry();
+					if (e.getValue() - 1 > 0) {
+						mb.put(new T(e.getKey().idx, e.getKey().a, e.getKey().b), e.getValue() - 1);
+					}
+ 					ao -= e.getKey().b;
+					ma.merge(new T(e.getKey().idx, e.getKey().a, e.getKey().b), -1, Integer::sum);
+					if (ma.get(new T(e.getKey().idx, e.getKey().a, e.getKey().b)) <= 0) {
+						ma.remove(new T(e.getKey().idx, e.getKey().a, e.getKey().b));
+					}
+				} else {
+					Entry<T, Integer> e = ma.pollFirstEntry();
+					if (e.getValue() - 1 > 0) {
+						ma.put(new T(e.getKey().idx, e.getKey().a, e.getKey().b), e.getValue() - 1);
+					}
+					taka -= e.getKey().a;
+					mb.merge(new T(e.getKey().idx, e.getKey().a, e.getKey().b), -1, Integer::sum);
+					if (mb.get(new T(e.getKey().idx, e.getKey().a, e.getKey().b)) <= 0) {
+						mb.remove(new T(e.getKey().idx, e.getKey().a, e.getKey().b));
+					}
+				}
+			}
+
+			out.println(taka - ao);
 		}
 
-		class RMQ extends AbstractRMQ<P> {
-
-			public RMQ(int size, P initial_value) {
-				super(size, initial_value);
-			}
-
-			@Override
-			P merge(P x, P y) {
-				return x.cost < y.cost ? x : y;
-			}
-
-			@Override
-			void updateNode(int k, P x) {
-				super.dat[k] = x;
-			}
-
-		}
-
-		class P implements Comparable<P> {
-			int idx;
-			long cost;
-
-			public P(int idx, long cost) {
-				super();
-				this.idx = idx;
-				this.cost = cost;
-			}
-
-			@Override
-			public int compareTo(P o) {
-				return Long.compare(this.cost, o.cost);
-			}
-
+		class T {
+			int idx, a, b;
 			@Override
 			public String toString() {
-				return "P [idx=" + idx + ", cost=" + cost + "]";
+				return "T [idx=" + idx + ", a=" + a + ", b=" + b + "]";
+			}
+			public T(int idx, int a, int b) {
+				super();
+				this.idx = idx;
+				this.a = a;
+				this.b = b;
+			}
+			@Override
+			public int hashCode() {
+				final int prime = 31;
+				int result = 1;
+				result = prime * result + getOuterType().hashCode();
+				result = prime * result + a;
+				result = prime * result + b;
+				result = prime * result + idx;
+				return result;
+			}
+			@Override
+			public boolean equals(Object obj) {
+				if (this == obj)
+					return true;
+				if (obj == null)
+					return false;
+				if (getClass() != obj.getClass())
+					return false;
+				T other = (T) obj;
+				if (!getOuterType().equals(other.getOuterType()))
+					return false;
+				if (a != other.a)
+					return false;
+				if (b != other.b)
+					return false;
+				if (idx != other.idx)
+					return false;
+				return true;
+			}
+			private TaskX getOuterType() {
+				return TaskX.this;
 			}
 
-		}
-
-	}
-
-	@SuppressWarnings("unchecked")
-	static abstract class AbstractRMQ<T> {
-		int size;
-		T[] dat;
-		T INITIAL_VALUE;
-
-		abstract T merge(T x, T y);
-		abstract void updateNode(int k, T x);
-
-		public AbstractRMQ(int size, T initial_value) {
-			this.size = size;
-			this.INITIAL_VALUE = initial_value;
-			dat = (T[])new Object[size * 2];
-			for (int i = 0; i < size * 2; i++) {
-				dat[i] = INITIAL_VALUE;
-			}
-		}
-
-		// k 番目(0-indexed) を a に更新
-		void update(int k, T a) {
-			k += size;
-			dat[k] = a;
-			while (k > 0) {
-				k /= 2;
-				dat[k] = merge(dat[2 * k], dat[2 * k + 1]);
-			}
-		}
-
-		// [a, b) の最小値を求める
-		private T query(int a, int b, int k, int l, int r) {
-			if (r <= a || b <= l) return INITIAL_VALUE;
-
-			if (a <= l && r <= b) {
-				return dat[k];
-			} else {
-				T vl = query(a, b, 2 * k, l, (l + r) / 2);
-				T vr = query(a, b, 2 * k + 1, (l + r) / 2, r);
-				return merge(vl, vr);
-			}
-		}
-
-		// [a, b) の最小値を求める
-		T query(int a, int b) {
-			return query(a, b, 1, 0, size);
 		}
 	}
 
@@ -215,6 +214,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {

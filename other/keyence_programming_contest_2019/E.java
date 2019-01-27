@@ -1,4 +1,6 @@
-package sample;
+package keyence_programming_contest_2019;
+
+import static java.lang.Math.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,9 +8,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
-public class Sample {
+public class E {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -32,8 +37,70 @@ public class Sample {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			RMQ rmq = new RMQ(100, new P(0, LINF));
+			int n = in.nextInt();
+			long d = in.nextLong();
+			P[] ps = new P[n];
+			for (int i = 0; i < n; i++) {
+				long a = in.nextLong();
+				ps[i] = new P(i, a);
+			}
+			RMQ left = new RMQ(n, new P(-1, LINF)), right = new RMQ(n, new P(-1, LINF));
+			for (int i = 0; i < n; i++) {
+				left.update(i, new P(i, ps[i].cost - d * i));
+				right.update(i, new P(i, ps[i].cost + d * i));
+			}
+			P[] p = ps.clone();
+			Arrays.sort(ps);
 
+			List<Edge> list = new ArrayList<>();
+			for (int i = 0; i < n; i++) {
+				int idx = ps[i].idx;
+				P le = left.query(0, idx);
+				P ri = right.query(idx+1, n);
+				if (le.idx != -1) {
+					list.add(new Edge(idx, le.idx, abs(idx - le.idx) * d + p[idx].cost + p[le.idx].cost));
+				}
+				if (ri.idx != -1) {
+					list.add(new Edge(idx, ri.idx, abs(idx - ri.idx) * d + p[idx].cost + p[ri.idx].cost));
+				}
+				left.update(idx, new P(idx, LINF));
+				right.update(idx, new P(idx, LINF));
+			}
+
+			Collections.sort(list);
+
+			long ans = 0;
+
+			UnionFind uf = new UnionFind(n);
+			for (Edge e : list) {
+				if (uf.same(e.s, e.t)) continue;
+				uf.union(e.s, e.t);
+				ans += e.cost;
+			}
+
+			out.println(ans);
+		}
+
+		class Edge implements Comparable<Edge> {
+			int s, t;
+			long cost;
+
+			public Edge(int s, int t, long cost) {
+				super();
+				this.s = s;
+				this.t = t;
+				this.cost = cost;
+			}
+
+			@Override
+			public String toString() {
+				return "Edge [s=" + s + ", t=" + t + ", cost=" + cost + "]";
+			}
+
+			@Override
+			public int compareTo(Edge o) {
+				return Long.compare(this.cost, o.cost);
+			}
 		}
 
 		class RMQ extends AbstractRMQ<P> {
@@ -44,14 +111,8 @@ public class Sample {
 
 			@Override
 			P merge(P x, P y) {
-				return x.cost < y.cost ? x : y;
+				return x.cost <= y.cost ? x : y;
 			}
-
-			@Override
-			void updateNode(int k, P x) {
-				super.dat[k] = x;
-			}
-
 		}
 
 		class P implements Comparable<P> {
@@ -66,14 +127,54 @@ public class Sample {
 
 			@Override
 			public int compareTo(P o) {
-				return Long.compare(this.cost, o.cost);
+				return -Long.compare(this.cost, o.cost);
 			}
 
 			@Override
 			public String toString() {
 				return "P [idx=" + idx + ", cost=" + cost + "]";
 			}
+		}
 
+		class UnionFind {
+			int[] data;
+
+			public UnionFind(int size) {
+				data = new int[size];
+				clear();
+			}
+
+			public void clear() {
+				Arrays.fill(data, -1);
+			}
+
+			public int root(int x) {
+				return data[x] < 0 ? x : (data[x] = root(data[x]));
+			}
+
+			public void union(int x, int y) {
+				x = root(x);
+				y = root(y);
+
+				if (x != y) {
+					if (data[y] > data[x]) {
+						final int t = x;
+						x = y;
+						y = t;
+					}
+
+					data[x] += data[y];
+					data[y] = x;
+				}
+			}
+
+			boolean same(int x, int y) {
+				return root(x) == root(y);
+			}
+
+			public int size(int x) {
+				return -data[root(x)];
+			}
 		}
 
 	}
@@ -85,11 +186,13 @@ public class Sample {
 		T INITIAL_VALUE;
 
 		abstract T merge(T x, T y);
-		abstract void updateNode(int k, T x);
 
-		public AbstractRMQ(int size, T initial_value) {
-			this.size = size;
+		public AbstractRMQ(int n, T initial_value) {
+			size = 1;
 			this.INITIAL_VALUE = initial_value;
+			while (size < n) {
+				size *= 2;
+			}
 			dat = (T[])new Object[size * 2];
 			for (int i = 0; i < size * 2; i++) {
 				dat[i] = INITIAL_VALUE;

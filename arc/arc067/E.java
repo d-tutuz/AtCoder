@@ -1,4 +1,4 @@
-package sample;
+package arc067;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class Sample {
+public class E {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -30,99 +30,80 @@ public class Sample {
 
 	static class TaskX {
 
+		int n, a, b, c, d;
+		long ans = 0;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			RMQ rmq = new RMQ(100, new P(0, LINF));
-
+			n = in.nextInt(); a = in.nextInt(); b = in.nextInt(); c = in.nextInt(); d = in.nextInt();
+			dfs(b, n, 1);
+			out.println(ans);
 		}
 
-		class RMQ extends AbstractRMQ<P> {
+		void dfs(int idx, int sum, long cnt) {
 
-			public RMQ(int size, P initial_value) {
-				super(size, initial_value);
+			if (sum == 0) {
+				ans += cnt;
+				return;
+			}
+			if (sum < 0) return;
+			if (idx < a) {
+				if (sum == 0) {
+					ans += cnt;
+				}
+				return;
 			}
 
-			@Override
-			P merge(P x, P y) {
-				return x.cost < y.cost ? x : y;
-			}
-
-			@Override
-			void updateNode(int k, P x) {
-				super.dat[k] = x;
-			}
-
-		}
-
-		class P implements Comparable<P> {
-			int idx;
-			long cost;
-
-			public P(int idx, long cost) {
-				super();
-				this.idx = idx;
-				this.cost = cost;
-			}
-
-			@Override
-			public int compareTo(P o) {
-				return Long.compare(this.cost, o.cost);
-			}
-
-			@Override
-			public String toString() {
-				return "P [idx=" + idx + ", cost=" + cost + "]";
+			dfs(idx-1, sum, cnt);
+			for (int i = c; i <= d; i++) {
+				dfs(idx-1, sum - i * idx, cnt * comb(sum, idx) / factInv[i]);
 			}
 
 		}
-
 	}
 
-	@SuppressWarnings("unchecked")
-	static abstract class AbstractRMQ<T> {
-		int size;
-		T[] dat;
-		T INITIAL_VALUE;
+	/**
+	 * 二項係数
+	 * 前提 n < modP
+	 * nCr = n!/(r!*(n-r)!)である。この時分子分母にMODが来る場合は以下のように使用する
+	 * */
+	public static long comb(int n, int r) {
+		if (r < 0 || r > n)
+			return 0L;
+		return fact[n] % MOD * factInv[r] % MOD * factInv[n - r] % MOD;
+	}
 
-		abstract T merge(T x, T y);
-		abstract void updateNode(int k, T x);
+	public static int MAXN = 200000;
 
-		public AbstractRMQ(int size, T initial_value) {
-			this.size = size;
-			this.INITIAL_VALUE = initial_value;
-			dat = (T[])new Object[size * 2];
-			for (int i = 0; i < size * 2; i++) {
-				dat[i] = INITIAL_VALUE;
-			}
+	static long[] fact = factorialArray(MAXN, MOD);
+	static long[] factInv = factorialInverseArray(MAXN, MOD,
+			inverseArray(MAXN, MOD));
+
+	public static long[] factorialArray(int maxN, long mod) {
+		long[] fact = new long[maxN + 1];
+		fact[0] = 1 % mod;
+		for (int i = 1; i <= maxN; i++) {
+			fact[i] = fact[i - 1] * i % mod;
 		}
+		return fact;
+	}
 
-		// k 番目(0-indexed) を a に更新
-		void update(int k, T a) {
-			k += size;
-			dat[k] = a;
-			while (k > 0) {
-				k /= 2;
-				dat[k] = merge(dat[2 * k], dat[2 * k + 1]);
-			}
+	public static long[] inverseArray(int maxN, long modP) {
+		long[] inv = new long[maxN + 1];
+		inv[1] = 1;
+		for (int i = 2; i <= maxN; i++) {
+			inv[i] = modP - (modP / i) * inv[(int) (modP % i)] % modP;
 		}
+		return inv;
+	}
 
-		// [a, b) の最小値を求める
-		private T query(int a, int b, int k, int l, int r) {
-			if (r <= a || b <= l) return INITIAL_VALUE;
-
-			if (a <= l && r <= b) {
-				return dat[k];
-			} else {
-				T vl = query(a, b, 2 * k, l, (l + r) / 2);
-				T vr = query(a, b, 2 * k + 1, (l + r) / 2, r);
-				return merge(vl, vr);
-			}
+	public static long[] factorialInverseArray(int maxN, long modP,
+			long[] inverseArray) {
+		long[] factInv = new long[maxN + 1];
+		factInv[0] = 1;
+		for (int i = 1; i <= maxN; i++) {
+			factInv[i] = factInv[i - 1] * inverseArray[i] % modP;
 		}
-
-		// [a, b) の最小値を求める
-		T query(int a, int b) {
-			return query(a, b, 1, 0, size);
-		}
+		return factInv;
 	}
 
 	static class MyInput {
@@ -215,6 +196,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {
