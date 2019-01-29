@@ -34,67 +34,36 @@ public class C {
 
 			int n = in.nextInt();
 			T[] t = new T[n], s = new T[n];
+			long ans = 0;
 			for (int i = 0; i < n; i++) {
 				long a = in.nextLong(), b = in.nextLong();
-				t[i] = new T(i, a, b, b - a);
-				s[i] = new T(i, a, b, a - b);
+				t[i] = new T(i, a, b);
+				ans -= b;
 			}
 			Arrays.sort(t);
-			Arrays.sort(s);
 
-			long ans1 = 0, ans2 = 0;
-			for (int i = 0; i < n; i++) {
-				if (i % 2 == 0) {
-					ans1 += t[i].a;
-				} else {
-					ans1 -= t[i].b;
-				}
+			for (int i = 0; i < n; i += 2) {
+				ans += t[i].a + t[i].b;
 			}
 
-			for (int i = 0; i < n; i++) {
-				if (i % 2 == 0) {
-					ans2 += t[i].a;
-				} else {
-					ans2 -= t[i].b;
-				}
-			}
-
-			out.println(Math.max(ans1, ans2));
+			out.println(ans);
 		}
 
 		class T implements Comparable<T> {
 			int idx;
-			long a, b, diff;
-			public T(int idx, long a, long b, long diff) {
+			long a, b;
+			public T(int idx, long a, long b) {
 				super();
 				this.idx = idx;
 				this.a = a;
 				this.b = b;
-				this.diff = diff;
-			}
-			@Override
-			public String toString() {
-				return "T [idx=" + idx + ", a=" + a + ", b=" + b + ", diff="
-						+ diff + "]";
 			}
 
 			@Override
 			public int compareTo(T o) {
-				return -Long.compare(this.diff, o.diff);
+				return -Long.compare(this.a + this.b, o.a + o.b);
 			}
 		}
-	}
-
-	static void printArrayLine(long[] a, PrintWriter out) {
-		int n = a.length;
-		for (int i = 0; i < n; i++) {
-			if (i == 0) {
-				out.print(a[i]);
-			} else {
-				out.print(" " + a[i]);
-			}
-		}
-		out.print("\n");
 	}
 
 	static class MyInput {

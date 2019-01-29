@@ -43,5 +43,4 @@ public class MatrixUtils {
 			return mul(a, pow(a, e-1, mod), mod);
 		}
 	}
-
 }

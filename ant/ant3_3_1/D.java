@@ -1,4 +1,4 @@
-package nikkei_Programming_Contest_2019;
+package ant3_3_1;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,12 +6,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Queue;
-import java.util.stream.Stream;
+import java.util.TreeMap;
 
 public class D {
 
@@ -37,40 +33,108 @@ public class D {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt(), m = in.nextInt();
-			Queue<Integer> q = new ArrayDeque<>();
-			List<Integer>[] g = new ArrayList[n];
-			int[] cnt = new int[n];
-			g = Stream.generate(ArrayList::new).limit(n).toArray(List[]::new);
-			for (int i = 0; i < n + m - 1; i++) {
-				int a = in.nextInt()-1, b = in.nextInt()-1;
-				g[a].add(b);
-				cnt[b]++;
+			long n = in.nextLong();
+			int m = in.nextInt();
+			TreeMap<Long, Integer> map = new TreeMap<>();
+			long[] p = new long[m];
+			double[] a = new double[m], b = new double[m];
+			for (int i = 0; i < m; i++) {
+				p[i] = in.nextLong()-1;
+				a[i] = in.nextDouble();
+				b[i] = in.nextDouble();
 			}
 
-			int[] ans = new int[n];
-			Arrays.fill(ans, -1);
-			for (int i = 0; i < n; i++) {
-				if (cnt[i] == 0) q.add(i);
-				ans[i] = 0;
-			}
-
-			List<Integer> list = new ArrayList<>();
-			while (!q.isEmpty()) {
-				int cur = q.remove();
-				list.add(cur);
-
-				for (int to : g[cur]) {
-					cnt[to]--;
-					if (cnt[to] == 0) {
-						q.add(to);
-						ans[to] = cur + 1;
-					}
+			int idx = 0;
+			{
+				long[] ps = p.clone();
+				Arrays.sort(ps);
+				for (int i = 0; i < m; i++) {
+					map.put(ps[i], idx++);
 				}
 			}
 
-			for (int i : ans) {
-				out.println(i);
+			SegmentTree seg = new SegmentTree(idx, new P(1, 0));
+			double min = 1.0, max = 1.0;
+			for (int i = 0; i < m; i++) {
+				seg.update(map.get(p[i]), new P(a[i], b[i]));
+				P res = seg.query(0, idx);
+				min = Math.min(min, res.a + res.b);
+				max = Math.max(max, res.a + res.b);
+			}
+			out.printf("%.9f\n%.9f\n", min, max);
+
+		}
+
+		class P {
+			double a, b;
+
+			public P(double a, double b) {
+				super();
+				this.a = a;
+				this.b = b;
+			}
+
+		}
+
+		class SegmentTree extends AbstractSegmentTree<P> {
+
+			public SegmentTree(int n, P initial_value) {
+				super(n, initial_value);
+			}
+
+			@Override
+			P merge(P l, P r) {
+				return new P(l.a * r.a, r.a * l.b + r.b);
+			}
+
+		}
+
+		@SuppressWarnings("unchecked")
+		abstract class AbstractSegmentTree<T> {
+			int size;
+			T[] dat;
+			T INITIAL_VALUE;
+
+			abstract T merge(T x, T y);
+
+			public AbstractSegmentTree(int n, T initial_value) {
+				size = 1;
+				this.INITIAL_VALUE = initial_value;
+				while (size < n) {
+					size *= 2;
+				}
+				dat = (T[])new Object[size * 2];
+				for (int i = 0; i < size * 2; i++) {
+					dat[i] = INITIAL_VALUE;
+				}
+			}
+
+			// k 番目(0-indexed) を a に更新
+			void update(int k, T a) {
+				k += size;
+				dat[k] = a;
+				while (k > 0) {
+					k /= 2;
+					dat[k] = merge(dat[2 * k], dat[2 * k + 1]);
+				}
+			}
+
+			// [a, b) の最小値を求める
+			private T query(int a, int b, int k, int l, int r) {
+				if (r <= a || b <= l) return INITIAL_VALUE;
+
+				if (a <= l && r <= b) {
+					return dat[k];
+				} else {
+					T vl = query(a, b, 2 * k, l, (l + r) / 2);
+					T vr = query(a, b, 2 * k + 1, (l + r) / 2, r);
+					return merge(vl, vr);
+				}
+			}
+
+			// [a, b) の最小値を求める
+			T query(int a, int b) {
+				return query(a, b, 1, 0, size);
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-package nikkei_Programming_Contest_2019;
+package ant3_4_4;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,14 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Queue;
-import java.util.stream.Stream;
 
-public class D {
+public class A {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -37,40 +32,62 @@ public class D {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt(), m = in.nextInt();
-			Queue<Integer> q = new ArrayDeque<>();
-			List<Integer>[] g = new ArrayList[n];
-			int[] cnt = new int[n];
-			g = Stream.generate(ArrayList::new).limit(n).toArray(List[]::new);
-			for (int i = 0; i < n + m - 1; i++) {
-				int a = in.nextInt()-1, b = in.nextInt()-1;
-				g[a].add(b);
-				cnt[b]++;
+			int k = in.nextInt(), m = in.nextInt();
+			long[] a = in.nextLongArray(k), c = in.nextLongArray(k);
+
+			long[][] A = new long[k][1], M = new long[k][k];
+			for (int i = 0; i < k; i++) {
+				A[k-1-i][0] = a[i];
 			}
 
-			int[] ans = new int[n];
-			Arrays.fill(ans, -1);
+			for (int i = 0; i < k; i++) {
+				M[0][i] = c[i];
+				if (i >= 1) M[i][i-1] = Long.MAX_VALUE;
+			}
+
+			M = MatrixUtils.pow(M, m-1);
+			A = MatrixUtils.mul(M, A);
+			out.println(A[k-1][0]);
+
+		}
+	}
+
+	static class MatrixUtils {
+
+		// 行列A と 行列B の積を返す
+		static long[][] mul(long[][] a, long[][] b) {
+
+			int n = a.length, k = a[0].length, m = b[0].length;
+			if (a[0].length != b.length) new RuntimeException("Input Matrix is invalid.");
+
+			long[][] ret = new long[n][m];
 			for (int i = 0; i < n; i++) {
-				if (cnt[i] == 0) q.add(i);
-				ans[i] = 0;
-			}
-
-			List<Integer> list = new ArrayList<>();
-			while (!q.isEmpty()) {
-				int cur = q.remove();
-				list.add(cur);
-
-				for (int to : g[cur]) {
-					cnt[to]--;
-					if (cnt[to] == 0) {
-						q.add(to);
-						ans[to] = cur + 1;
+				for (int t = 0; t < k; t++) {
+					for (int j = 0; j < m; j++) {
+						ret[i][j] ^= a[i][t] & b[t][j];
 					}
 				}
 			}
+			return ret;
+		}
 
-			for (int i : ans) {
-				out.println(i);
+		// 正方行列A の e乗
+		static long[][] pow(long[][] a, long e) {
+
+			if (a.length != a[0].length) new RuntimeException("Matrix is not square.");
+			int n = a.length;
+
+			if (e == 0) {
+				long[][] ret = new long[n][n];
+				for (int i = 0; i < n; i++) ret[i][i] = Long.MAX_VALUE;
+				return ret;
+			} else if (e == 1) {
+				return a;
+			} else if (e % 2 == 0) {
+				long[][] ret = pow(a, e/2);
+				return mul(ret, ret);
+			} else {
+				return mul(a, pow(a, e-1));
 			}
 		}
 	}

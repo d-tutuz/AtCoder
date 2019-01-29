@@ -6,14 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Queue;
-import java.util.stream.Stream;
 
-public class D {
+public class E {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -35,42 +30,112 @@ public class D {
 
 	static class TaskX {
 
+		int n, m;
+		long[] x;
+		T[] t;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt(), m = in.nextInt();
-			Queue<Integer> q = new ArrayDeque<>();
-			List<Integer>[] g = new ArrayList[n];
-			int[] cnt = new int[n];
-			g = Stream.generate(ArrayList::new).limit(n).toArray(List[]::new);
-			for (int i = 0; i < n + m - 1; i++) {
+			n = in.nextInt(); m = in.nextInt();
+			x = in.nextLongArray(n);
+			t = new T[m];
+			for (int i = 0; i < m; i++) {
 				int a = in.nextInt()-1, b = in.nextInt()-1;
-				g[a].add(b);
-				cnt[b]++;
+				long y = in.nextLong();
+				t[i] = new T(a, b, y);
 			}
+			Arrays.sort(t);
 
-			int[] ans = new int[n];
-			Arrays.fill(ans, -1);
-			for (int i = 0; i < n; i++) {
-				if (cnt[i] == 0) q.add(i);
-				ans[i] = 0;
-			}
-
-			List<Integer> list = new ArrayList<>();
-			while (!q.isEmpty()) {
-				int cur = q.remove();
-				list.add(cur);
-
-				for (int to : g[cur]) {
-					cnt[to]--;
-					if (cnt[to] == 0) {
-						q.add(to);
-						ans[to] = cur + 1;
-					}
+			int use = 0;
+			UnionFind uf = new UnionFind(n);
+			for (int i = 0; i < m; i++) {
+				uf.union(t[i].a, t[i].b);
+				uf.addEdge(t[i].a);
+				long w = uf.getWeight(t[i].a);
+				if (w >= t[i].y) {
+					use += uf.getEdges(t[i].a);
 				}
 			}
 
-			for (int i : ans) {
-				out.println(i);
+			out.println(m - use);
+
+		}
+
+		class UnionFind {
+			int[] data;
+			long[] weight;
+			int[] es;
+
+			public UnionFind(int size) {
+				data = new int[size];
+				es = new int[size];
+				clear();
+				weight = x.clone();
+			}
+
+			public void clear() {
+				Arrays.fill(data, -1);
+			}
+
+			public int root(int x) {
+				return data[x] < 0 ? x : (data[x] = root(data[x]));
+			}
+
+			public long getWeight(int x) {
+				return weight[root(x)];
+			}
+
+			public void union(int x, int y) {
+				x = root(x);
+				y = root(y);
+
+				if (x != y) {
+					if (data[y] > data[x]) {
+						final int t = x;
+						x = y;
+						y = t;
+					}
+
+					data[x] += data[y];
+					data[y] = x;
+					weight[x] += weight[y];
+					es[x] += es[y];
+				}
+			}
+
+			void addEdge(int x) {
+				es[root(x)]++;
+			}
+
+			public int getEdges(int x) {
+				x = root(x);
+				int ret = es[x];
+				es[x] = 0;
+				return ret;
+			}
+
+			boolean same(int x, int y) {
+				return root(x) == root(y);
+			}
+
+			public int size(int x) {
+				return -data[root(x)];
+			}
+		}
+
+		class T implements Comparable<T> {
+			int a, b;
+			long y;
+
+			public T(int a, int b, long y) {
+				super();
+				this.a = a;
+				this.b = b;
+				this.y = y;
+			}
+
+			@Override
+			public int compareTo(T o) {
+				return Long.compare(this.y, o.y);
 			}
 		}
 	}

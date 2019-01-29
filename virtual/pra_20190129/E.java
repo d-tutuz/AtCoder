@@ -1,4 +1,4 @@
-package nikkei_Programming_Contest_2019;
+package pra_20190129;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,14 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Queue;
-import java.util.stream.Stream;
 
-public class D {
+public class E {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -37,42 +32,76 @@ public class D {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt(), m = in.nextInt();
-			Queue<Integer> q = new ArrayDeque<>();
-			List<Integer>[] g = new ArrayList[n];
-			int[] cnt = new int[n];
-			g = Stream.generate(ArrayList::new).limit(n).toArray(List[]::new);
-			for (int i = 0; i < n + m - 1; i++) {
-				int a = in.nextInt()-1, b = in.nextInt()-1;
-				g[a].add(b);
-				cnt[b]++;
-			}
+			int n = in.nextInt(), a = in.nextInt(), b = in.nextInt();
+			int c = in.nextInt(), d = in.nextInt();
 
-			int[] ans = new int[n];
-			Arrays.fill(ans, -1);
-			for (int i = 0; i < n; i++) {
-				if (cnt[i] == 0) q.add(i);
-				ans[i] = 0;
-			}
+			// i 人未満のグループで j 人作るときの場合の数
+			long[][] dp = new long[n+2][n+2];
+			dp[a][0] = 1;
 
-			List<Integer> list = new ArrayList<>();
-			while (!q.isEmpty()) {
-				int cur = q.remove();
-				list.add(cur);
+			for (int i = a; i <= b; i++) {
+				for (int j = 0; j <= n; j++) {
+					if (dp[i][j] == 0) continue;
+					dp[i+1][j] += dp[i][j];
+					dp[i+1][j] %= MOD;
 
-				for (int to : g[cur]) {
-					cnt[to]--;
-					if (cnt[to] == 0) {
-						q.add(to);
-						ans[to] = cur + 1;
+					long product = dp[i][j];
+					for (int k = 1; k <= d; k++) {
+						if (n - j - i * k < 0) break;
+
+						product *= comb(n - j - i * (k-1), i);
+						product %= MOD;
+
+						if (k < c) continue;
+						dp[i+1][j+i*k] += product * factInv[k];
+						dp[i+1][j+i*k] %= MOD;
 					}
 				}
 			}
 
-			for (int i : ans) {
-				out.println(i);
-			}
+			out.println(dp[b+1][n]);
+
 		}
+	}
+
+	public static long comb(int n, int r) {
+		if (r < 0 || r > n)
+			return 0L;
+		return fact[n] % MOD * factInv[r] % MOD * factInv[n - r] % MOD;
+	}
+
+	public static int MAXN = 200000;
+
+	static long[] fact = factorialArray(MAXN, MOD);
+	static long[] factInv = factorialInverseArray(MAXN, MOD,
+			inverseArray(MAXN, MOD));
+
+	public static long[] factorialArray(int maxN, long mod) {
+		long[] fact = new long[maxN + 1];
+		fact[0] = 1 % mod;
+		for (int i = 1; i <= maxN; i++) {
+			fact[i] = fact[i - 1] * i % mod;
+		}
+		return fact;
+	}
+
+	public static long[] inverseArray(int maxN, long modP) {
+		long[] inv = new long[maxN + 1];
+		inv[1] = 1;
+		for (int i = 2; i <= maxN; i++) {
+			inv[i] = modP - (modP / i) * inv[(int) (modP % i)] % modP;
+		}
+		return inv;
+	}
+
+	public static long[] factorialInverseArray(int maxN, long modP,
+			long[] inverseArray) {
+		long[] factInv = new long[maxN + 1];
+		factInv[0] = 1;
+		for (int i = 1; i <= maxN; i++) {
+			factInv[i] = factInv[i - 1] * inverseArray[i] % modP;
+		}
+		return factInv;
 	}
 
 	static class MyInput {

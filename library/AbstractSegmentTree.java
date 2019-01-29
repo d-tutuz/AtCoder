@@ -6,7 +6,7 @@
  *
  * 使う場合は
  *
- * 		class RMQ extends AbstractRMQ<P> {
+ * 		class RMQ extends AbstractSegmentTree<P> {
 			public RMQ(int size, P initial_value) {
 				super(size, initial_value);
 			}
@@ -21,14 +21,14 @@
  * */
 
 @SuppressWarnings("unchecked")
-abstract class AbstractRMQ<T> {
+abstract class AbstractSegmentTree<T> {
 	int size;
 	T[] dat;
 	T INITIAL_VALUE;
 
 	abstract T merge(T x, T y);
 
-	public AbstractRMQ(int n, T initial_value) {
+	public AbstractSegmentTree(int n, T initial_value) {
 		size = 1;
 		this.INITIAL_VALUE = initial_value;
 		while (size < n) {

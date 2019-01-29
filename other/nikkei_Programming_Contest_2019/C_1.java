@@ -36,7 +36,7 @@ public class C_1 {
 			T[] t = new T[n];
 			for (int i = 0; i < n; i++) {
 				long a = in.nextLong(), b = in.nextLong();
-				t[i] = new T(i, a, b, b - a);
+				t[i] = new T(i, a, b, a + b);
 			}
 			Arrays.sort(t);
 
