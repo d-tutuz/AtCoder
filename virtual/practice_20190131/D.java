@@ -1,4 +1,4 @@
-package japan_alumni_group_summer_camp_2017_day_1;
+package practice_20190131;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,10 +8,11 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class K {
+public class D {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
+//		inputStream = new FileInputStream(new File("/workspace/Atcoder/virtual/practice_20190131/test"));
 		OutputStream outputStream = System.out;
 		MyInput in = new MyInput(inputStream);
 		PrintWriter out = new PrintWriter(outputStream);
@@ -32,46 +33,90 @@ public class K {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt();
-			P[] p = new P[n];
-			long thr = 0;
+			int n = in.nextInt(), q = in.nextInt();
+			long[] a = in.nextLongArray(n);
+			long[] sum = new long[n], odd = new long[n], even = new long[n];
 			for (int i = 0; i < n; i++) {
-				long c = in.nextLong(), g = in.nextLong();
-				p[i] = new P(c, g);
-				thr -= c;
+				sum[i] = a[i];
+				if (i % 2 == 0) {
+					even[i] = a[i];
+				} else {
+					odd[i] = a[i];
+				}
 			}
+			Arrays.parallelPrefix(sum, Math::addExact);
+			Arrays.parallelPrefix(odd, Math::addExact);
+			Arrays.parallelPrefix(even, Math::addExact);
 
-			Arrays.sort(p, (a, b) -> -Long.compare(a.c + a.g, b.c + b.g));
 
-			int cnt = 0;
-			for (int i = 0; i < n; i++) {
-				if (thr >= 0) break;
-				thr += p[i].get();
-				cnt++;
+			while (q-- > 0) {
+				long x = in.nextLong();
+				long ng = INF, ok = 0;
+				while (ng - ok > 1) {
+					long mid = (ng + ok) / 2;
+					int ri_1 = upperBound(a, x + mid) - 1;
+					int li_1 = lowerBound(a, x - mid);
+					int len = ri_1 - li_1 + 1;
+					int li_2 = n - len;
+					if (li_2 - ri_1 >= 0) {
+						ok = mid;
+					} else {
+						ng = mid;
+					}
+				}
+
+				long mid = ok;
+				int ri_1 = upperBound(a, x + mid) - 1;
+				int li_1 = lowerBound(a, x - mid);
+				int len = ri_1 - li_1 + 1;
+				int li_2 = n - len;
+
+				long ans = 0;
+				if (li_2 - ri_1 == 1) {
+					ans += sum[n-1] - sum[li_2 - 1];
+					if (n % 2 == 0) {
+						ans += li_1 - 1 >= 0 ? odd[li_1 - 1] : 0;
+					} else {
+						ans += li_1 - 1 >= 0 ? even[li_1 - 1] : 0;
+					}
+				} else if (li_2 - ri_1 == 0) {
+					ans += sum[n-1] - sum[li_2 - 1];
+					if (n % 2 == 0) {
+						ans += li_1 - 1 >= 0 ? odd[li_1 - 1] : 0;
+					} else {
+						ans += li_1 - 1 >= 0 ? even[li_1 - 1] : 0;
+					}
+				}
+
+				out.println(ans);
 			}
-
-			out.println(n - cnt);
 		}
+	}
 
-		class P {
-			long c, g;
-
-			public P(long c, long g) {
-				super();
-				this.c = c;
-				this.g = g;
+	public static int upperBound(long[] a, long obj) {
+		int l = 0, r = a.length - 1;
+		while (r - l >= 0) {
+			int c = (l + r) / 2;
+			if (a[c] <= obj) {
+				l = c + 1;
+			} else {
+				r = c - 1;
 			}
-
-			long get() {
-				return this.c + this.g;
-			}
-
-			@Override
-			public String toString() {
-				return "P [c=" + c + ", g=" + g + "]";
-			}
-
 		}
+		return l;
+	}
+
+	public static int lowerBound(long[] a, long obj) {
+		int l = 0, r = a.length - 1;
+		while (r - l >= 0) {
+			int c = (l + r) / 2;
+			if (obj <= a[c]) {
+				r = c - 1;
+			} else {
+				l = c + 1;
+			}
+		}
+		return l;
 	}
 
 	static class MyInput {
@@ -257,5 +302,4 @@ public class K {
 		}
 
 	}
-
 }
