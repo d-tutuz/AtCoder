@@ -1,4 +1,4 @@
-package sample;
+package abc117;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,9 +8,9 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class Sample {
+public class B {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		InputStream inputStream = System.in;
 		OutputStream outputStream = System.out;
 		MyInput in = new MyInput(inputStream);
@@ -30,18 +30,21 @@ public class Sample {
 
 	static class TaskX {
 
-		int thr = 45;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			out.println(Integer.toBinaryString(1000000));
+			int n = in.nextInt();
+			int[] l = in.nextIntArray(n);
+			Arrays.sort(l);
+
+			int sum = 0;
+			for (int i = 0; i < n-1; i++) {
+				sum += l[i];
+			}
+
+			out.println(l[n-1] < sum ? "Yes" : "No");
 
 		}
 	}
-
-	static String zeroPad(String str, int len) {
-		return String.format("%" + len + "s", str).replace(" ", "0");
-	}
-
 
 	static class MyInput {
 		private final BufferedReader in;
@@ -133,6 +136,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {

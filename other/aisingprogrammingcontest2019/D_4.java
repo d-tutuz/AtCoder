@@ -1,4 +1,4 @@
-package sample;
+package aisingprogrammingcontest2019;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,9 +8,9 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class Sample {
+public class D_4 {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		InputStream inputStream = System.in;
 		OutputStream outputStream = System.out;
 		MyInput in = new MyInput(inputStream);
@@ -30,18 +30,71 @@ public class Sample {
 
 	static class TaskX {
 
-		int thr = 45;
+		int n, q;
+		long[] a;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			out.println(Integer.toBinaryString(1000000));
+			n = in.nextInt(); q = in.nextInt();
+			a = in.nextLongArray(n);
+			long[] sum = new long[n], odd = new long[n], even = new long[n];
+			for (int i = 0; i < n; i++) {
+				sum[i] = (i-1 >= 0 ? sum[i-1] : 0) + a[i];
+				even[i] = (i-1 >= 0 ? even[i-1] : 0) + (i % 2 == 0 ? a[i] : 0);
+				odd[i] = (i-1 >= 0 ? odd[i-1] : 0) + (i % 2 == 1 ? a[i] : 0);
+			}
 
+			while (q-- > 0) {
+				long x = in.nextLong();
+				int ok = 1, ng = n;
+				while (ng - ok > 1) {
+					int k = (ok + ng) / 2;
+					if (check(k, x)) {
+						ok = k;
+					} else {
+						ng = k;
+					}
+				}
+
+				long ans = sum[n - 1] - sum[n - ok - 1];
+				if (n % 2 == 0) {
+					ans += n - 2*ok - 1 >= 0 ? odd[n - 2*ok - 1] : 0;
+				} else {
+					ans += n - 2*ok - 1 >= 0 ? even[n - 2*ok - 1] : 0;
+				}
+
+				out.println(ans);
+			}
+
+		}
+
+		// 高橋くんが上からk枚とることができるかどうか
+		boolean check(int k, long x) {
+			if (k > n) return false;
+			long d = a[n-k] - x;
+			int s = lowerBound(a, x - d);
+
+			// 青木くんが a[n-k] を選ぶのが何番目になるか。
+			// 閉区間 [x - d, x + d] に含まれる数をすべて選ぶので、その個数番目
+			int m = (n - 1 - k + 1) - (s - 1);
+
+			// 高橋くんが a[n-k] 番目を選ぶ場合に青木くんが k 番目以上に選ぶのであれば
+			// まだ a[n-k] は残っているので上から k 枚をとることが可能
+			return m >= k;
 		}
 	}
 
-	static String zeroPad(String str, int len) {
-		return String.format("%" + len + "s", str).replace(" ", "0");
+	public static int lowerBound(long[] a, long obj) {
+		int l = 0, r = a.length - 1;
+		while (r - l >= 0) {
+			int c = (l + r) / 2;
+			if (obj <= a[c]) {
+				r = c - 1;
+			} else {
+				l = c + 1;
+			}
+		}
+		return l;
 	}
-
 
 	static class MyInput {
 		private final BufferedReader in;
@@ -133,6 +186,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {

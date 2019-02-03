@@ -1,4 +1,4 @@
-package sample;
+package pra_400ten;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,11 +6,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
-public class Sample {
+public class C {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		InputStream inputStream = System.in;
 		OutputStream outputStream = System.out;
 		MyInput in = new MyInput(inputStream);
@@ -30,18 +32,71 @@ public class Sample {
 
 	static class TaskX {
 
-		int thr = 45;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			out.println(Integer.toBinaryString(1000000));
+			int h = in.nextInt(), w = in.nextInt();
+			int[][] a = new int[h][w];
+			for (int i = 0; i < h; i++) {
+				for (int j = 0; j < w; j++) {
+					a[i][j] = in.nextInt();
+				}
+			}
+
+			List<T> list = new ArrayList<>();
+			for (int i = 0; i < h; i++) {
+				if (i % 2 == 0) {
+					for (int j = 0; j < w-1; j++) {
+						if (a[i][j] % 2 == 1) {
+							a[i][j]--;
+							a[i][j+1]++;
+							list.add(new T(i, j, i, j+1));
+						}
+					}
+					if (a[i][w-1] % 2 == 1 && i != h-1) {
+						a[i][w-1]--;
+						a[i+1][w-1]++;
+						list.add(new T(i, w-1, i+1, w-1));
+					}
+				} else {
+					for (int j = w-1; j > 0; j--) {
+						if (a[i][j] % 2 == 1) {
+							a[i][j]--;
+							a[i][j-1]++;
+							list.add(new T(i, j, i, j-1));
+						}
+					}
+					if (a[i][0] % 2 == 1 && i != h-1) {
+						a[i][0]--;
+						a[i+1][0]++;
+						list.add(new T(i, 0, i+1, 0));
+					}
+				}
+			}
+
+			out.println(list.size());
+			for (T t : list) {
+				out.println(t);
+			}
+		}
+
+		class T {
+			int sh, sw, th, tw;
+
+			public T(int sh, int sw, int th, int tw) {
+				super();
+				this.sh = sh;
+				this.sw = sw;
+				this.th = th;
+				this.tw = tw;
+			}
+
+			@Override
+			public String toString() {
+				return String.format("%s %s %s %s", sh+1, sw+1, th+1, tw+1);
+			}
 
 		}
 	}
-
-	static String zeroPad(String str, int len) {
-		return String.format("%" + len + "s", str).replace(" ", "0");
-	}
-
 
 	static class MyInput {
 		private final BufferedReader in;
@@ -133,6 +188,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {

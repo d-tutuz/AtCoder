@@ -1,4 +1,4 @@
-package sample;
+package aisingprogrammingcontest2019;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class Sample {
+public class Main2 {
 
 	public static void main(String[] args) throws IOException {
 		InputStream inputStream = System.in;
@@ -30,18 +30,94 @@ public class Sample {
 
 	static class TaskX {
 
-		int thr = 45;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			out.println(Integer.toBinaryString(1000000));
+			int n = in.nextInt(), q = in.nextInt();
+			long[] a = in.nextLongArray(n);
+			long[] sum = new long[n], odd = new long[n], even = new long[n];
+			for (int i = 0; i < n; i++) {
+				sum[i] = a[i];
+				if (i % 2 == 0) {
+					even[i] = a[i];
+				} else {
+					odd[i] = a[i];
+				}
+			}
+			Arrays.parallelPrefix(sum, Math::addExact);
+			Arrays.parallelPrefix(odd, Math::addExact);
+			Arrays.parallelPrefix(even, Math::addExact);
 
+
+			while (q-- > 0) {
+				long x = in.nextLong();
+				long ng = INF, ok = 0;
+				while (ng - ok > 1) {
+					long mid = (ng + ok) / 2;
+					int ri_1 = upperBound(a, x + mid) - 1;
+					int li_1 = lowerBound(a, x - mid);
+					int len = ri_1 - li_1 + 1;
+					int li_2 = n - len;
+					if (li_2 - ri_1 >= 0) {
+						ok = mid;
+					} else {
+						ng = mid;
+					}
+				}
+
+				long mid = ok;
+				int ri_1 = upperBound(a, x + mid) - 1;
+				int li_1 = lowerBound(a, x - mid);
+				int len = ri_1 - li_1 + 1;
+				int li_2 = n - len;
+
+				long ans = 0;
+				if (li_2 - ri_1 == 1) {
+					ans += sum[n-1] - sum[li_2 - 1];
+					if (n % 2 == 0) {
+						ans += li_1 - 1 >= 0 ? odd[li_1 - 1] : 0;
+					} else {
+						ans += li_1 - 1 >= 0 ? even[li_1 - 1] : 0;
+					}
+//				} else if (li_2 - ri_1 == 0) {
+				} else {
+					ans += sum[n-1] - sum[li_2 - 1];
+					if (n % 2 == 0) {
+						ans += li_1 - 1 >= 0 ? odd[li_1 - 1] : 0;
+					} else {
+						ans += li_1 - 1 >= 0 ? even[li_1 - 1] : 0;
+					}
+				}
+
+				out.println(ans);
+			}
 		}
 	}
 
-	static String zeroPad(String str, int len) {
-		return String.format("%" + len + "s", str).replace(" ", "0");
+	public static int upperBound(long[] a, long obj) {
+		int l = 0, r = a.length - 1;
+		while (r - l >= 0) {
+			int c = (l + r) / 2;
+			if (a[c] <= obj) {
+				l = c + 1;
+			} else {
+				r = c - 1;
+			}
+		}
+		return l;
 	}
 
+	public static int lowerBound(long[] a, long obj) {
+		int l = 0, r = a.length - 1;
+		while (r - l >= 0) {
+			int c = (l + r) / 2;
+			if (obj <= a[c]) {
+				r = c - 1;
+			} else {
+				l = c + 1;
+			}
+		}
+		return l;
+	}
 
 	static class MyInput {
 		private final BufferedReader in;
@@ -135,6 +211,14 @@ public class Sample {
 			return Arrays.copyOf(str, len);
 		}
 
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
+		}
+
 		int reads(int len, boolean[] accept) {
 			try {
 				while (true) {
@@ -218,5 +302,4 @@ public class Sample {
 		}
 
 	}
-
 }

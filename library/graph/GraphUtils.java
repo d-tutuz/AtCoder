@@ -127,7 +127,7 @@ public class GraphUtils {
 		}
 	}
 
-	int dijkstra(int from, int to, List<P>[] g) {
+	int[] dijkstra(int from, List<P>[] g) {
 		final int INF = 1 << 30;
 		int n = g.length;
 		PriorityQueue<P> q = new PriorityQueue<>();
@@ -148,7 +148,7 @@ public class GraphUtils {
 
 		}
 
-		return cost[to];
+		return cost;
 	}
 
 	class P implements Comparable<P> {

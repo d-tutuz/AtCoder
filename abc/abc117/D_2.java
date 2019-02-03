@@ -1,4 +1,4 @@
-package practice_20190131;
+package abc117;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,11 +8,10 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class D {
+public class D_2 {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		InputStream inputStream = System.in;
-//		inputStream = new FileInputStream(new File("/workspace/Atcoder/virtual/practice_20190131/test"));
 		OutputStream outputStream = System.out;
 		MyInput in = new MyInput(inputStream);
 		PrintWriter out = new PrintWriter(outputStream);
@@ -31,92 +30,74 @@ public class D {
 
 	static class TaskX {
 
+		int thr = 50;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt(), q = in.nextInt();
+			int n = in.nextInt();
+			long k = in.nextLong();
 			long[] a = in.nextLongArray(n);
-			long[] sum = new long[n], odd = new long[n], even = new long[n];
+			Arrays.sort(a);
+
+			long[] bit0 = new long[thr], bit1 = new long[thr];
+
 			for (int i = 0; i < n; i++) {
-				sum[i] = a[i];
-				if (i % 2 == 0) {
-					even[i] = a[i];
+				for (int j = thr-1; j >= 0; j--) {
+					if ((a[i] >> j & 1) == 1) {
+						bit1[thr-1-j]++;
+					} else {
+						bit0[thr-1-j]++;
+					}
+				}
+			}
+
+			int hibit = -1;
+			boolean[] can = new boolean[thr];
+			for (int i = thr-1; i >= 0; i--) {
+				if ((k >> i & 1) == 1) {
+					can[thr-1-i] = true;
+					hibit = Math.max(hibit, i);
+				}
+			}
+
+			int numhibit = -1;
+			for (int i = thr-1; i >= 0; i--) {
+				for (int j = 0; j < n; j++) {
+					if ((a[j] >> i & 1) == 1) {
+						numhibit = Math.max(numhibit, i);
+					}
+				}
+			}
+
+			long ans = 0;
+
+			// 最大値のbit
+			for (int i = numhibit; i > hibit; i--) {
+				ans += (1L << i) * bit1[thr-1-i];
+			}
+			for (int i = hibit; i >= 0; i--) {
+				if (can[thr-1-i]) {
+					long c = Math.max(bit0[thr-1-i], bit1[thr-1-i]);
+					ans += (1L << i) * c;
 				} else {
-					odd[i] = a[i];
+					ans += (1L << i) * bit1[thr-1-i];
 				}
 			}
-			Arrays.parallelPrefix(sum, Math::addExact);
-			Arrays.parallelPrefix(odd, Math::addExact);
-			Arrays.parallelPrefix(even, Math::addExact);
 
-
-			while (q-- > 0) {
-				long x = in.nextLong();
-				long ng = INF, ok = 0;
-				while (ng - ok > 1) {
-					long mid = (ng + ok) / 2;
-					int ri_1 = upperBound(a, x + mid) - 1;
-					int li_1 = lowerBound(a, x - mid);
-					int len = ri_1 - li_1 + 1;
-					int li_2 = n - len;
-					if (li_2 - ri_1 >= 0) {
-						ok = mid;
-					} else {
-						ng = mid;
-					}
-				}
-
-				long mid = ok;
-				int ri_1 = upperBound(a, x + mid) - 1;
-				int li_1 = lowerBound(a, x - mid);
-				int len = ri_1 - li_1 + 1;
-				int li_2 = n - len;
-
-				long ans = 0;
-				if (li_2 - ri_1 == 1) {
-					ans += sum[n-1] - sum[li_2 - 1];
-					if (n % 2 == 0) {
-						ans += li_1 - 1 >= 0 ? odd[li_1 - 1] : 0;
-					} else {
-						ans += li_1 - 1 >= 0 ? even[li_1 - 1] : 0;
-					}
-				} else if (li_2 - ri_1 == 0) {
-					ans += sum[n-1] - sum[li_2 - 1];
-					if (n % 2 == 0) {
-						ans += li_1 - 1 >= 0 ? odd[li_1 - 1] : 0;
-					} else {
-						ans += li_1 - 1 >= 0 ? even[li_1 - 1] : 0;
-					}
-				}
-
-				out.println(ans);
+			// 最大値のbit未満の任意の数
+			long tmp = 0;
+			for (int i = numhibit; i >= hibit; i--) {
+				tmp += (1L << i) * bit1[thr-1-i];
 			}
-		}
-	}
-
-	public static int upperBound(long[] a, long obj) {
-		int l = 0, r = a.length - 1;
-		while (r - l >= 0) {
-			int c = (l + r) / 2;
-			if (a[c] <= obj) {
-				l = c + 1;
-			} else {
-				r = c - 1;
+			for (int i = hibit-1; i >= 0; i--) {
+				long c = Math.max(bit0[thr-1-i], bit1[thr-1-i]);
+				tmp += (1L << i) * c;
 			}
-		}
-		return l;
-	}
 
-	public static int lowerBound(long[] a, long obj) {
-		int l = 0, r = a.length - 1;
-		while (r - l >= 0) {
-			int c = (l + r) / 2;
-			if (obj <= a[c]) {
-				r = c - 1;
-			} else {
-				l = c + 1;
-			}
+			ans = Math.max(ans, tmp);
+
+			out.printf("%d\n" ,ans);
 		}
-		return l;
+
 	}
 
 	static class MyInput {
@@ -302,4 +283,5 @@ public class D {
 		}
 
 	}
+
 }

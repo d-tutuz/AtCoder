@@ -106,13 +106,13 @@ public class IntegerUtils {
 	 * */
 	Map<Long, Integer> getPrimeFactorization(long n) {
 		Map<Long, Integer> map = new TreeMap<>();
-		long tmp = n;
 		for (long i = 2; i * i <= n; i++) {
-			while (tmp % i == 0) {
+			while (n % i == 0) {
 				map.merge(i, 1, Integer::sum);
-				tmp /= i;
+				n /= i;
 			}
 		}
+		if (n > 1) map.merge(n, 1, Integer::sum);
 		return map;
 	}
 

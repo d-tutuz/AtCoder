@@ -1,4 +1,4 @@
-package sample;
+package pra_400ten;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,11 +6,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Stream;
 
-public class Sample {
+public class F {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		InputStream inputStream = System.in;
 		OutputStream outputStream = System.out;
 		MyInput in = new MyInput(inputStream);
@@ -30,18 +35,57 @@ public class Sample {
 
 	static class TaskX {
 
-		int thr = 45;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			out.println(Integer.toBinaryString(1000000));
+			int N = in.nextInt();
+			int W = in.nextInt();
+			List<Integer>[] g = new ArrayList[4];
+			g = Stream.generate(ArrayList::new).limit(4).toArray(List[]::new);
+
+			int[] w = new int[N], v = new int[N];
+			for (int i = 0; i < N; i++) {
+				w[i] = in.nextInt();
+				v[i] = in.nextInt();
+				g[w[i]-w[0]].add(v[i]);
+			}
+
+			for (int i = 0; i < 4; i++) {
+				Collections.sort(g[i], Comparator.reverseOrder());
+			}
+
+			long ans = 0;
+			for (int i = 0; i <= g[0].size(); i++) {
+				for (int j = 0; j <= g[1].size(); j++) {
+					 for (int k = 0; k <= g[2].size(); k++) {
+						for (int l = 0; l <= g[3].size(); l++) {
+							if (i + j + k + l > N) continue;
+							long tmp = 0;
+							long tweight = w[0] * (long)(i + j + k + l);
+							for (int m = 0; m < i; m++) {
+								tmp += g[0].get(m);
+							}
+							for (int m = 0; m < j; m++) {
+								tmp += g[1].get(m);
+								tweight += 1;
+							}
+							for (int m = 0; m < k; m++) {
+								tmp += g[2].get(m);
+								tweight += 2;
+							}
+							for (int m = 0; m < l; m++) {
+								tmp += g[3].get(m);
+								tweight += 3;
+							}
+							if (tweight <= W) ans = Math.max(ans, tmp);
+						}
+					}
+				}
+			}
+
+			out.println(ans);
 
 		}
 	}
-
-	static String zeroPad(String str, int len) {
-		return String.format("%" + len + "s", str).replace(" ", "0");
-	}
-
 
 	static class MyInput {
 		private final BufferedReader in;
@@ -133,6 +177,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {

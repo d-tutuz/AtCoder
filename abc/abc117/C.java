@@ -1,4 +1,4 @@
-package sample;
+package abc117;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,11 +6,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
-public class Sample {
+public class C {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		InputStream inputStream = System.in;
 		OutputStream outputStream = System.out;
 		MyInput in = new MyInput(inputStream);
@@ -30,18 +34,33 @@ public class Sample {
 
 	static class TaskX {
 
-		int thr = 45;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			out.println(Integer.toBinaryString(1000000));
+			int n = in.nextInt(), m = in.nextInt();
+			int[] x = in.nextIntArray(m);
+			Arrays.sort(x);
 
+			if (n >= m) {
+				out.println(0);
+				return;
+			}
+
+			long ans = 0;
+			List<Long> list = new ArrayList<>();
+			for (int i = m-1; i > 0; i--) {
+				long diff = x[i] - x[i-1];
+				list.add(diff);
+				ans += diff;
+			}
+			Collections.sort(list, Comparator.reverseOrder());
+
+			for (int i = 0; i < n-1; i++) {
+				ans -= list.get(i);
+			}
+
+			out.println(ans);
 		}
 	}
-
-	static String zeroPad(String str, int len) {
-		return String.format("%" + len + "s", str).replace(" ", "0");
-	}
-
 
 	static class MyInput {
 		private final BufferedReader in;
@@ -133,6 +152,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {

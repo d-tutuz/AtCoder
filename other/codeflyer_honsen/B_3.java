@@ -1,4 +1,4 @@
-package sample;
+package codeflyer_honsen;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,9 +8,9 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class Sample {
+public class B_3 {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		InputStream inputStream = System.in;
 		OutputStream outputStream = System.out;
 		MyInput in = new MyInput(inputStream);
@@ -30,18 +30,72 @@ public class Sample {
 
 	static class TaskX {
 
-		int thr = 45;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			out.println(Integer.toBinaryString(1000000));
+			int n = in.nextInt(), q = in.nextInt();
+			long[] x = in.nextLongArray(n);
+			long[] sum = x.clone();
+			Arrays.parallelPrefix(sum, Math::addExact);
+			while (q-- > 0) {
+				long c = in.nextLong(), d = in.nextLong();
 
+				int m = n;
+				long ans = 0;
+				// 右側の [c, c+d] の個数
+				{
+					int r = upperBound(x, c + d) - 1;
+					int l = lowerBound(x, c);
+					long cnt = r - l + 1;
+					if (r >= 0) {
+						ans += (sum[r] - (l-1 >= 0 ? sum[l-1] : 0)) - cnt * c;
+						m -= cnt;
+					}
+				}
+
+				// 左側の [c-d, c) の個数
+				{
+					int r = lowerBound(x, c) - 1;
+					int l = lowerBound(x, c - d);
+					long cnt = r - l + 1;
+					if (r >= 0) {
+						ans += - (sum[r] - (l-1 >= 0 ? sum[l-1] : 0)) + cnt * c;
+						m -= cnt;
+					}
+				}
+
+				// 区間以外
+				ans += m * d;
+
+				out.println(ans);
+			}
 		}
 	}
 
-	static String zeroPad(String str, int len) {
-		return String.format("%" + len + "s", str).replace(" ", "0");
+	public static int upperBound(long[] a, long obj) {
+		int l = 0, r = a.length - 1;
+		while (r - l >= 0) {
+			int c = (l + r) / 2;
+			if (a[c] <= obj) {
+				l = c + 1;
+			} else {
+				r = c - 1;
+			}
+		}
+		return l;
 	}
 
+	public static int lowerBound(long[] a, long obj) {
+		int l = 0, r = a.length - 1;
+		while (r - l >= 0) {
+			int c = (l + r) / 2;
+			if (obj <= a[c]) {
+				r = c - 1;
+			} else {
+				l = c + 1;
+			}
+		}
+		return l;
+	}
 
 	static class MyInput {
 		private final BufferedReader in;
@@ -133,6 +187,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {

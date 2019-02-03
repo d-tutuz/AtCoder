@@ -1,4 +1,4 @@
-package sample;
+package abc117;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,9 +8,9 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class Sample {
+public class D {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		InputStream inputStream = System.in;
 		OutputStream outputStream = System.out;
 		MyInput in = new MyInput(inputStream);
@@ -30,18 +30,78 @@ public class Sample {
 
 	static class TaskX {
 
-		int thr = 45;
+		int thr = 46;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			out.println(Integer.toBinaryString(1000000));
+			int n = in.nextInt();
+			long k = in.nextLong();
+			long[] a = in.nextLongArray(n);
+			Arrays.sort(a);
 
+			long[] bit0 = new long[thr], bit1 = new long[thr];
+
+			for (int i = 0; i < n; i++) {
+				for (int j = thr-1; j >= 0; j--) {
+					if ((a[i] >> j & 1) == 1) {
+						bit1[thr-1-j]++;
+					} else {
+						bit0[thr-1-j]++;
+					}
+				}
+			}
+
+			int hibit = -1;
+			boolean[] can = new boolean[thr];
+			for (int i = thr-1; i >= 0; i--) {
+				if ((k >> i & 1) == 1) {
+					can[thr-1-i] = true;
+					hibit = Math.max(hibit, i);
+				}
+			}
+
+			int numhibit = -1;
+			for (int i = thr-1; i >= 0; i--) {
+				for (int j = 0; j < n; j++) {
+					if ((a[j] >> i & 1) == 1) {
+						numhibit = Math.max(numhibit, i);
+					}
+				}
+			}
+
+			long ans = 0;
+
+			for (int i = numhibit; i > hibit; i--) {
+				ans += (1L << i) * bit0[thr-1-i];
+			}
+			for (int i = hibit; i >= 0; i--) {
+				if (can[thr-1-i]) {
+					long c = Math.max(bit0[thr-1-i], bit1[thr-1-i]);
+					ans += (1L << i) * c;
+				} else {
+					ans += (1L << i) * bit0[thr-1-i];
+				}
+			}
+
+			long tmp = 0;
+			for (int i = numhibit; i >= Math.max(hibit, 0); i--) {
+				tmp += (1L << i) * bit1[thr-1-i];
+			}
+			for (int i = hibit-1; i >= 0; i--) {
+				long c = Math.max(bit0[thr-1-i], bit1[thr-1-i]);
+				tmp += (1L << i) * c;
+			}
+//			long tmp2 = 0;
+//			for (int i = 0; i < n; i++) {
+//				tmp2 += a[i] ^ 0;
+//			}
+
+			ans = Math.max(ans, tmp);
+//			ans = Math.max(ans, tmp2);
+
+			out.println(ans);
 		}
-	}
 
-	static String zeroPad(String str, int len) {
-		return String.format("%" + len + "s", str).replace(" ", "0");
 	}
-
 
 	static class MyInput {
 		private final BufferedReader in;
@@ -133,6 +193,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {

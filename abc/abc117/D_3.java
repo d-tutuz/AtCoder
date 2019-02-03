@@ -1,4 +1,4 @@
-package sample;
+package abc117;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,10 +7,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.Random;
 
-public class Sample {
+public class D_3 {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		InputStream inputStream = System.in;
 		OutputStream outputStream = System.out;
 		MyInput in = new MyInput(inputStream);
@@ -30,18 +31,53 @@ public class Sample {
 
 	static class TaskX {
 
-		int thr = 45;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			out.println(Integer.toBinaryString(1000000));
+			int n = 5;
+			long k = 1000000;
+			out.printf("%d %d\n", n, k);
+			long[] a = new long[n];
+			Random rnd = new Random();
+			for (int i = 0; i < n; i++) {
+				a[i] = Math.abs(rnd.nextLong() % (long)1e12);
+			}
+			printArrayLine(a, out);
+			Arrays.sort(a);
 
+			long ans = 0, maxX = 0;
+			for (int i = 0; i <= k; i++) {
+				if (ans < f(a, i)) {
+					ans = Math.max(ans, f(a, i));
+					maxX = i;
+				}
+//				out.printf("%d %d\n", i, f(a, i));
+			}
+
+			out.printf("%s(%d) %d\n", Long.toBinaryString(maxX), maxX, ans);
+
+		}
+
+		long f(long[] a, long x) {
+			long ret = 0;
+			int n = a.length;
+			for (int i = 0; i < n; i++) {
+				ret += a[i] ^ x;
+			}
+			return ret;
 		}
 	}
 
-	static String zeroPad(String str, int len) {
-		return String.format("%" + len + "s", str).replace(" ", "0");
+	static void printArrayLine(long[] a, PrintWriter out) {
+		int n = a.length;
+		for (int i = 0; i < n; i++) {
+			if (i == 0) {
+				out.print(a[i]);
+			} else {
+				out.print(" " + a[i]);
+			}
+		}
+		out.print("\n");
 	}
-
 
 	static class MyInput {
 		private final BufferedReader in;
@@ -133,6 +169,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {

@@ -1,4 +1,4 @@
-package sample;
+package codeflyer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,9 +8,9 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class Sample {
+public class C_3 {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		InputStream inputStream = System.in;
 		OutputStream outputStream = System.out;
 		MyInput in = new MyInput(inputStream);
@@ -30,18 +30,51 @@ public class Sample {
 
 	static class TaskX {
 
-		int thr = 45;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			out.println(Integer.toBinaryString(1000000));
+			int n = in.nextInt();
+			long d = in.nextLong();
+			long[] x = in.nextLongArray(n);
 
+			long ans = 0;
+			for (int i = 1; i < n-1; i++) {
+				ans += (i - lowerBound(x, x[i] - d)) * (upperBound(x, x[i] + d)-1 - i);
+			}
+
+			for (int i = 0; i < n; i++) {
+				long c = upperBound(x, x[i] + d)-1 - i;
+				ans -= c * (c-1) / 2;
+			}
+
+			out.println(ans);
 		}
 	}
 
-	static String zeroPad(String str, int len) {
-		return String.format("%" + len + "s", str).replace(" ", "0");
+	public static long lowerBound(long[] a, long obj) {
+		int l = 0, r = a.length - 1;
+		while (r - l >= 0) {
+			int c = (l + r) / 2;
+			if (obj <= a[c]) {
+				r = c - 1;
+			} else {
+				l = c + 1;
+			}
+		}
+		return (long)l;
 	}
 
+	public static long upperBound(long[] a, long obj) {
+		int l = 0, r = a.length - 1;
+		while (r - l >= 0) {
+			int c = (l + r) / 2;
+			if (a[c] <= obj) {
+				l = c + 1;
+			} else {
+				r = c - 1;
+			}
+		}
+		return (long)l;
+	}
 
 	static class MyInput {
 		private final BufferedReader in;
@@ -133,6 +166,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {

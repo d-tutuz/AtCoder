@@ -1,4 +1,4 @@
-package sample;
+package pra_400ten;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,11 +6,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
 
-public class Sample {
+public class E {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		InputStream inputStream = System.in;
 		OutputStream outputStream = System.out;
 		MyInput in = new MyInput(inputStream);
@@ -30,18 +33,45 @@ public class Sample {
 
 	static class TaskX {
 
-		int thr = 45;
+		List<Integer>[] g;
+		@SuppressWarnings("unchecked")
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			out.println(Integer.toBinaryString(1000000));
+			int n = in.nextInt();
+			g = new ArrayList[n];
+			g = Stream.generate(ArrayList::new).limit(n).toArray(List[]::new);
+			for (int i = 0; i < n-1; i++) {
+				int a = in.nextInt()-1, b = in.nextInt()-1;
+				g[a].add(b);
+				g[b].add(a);
+			}
 
+			int[] f = new int[n], s = new int[n];
+			dfs(0, -1, f, 0);
+			dfs(n-1, -1, s, 0);
+
+			int fc = 0, sc = 0;
+			for (int i = 0; i < n; i++) {
+				if (f[i] <= s[i]) {
+					fc++;
+				} else {
+					sc++;
+				}
+			}
+
+			out.println(fc > sc ? "Fennec" : "Snuke");
+		}
+
+		void dfs(int cur, int par, int[] a, int cnt) {
+
+			a[cur] = cnt;
+
+			for (int to : g[cur]) {
+				if (to == par) continue;
+				dfs(to, cur, a, cnt + 1);
+			}
 		}
 	}
-
-	static String zeroPad(String str, int len) {
-		return String.format("%" + len + "s", str).replace(" ", "0");
-	}
-
 
 	static class MyInput {
 		private final BufferedReader in;
@@ -133,6 +163,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {

@@ -1,4 +1,6 @@
-package sample;
+package arc064;
+
+import static java.lang.Math.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,11 +8,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.stream.Stream;
 
-public class Sample {
+public class E {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		InputStream inputStream = System.in;
 		OutputStream outputStream = System.out;
 		MyInput in = new MyInput(inputStream);
@@ -30,18 +36,111 @@ public class Sample {
 
 	static class TaskX {
 
-		int thr = 45;
+		@SuppressWarnings("unchecked")
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			out.println(Integer.toBinaryString(1000000));
+			T s = new T(1001, in.nextLong(), in.nextLong(), 0);
+			T t = new T(1002, in.nextLong(), in.nextLong(), 0);
+			int n = in.nextInt();
+			T[] ts = new T[1010];
+			for (int i = 0; i < n; i++) {
+				ts[i] = new T(i, in.nextLong(), in.nextLong(), in.nextLong());
+			}
+
+			List<P>[] g = new ArrayList[1010];
+			g = Stream.generate(ArrayList::new).limit(1010).toArray(List[]::new);
+
+			for (int i = 0; i < n; i++) {
+				g[1001].add(new P(ts[i].idx, dist(s, ts[i])));
+				g[ts[i].idx].add(new P(1001, dist(s, ts[i])));
+			}
+
+			for (int i = 0; i < n; i++) {
+				g[1002].add(new P(ts[i].idx, dist(t, ts[i])));
+				g[ts[i].idx].add(new P(1002, dist(t, ts[i])));
+			}
+
+			g[s.idx].add(new P(t.idx, dist(s, t)));
+			g[t.idx].add(new P(s.idx, dist(s, t)));
+
+			for (int from = 0; from < n; from++) {
+				for (int to = 0; to < n; to++) {
+					if (from == to) continue;
+					g[ts[from].idx].add(new P(ts[to].idx, dist(ts[from], ts[to])));
+				}
+			}
+
+			double[] cost = new double[1010];
+			Arrays.fill(cost, Double.MAX_VALUE/2);
+			cost[1001] = 0.0;
+
+			PriorityQueue<P> pq = new PriorityQueue<>();
+			pq.add(new P(1001, cost[1001]));
+			while (!pq.isEmpty()) {
+				P now = pq.remove();
+
+				if (now.d != cost[now.idx]) continue;
+
+				for (P to : g[now.idx]) {
+					if (cost[now.idx] + to.d < cost[to.idx]) {
+						cost[to.idx] = cost[now.idx] + to.d;
+						pq.add(new P(to.idx, cost[to.idx]));
+					}
+				}
+			}
+
+			out.println(cost[1002]);
+
+		}
+
+		class P implements Comparable<P> {
+			int idx;
+			double d;
+
+			public P(int idx, double d) {
+				super();
+				this.idx = idx;
+				this.d = d;
+			}
+
+			@Override
+			public int compareTo(P o) {
+				return Double.compare(this.d, o.d);
+			}
+
+			@Override
+			public String toString() {
+				return "P [idx=" + idx + ", d=" + d + "]";
+			}
+
+		}
+
+		double dist (T t1, T t2) {
+			double ret = sqrt(pow(t1.x - t2.x, 2) + pow(t1.y - t2.y, 2));
+			ret -= t1.r + t2.r;
+			return Math.max(ret, 0);
+		}
+
+		class T {
+			int idx;
+			long x, y, r;
+
+			public T(int idx, long x, long y, long r) {
+				super();
+				this.idx = idx;
+				this.x = x;
+				this.y = y;
+				this.r = r;
+			}
+
+			@Override
+			public String toString() {
+				return "T [idx=" + idx + ", x=" + x + ", y=" + y + ", r=" + r
+						+ "]";
+			}
 
 		}
 	}
-
-	static String zeroPad(String str, int len) {
-		return String.format("%" + len + "s", str).replace(" ", "0");
-	}
-
 
 	static class MyInput {
 		private final BufferedReader in;
@@ -133,6 +232,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {
