@@ -1,4 +1,6 @@
-package sample;
+package abc117;
+
+import static java.lang.Math.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,13 +8,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
-public class Sample {
+public class D_6 {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		InputStream inputStream = System.in;
 		OutputStream outputStream = System.out;
 		MyInput in = new MyInput(inputStream);
@@ -32,31 +32,44 @@ public class Sample {
 
 	static class TaskX {
 
-		int thr = 45;
+		int thr = 50;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			List<Integer> list = new ArrayList<>();
-			int k = 214;
-			for (int i = 10; i >= 0; i--) {
-				if ((k >> i & 1) == 1) {
-					int kk = k;
-					kk -= 1 << i;
-					kk |= (1 << i) - 1;
-					list.add(kk);
+			int n = in.nextInt();
+			long k = in.nextLong();
+			long[] a = in.nextLongArray(n);
+
+			long[][] dp = new long[thr+1][2];
+			fill(dp, -LINF);
+			dp[thr][1] = 0;
+
+			for (int d = thr-1; d >= 0; d--) {
+				final int v = d;
+				long cnt1 = Arrays.stream(a).mapToInt(x -> ((x >> v & 1) == 1) ? 1 : 0).sum();
+				long cnt0 = n - cnt1;
+
+				if ((k >> d & 1) == 1) {
+					dp[d][1] = max(dp[d][1], dp[d+1][1] + (1L << d) * cnt0);
+					dp[d][0] = max(dp[d][0], dp[d+1][1] + (1L << d) * cnt1);
 				}
+
+				if ((k >> d & 1) == 0) {
+					dp[d][1] = max(dp[d][1], dp[d+1][1] + (1L << d) * cnt1);
+				}
+				dp[d][0] = max(dp[d][0], dp[d+1][0] + (1L << d) * max(cnt0, cnt1));
 			}
 
-			for (int i : list) {
-//				out.printf("%d %s\n", i, zeroPad(Integer.toBinaryString(i), 8));
-				out.printf("- [tex:%s\\_{(2)}, %d\\_{(10)}]\n", zeroPad(Integer.toBinaryString(i), 8), i);
-			}
+			out.println(max(dp[0][0], dp[0][1]));
 		}
 	}
 
-	static String zeroPad(String str, int len) {
-		return String.format("%" + len + "s", str).replace(" ", "0");
+	static void fill(long[][] a, long v) {
+		for (int i = 0; i < a.length; i++) {
+			for (int j = 0; j < a[0].length; j++) {
+				a[i][j] = v;
+			}
+		}
 	}
-
 
 	static class MyInput {
 		private final BufferedReader in;
@@ -148,6 +161,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {

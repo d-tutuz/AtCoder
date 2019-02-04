@@ -1,4 +1,4 @@
-package sample;
+package abc117;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,57 +6,43 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
-public class Sample {
-
-	public static void main(String[] args) throws IOException {
+/**
+ * Built using CHelper plug-in Actual solution is at the top
+ */
+public class Tanzaku {
+	public static void main(String[] args) {
 		InputStream inputStream = System.in;
 		OutputStream outputStream = System.out;
 		MyInput in = new MyInput(inputStream);
 		PrintWriter out = new PrintWriter(outputStream);
-		TaskX solver = new TaskX();
+		DXXOR solver = new DXXOR();
 		solver.solve(1, in, out);
 		out.close();
 	}
 
-	static int INF = 1 << 30;
-	static long LINF = 1L << 55;
-	static int MOD = 1000000007;
-	static int[] mh4 = { 0, -1, 1, 0 };
-	static int[] mw4 = { -1, 0, 0, 1 };
-	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
-	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
-
-	static class TaskX {
-
-		int thr = 45;
+	static class DXXOR {
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
-
-			List<Integer> list = new ArrayList<>();
-			int k = 214;
-			for (int i = 10; i >= 0; i--) {
-				if ((k >> i & 1) == 1) {
-					int kk = k;
-					kk -= 1 << i;
-					kk |= (1 << i) - 1;
-					list.add(kk);
+			int n = in.nextInt();
+			long k = in.nextLong();
+			long[] a = in.nextLongArray(n);
+			long ans = 0;
+			long cur = 0;
+			for (long i = 1L << 62; i > 0; i >>>= 1) {
+				final long j = i;
+				int cnt = Arrays.stream(a).mapToInt(x -> (x & j) == 0 ? 1 : 0).sum();
+				if (cur + i <= k && cnt > n - cnt) {
+					ans += cnt * i;
+					cur += i;
+				} else {
+					ans += (n - cnt) * i;
 				}
 			}
-
-			for (int i : list) {
-//				out.printf("%d %s\n", i, zeroPad(Integer.toBinaryString(i), 8));
-				out.printf("- [tex:%s\\_{(2)}, %d\\_{(10)}]\n", zeroPad(Integer.toBinaryString(i), 8), i);
-			}
+			out.println(ans);
 		}
-	}
 
-	static String zeroPad(String str, int len) {
-		return String.format("%" + len + "s", str).replace(" ", "0");
 	}
-
 
 	static class MyInput {
 		private final BufferedReader in;
@@ -139,17 +125,6 @@ public class Sample {
 			}
 		}
 
-		public String nextString() {
-			return new String(nextChars());
-		}
-
-		public char[] nextChars() {
-			int len = 0;
-			str[len++] = nextChar();
-			len = reads(len, isSpace);
-			return Arrays.copyOf(str, len);
-		}
-
 		int reads(int len, boolean[] accept) {
 			try {
 				while (true) {
@@ -169,30 +144,6 @@ public class Sample {
 			return len;
 		}
 
-		public int[] nextIntArray(final int n) {
-			final int[] res = new int[n];
-			for (int i = 0; i < n; i++) {
-				res[i] = nextInt();
-			}
-			return res;
-		}
-
-		public int[] nextIntArray1Index(final int n) {
-			final int[] res = new int[n + 1];
-			for (int i = 1; i < n + 1; i++) {
-				res[i] = nextInt();
-			}
-			return res;
-		}
-
-		public int[] nextIntArrayDec(final int n) {
-			final int[] res = new int[n];
-			for (int i = 0; i < n; i++) {
-				res[i] = nextInt() - 1;
-			}
-			return res;
-		}
-
 		public long[] nextLongArray(final int n) {
 			final long[] res = new long[n];
 			for (int i = 0; i < n; i++) {
@@ -201,37 +152,8 @@ public class Sample {
 			return res;
 		}
 
-		public long[] nextLongArray1Index(final int n) {
-			final long[] res = new long[n + 1];
-			for (int i = 1; i < n + 1; i++) {
-				res[i] = nextLong();
-			}
-			return res;
-		}
-
-		public long[] nextLongArrayDec(final int n) {
-			final long[] res = new long[n];
-			for (int i = 0; i < n; i++) {
-				res[i] = nextLong() - 1;
-			}
-			return res;
-		}
-
-		public double nextDouble() {
-			return Double.parseDouble(nextString());
-		}
-
-		public double[] nextDoubleArray(int n) {
-			double[] res = new double[n];
-			for (int i = 0; i < n; i++) {
-				res[i] = nextDouble();
-			}
-			return res;
-		}
-
 		static class EndOfFileRuntimeException extends RuntimeException {
 		}
 
 	}
-
 }

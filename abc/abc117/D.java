@@ -1,12 +1,16 @@
 package abc117;
 
+import static java.lang.Math.*;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class D {
 
@@ -30,75 +34,36 @@ public class D {
 
 	static class TaskX {
 
-		int thr = 46;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
 			int n = in.nextInt();
 			long k = in.nextLong();
 			long[] a = in.nextLongArray(n);
-			Arrays.sort(a);
 
-			long[] bit0 = new long[thr], bit1 = new long[thr];
-
-			for (int i = 0; i < n; i++) {
-				for (int j = thr-1; j >= 0; j--) {
-					if ((a[i] >> j & 1) == 1) {
-						bit1[thr-1-j]++;
-					} else {
-						bit0[thr-1-j]++;
-					}
-				}
-			}
-
-			int hibit = -1;
-			boolean[] can = new boolean[thr];
-			for (int i = thr-1; i >= 0; i--) {
-				if ((k >> i & 1) == 1) {
-					can[thr-1-i] = true;
-					hibit = Math.max(hibit, i);
-				}
-			}
-
-			int numhibit = -1;
-			for (int i = thr-1; i >= 0; i--) {
-				for (int j = 0; j < n; j++) {
-					if ((a[j] >> i & 1) == 1) {
-						numhibit = Math.max(numhibit, i);
-					}
+			List<Long> list = new ArrayList<>();
+			list.add(k);
+			for (int i = 50; i >= 0; i--) {
+				long tmp = k;
+				if ((tmp >> i & 1) == 1) {
+					tmp -= 1L << i;
+					tmp |= ((1L << i) - 1);
+					list.add(tmp);
 				}
 			}
 
 			long ans = 0;
-
-			for (int i = numhibit; i > hibit; i--) {
-				ans += (1L << i) * bit0[thr-1-i];
-			}
-			for (int i = hibit; i >= 0; i--) {
-				if (can[thr-1-i]) {
-					long c = Math.max(bit0[thr-1-i], bit1[thr-1-i]);
-					ans += (1L << i) * c;
-				} else {
-					ans += (1L << i) * bit0[thr-1-i];
+			for (long l : list) {
+				long tmp = 0;
+				for (int i = 50; i >= 0; i--) {
+					final int v = i;
+					int cnt = Arrays.stream(a).mapToInt(x -> ((x >> v & 1) == 1 ? 1 : 0)).sum();
+					tmp += (1L << i) * ((l >> i & 1) == 1 ? max(cnt, n - cnt) : cnt);
 				}
+				ans = max(ans, tmp);
 			}
-
-			long tmp = 0;
-			for (int i = numhibit; i >= Math.max(hibit, 0); i--) {
-				tmp += (1L << i) * bit1[thr-1-i];
-			}
-			for (int i = hibit-1; i >= 0; i--) {
-				long c = Math.max(bit0[thr-1-i], bit1[thr-1-i]);
-				tmp += (1L << i) * c;
-			}
-//			long tmp2 = 0;
-//			for (int i = 0; i < n; i++) {
-//				tmp2 += a[i] ^ 0;
-//			}
-
-			ans = Math.max(ans, tmp);
-//			ans = Math.max(ans, tmp2);
 
 			out.println(ans);
+
 		}
 
 	}

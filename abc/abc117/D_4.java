@@ -1,4 +1,4 @@
-package sample;
+package abc117;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Sample {
+public class D_4 {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		InputStream inputStream = System.in;
 		OutputStream outputStream = System.out;
 		MyInput in = new MyInput(inputStream);
@@ -32,31 +32,93 @@ public class Sample {
 
 	static class TaskX {
 
-		int thr = 45;
+		int thr = 50;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			List<Integer> list = new ArrayList<>();
-			int k = 214;
-			for (int i = 10; i >= 0; i--) {
-				if ((k >> i & 1) == 1) {
-					int kk = k;
-					kk -= 1 << i;
-					kk |= (1 << i) - 1;
-					list.add(kk);
+			int n = in.nextInt();
+			long k = in.nextLong();
+			long[] a = in.nextLongArray(n);
+			Arrays.sort(a);
+
+			long[] bit0 = new long[thr], bit1 = new long[thr];
+
+			for (int i = 0; i < n; i++) {
+				for (int j = thr-1; j >= 0; j--) {
+					if ((a[i] >> j & 1) == 1) {
+						bit1[thr-1-j]++;
+					} else {
+						bit0[thr-1-j]++;
+					}
 				}
 			}
 
-			for (int i : list) {
-//				out.printf("%d %s\n", i, zeroPad(Integer.toBinaryString(i), 8));
-				out.printf("- [tex:%s\\_{(2)}, %d\\_{(10)}]\n", zeroPad(Integer.toBinaryString(i), 8), i);
+			int hibit = -1;
+			boolean[] can = new boolean[thr];
+			for (int i = thr-1; i >= 0; i--) {
+				if ((k >> i & 1) == 1) {
+					can[thr-1-i] = true;
+					hibit = Math.max(hibit, i);
+				}
 			}
+
+			int numhibit = -1;
+			for (int i = thr-1; i >= 0; i--) {
+				for (int j = 0; j < n; j++) {
+					if ((a[j] >> i & 1) == 1) {
+						numhibit = Math.max(numhibit, i);
+					}
+				}
+			}
+
+			long ans = 0;
+
+			// 最大値のbit
+			for (int i = numhibit; i > hibit; i--) {
+				ans += (1L << i) * bit1[thr-1-i];
+			}
+			for (int i = hibit; i >= 0; i--) {
+				if (can[thr-1-i]) {
+					long c = Math.max(bit0[thr-1-i], bit1[thr-1-i]);
+					ans += (1L << i) * c;
+				} else {
+					ans += (1L << i) * bit1[thr-1-i];
+				}
+			}
+
+			// 最大値のbit未満の任意の数
+			long tmp = 0;
+			for (int i = numhibit; i > hibit; i--) {
+				tmp += (1L << i) * bit1[thr-1-i];
+			}
+			List<Long> list = new ArrayList<>();
+			for (int i = hibit; i >= 0; i--) {
+				if (can[thr-1-i]) {
+					long kk = k;
+					long t = (1L << i) - 1;
+					kk -= 1L << i;
+					kk |= t;
+					list.add(kk);
+				}
+			}
+			for (long l : list) {
+				long tmp2 = tmp;
+				for (int i = hibit; i >= 0; i--) {
+					if ((l >> i & 1) == 1) {
+						long c = Math.max(bit0[thr-1-i], bit1[thr-1-i]);
+						tmp2 += (1L << i) * c;
+					} else {
+						tmp2 += (1L << i) * bit1[thr-1-i];
+					}
+				}
+				ans = Math.max(ans, tmp2);
+			}
+
+			ans = Math.max(ans, tmp);
+
+			out.printf("%d\n" ,ans);
 		}
-	}
 
-	static String zeroPad(String str, int len) {
-		return String.format("%" + len + "s", str).replace(" ", "0");
 	}
-
 
 	static class MyInput {
 		private final BufferedReader in;
@@ -148,6 +210,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {
