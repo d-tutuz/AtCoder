@@ -1,4 +1,4 @@
-package pra_400ten;
+package nikkei_Programming_Contest_2019;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,12 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
 
-public class E {
+public class E_2 {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -33,42 +30,118 @@ public class E {
 
 	static class TaskX {
 
-		List<Integer>[] g;
-		@SuppressWarnings("unchecked")
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt();
-			g = new ArrayList[n];
-			g = Stream.generate(ArrayList::new).limit(n).toArray(List[]::new);
-			for (int i = 0; i < n-1; i++) {
-				int a = in.nextInt()-1, b = in.nextInt()-1;
-				g[a].add(b);
-				g[b].add(a);
+			int n = in.nextInt(), m = in.nextInt();
+			long[] x = in.nextLongArray(n);
+			T[] ts = new T[m];
+			for (int i = 0; i < m; i++) {
+				ts[i] = new T(in.nextInt()-1, in.nextInt()-1, in.nextLong());
+			}
+			Arrays.sort(ts);
+
+			UnionFind uf = new UnionFind(n);
+
+			long ans = 0;
+			boolean[] used = new boolean[n];
+			for (T t : ts) {
+				if (!used[t.a]) {
+					uf.addWeight(t.a, x[t.a]);
+					used[t.a] = true;
+				}
+				if (!used[t.b]) {
+					uf.addWeight(t.a, x[t.b]);
+					used[t.b] = true;
+				}
+				uf.union(t.a, t.b);
+				uf.addEdge(t.a);
+				if (t.c <= uf.getWeight(t.a)) {
+					ans += uf.getEdges(t.a);
+				}
+			}
+			out.println(m - ans);
+		}
+
+		class T implements Comparable<T> {
+			int a, b;
+			long c;
+
+			public T(int a, int b, long y) {
+				super();
+				this.a = a;
+				this.b = b;
+				this.c = y;
 			}
 
-			int[] f = new int[n], s = new int[n];
-			dfs(0, -1, f, 0);
-			dfs(n-1, -1, s, 0);
+			@Override
+			public int compareTo(T o) {
+				return Long.compare(this.c, o.c);
+			}
+		}
 
-			int fc = 0, sc = 0;
-			for (int i = 0; i < n; i++) {
-				if (f[i] <= s[i]) {
-					fc++;
-				} else {
-					sc++;
+		class UnionFind {
+			int[] data;
+			int[] edge;
+			long[] weight;
+
+			public UnionFind(int size) {
+				data = new int[size];
+				edge = new int[size];
+				weight = new long[size];
+				clear();
+			}
+
+			void addEdge(int x) {
+				edge[root(x)]++;
+			}
+
+			void addWeight(int x, long v) {
+				weight[root(x)] += v;
+			}
+
+			int getEdges(int x) {
+				x = root(x);
+				int ret = edge[x];
+				edge[x] = 0;
+				return ret;
+			}
+
+			long getWeight(int x) {
+				return weight[root(x)];
+			}
+
+			public void clear() {
+				Arrays.fill(data, -1);
+			}
+
+			public int root(int x) {
+				return data[x] < 0 ? x : (data[x] = root(data[x]));
+			}
+
+			public void union(int x, int y) {
+				x = root(x);
+				y = root(y);
+
+				if (x != y) {
+					if (data[y] > data[x]) {
+						final int t = x;
+						x = y;
+						y = t;
+					}
+
+					data[x] += data[y];
+					data[y] = x;
+					edge[x] += edge[y];
+					weight[x] += weight[y];
 				}
 			}
 
-			out.println(fc > sc ? "Fennec" : "Snuke");
-		}
+			boolean same(int x, int y) {
+				return root(x) == root(y);
+			}
 
-		void dfs(int cur, int par, int[] a, int cnt) {
-
-			a[cur] = cnt;
-
-			for (int to : g[cur]) {
-				if (to == par) continue;
-				dfs(to, cur, a, cnt + 1);
+			public int size(int x) {
+				return -data[root(x)];
 			}
 		}
 	}

@@ -32,24 +32,32 @@ public class A {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt();
-			int[] a = in.nextIntArray(n);
-			int base2 = 0, base4 = 0, other = 0;
-			for (int i : a) {
-				if (i % 4 == 0) {
-					base4++;
-				} else if (i % 2 == 0) {
-					base2++;
-				} else {
-					other++;
+			char[] tmp = in.nextChars();
+			int m = tmp.length;
+			int[] s = new int[m];
+			for (int i = 0; i < m; i++) {
+				s[i] = tmp[i] - 'a';
+			}
+			int k = in.nextInt();
+			for (int i = 0; i < m; i++) {
+				if (s[i] == 0) continue;
+				if (s[i] + k >= 26) {
+					int diff = 26 - s[i];
+					k -= diff;
+					s[i] = 0;
 				}
 			}
 
-			if (base2 == 0) {
-				out.println(other <= base4 + 1 ? "Yes" : "No");
-			} else {
-				out.println(other <= base4 ? "Yes" : "No");
+			if (k > 0) {
+				s[m-1] += k;
+				s[m-1] %= 26;
 			}
+
+			for (int i = 0; i < m; i++) {
+				out.print((char)(s[i]+'a'));
+			}
+
+			out.print("\n");
 		}
 	}
 
