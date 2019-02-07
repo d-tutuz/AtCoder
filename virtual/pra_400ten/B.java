@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class A {
+public class B {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -32,82 +32,21 @@ public class A {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			long h = in.nextLong(), w = in.nextLong();
-			if (h % 3 == 0 || w % 3 == 0) {
-				out.println(0);
-				return;
-			}
+			char[] s = in.nextChars();
+			int n = s.length;
 
-			long s = h * w;
-			long ans = LINF;
-			if (h % 2 == 0) {
-				long a = s / 2, b = s / 2, c = 0;
-				for (int i = 0; i < w; i++) {
-					a -= h/2;
-					b -= h/2;
-					c += h;
-					ans = Math.min(ans, diff(a, b, c));
+			for (int i = 0; i < n; i++) {
+				if (i + 1 < n && s[i] == s[i+1]) {
+					out.printf("%d %d\n", i+1, i+1+1);
+					return;
+				}
+				if (i + 2 < n && s[i] == s[i+2]) {
+					out.printf("%d %d\n", i+1, i+2+1);
+					return;
 				}
 			}
-
-			if (w % 2 == 0) {
-				long a = s / 2, b = s / 2, c = 0;
-				for (int i = 0; i < h; i++) {
-					a -= w/2;
-					b -= w/2;
-					c += w;
-					ans = Math.min(ans, diff(a, b, c));
-				}
-			}
-
-			if (h % 2 == 1) {
-				long a = h / 2 * w, b = (h - h/2) * w, c = 0;
-				for (int i = 0; i < w; i++) {
-					a -= h/2;
-					b -= h - h/2;
-					c += h;
-					ans = Math.min(ans, diff(a, b, c));
-				}
-
-			}
-
-			if (w % 2 == 1) {
-				long a = w / 2 * h, b = (w - w/2) * h, c = 0;
-				for (int i = 0; i < h; i++) {
-					a -= w/2;
-					b -= w - w/2;
-					c += w;
-					ans = Math.min(ans, diff(a, b, c));
-				}
-			}
-
-			for (int i = 1; i <= h; i++) {
-				long j = (h - i) / 2;
-				long k = h - i - j;
-				ans = Math.min(ans, diff(i * w, j * w, k * w));
-			}
-
-			for (int i = 1; i <= w; i++) {
-				long j = (w - i) / 2;
-				long k = w - i - j;
-				ans = Math.min(ans, diff(i * h, j * h, k * h));
-			}
-
-			out.println(ans);
+			out.printf("%d %d\n", -1, -1);
 		}
-
-		long max(long a, long b, long c) {
-			return Math.max(Math.max(a, b), c);
-		}
-
-		long min(long a, long b, long c) {
-			return Math.min(Math.min(a, b), c);
-		}
-
-		long diff(long a, long b, long c) {
-			return max(a, b, c) - min(a, b, c);
-		}
-
 	}
 
 	static class MyInput {
