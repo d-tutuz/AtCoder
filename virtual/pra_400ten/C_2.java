@@ -1,4 +1,4 @@
-package sample;
+package pra_400ten;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,9 +9,9 @@ import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.TreeSet;
 
-public class Sample {
+public class C_2 {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		InputStream inputStream = System.in;
 		OutputStream outputStream = System.out;
 		MyInput in = new MyInput(inputStream);
@@ -33,18 +33,35 @@ public class Sample {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
+			char[] s = in.nextChars();
+			int n = s.length;
+
+			StringBuilder sb = new StringBuilder();
 			TreeSet<Character> set = new TreeSet<>();
-			for (char i = 'a'; i <= 'z'; i++) {
-				set.add(i);
+			for (char i = 'a'; i <= 'c'; i++) set.add(i);
+			for (int i = n-1; i >= 0; i--) {
+				set.remove(s[i]);
+				if (set.size() == 1) {
+					char x = set.pollFirst();
+					sb.append(x);
+					while (true) {
+						if (s[i] == x) break;
+						i--;
+					}
+					if (i != 0) for (char c = 'a'; c <= 'c'; c++) set.add(c);
+				}
 			}
 
-			out.println(set.pollFirst());
-			out.println(set.pollFirst());
-			out.println(set.pollLast());
+			if (set.size() == 0) {
+				sb.append('a');
+			} else {
+				char x = set.pollFirst();
+				sb.append(x);
+			}
 
+			out.println(sb.reverse());
 		}
 	}
-
 
 	static class MyInput {
 		private final BufferedReader in;
@@ -136,6 +153,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {

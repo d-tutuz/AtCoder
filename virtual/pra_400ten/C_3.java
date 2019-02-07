@@ -1,4 +1,4 @@
-package sample;
+package pra_400ten;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,11 +7,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.TreeSet;
 
-public class Sample {
+public class C_3 {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		InputStream inputStream = System.in;
 		OutputStream outputStream = System.out;
 		MyInput in = new MyInput(inputStream);
@@ -33,18 +32,38 @@ public class Sample {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			TreeSet<Character> set = new TreeSet<>();
-			for (char i = 'a'; i <= 'z'; i++) {
-				set.add(i);
+			char[] s = in.nextChars();
+			int n = s.length;
+
+			// 今まで現れた文字の集合
+			int[] b = new int[n];
+
+			// 今まで現れた文字数
+			int[] c = new int[n];
+
+			for (int i = n-1; i >= 0; i--) {
+				b[i] = (i+1 < n ? b[i+1] : 0) | (1 << (s[i]-'a'));
+				c[i] = i+1 < n ? c[i+1] : 0;
+				while ((b[i] & (1 << c[i])) != 0) {
+					++c[i];
+				}
+				if (c[i] == 26) {
+					b[i] = c[i] = 0;
+				}
 			}
 
-			out.println(set.pollFirst());
-			out.println(set.pollFirst());
-			out.println(set.pollLast());
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < n; i++) {
+				char x = (char)(c[i] + 'a');
+				sb.append(x);
+				while (i < n && s[i] != x) {
+					i++;
+				}
+			}
 
+			out.println(sb.toString());
 		}
 	}
-
 
 	static class MyInput {
 		private final BufferedReader in;
@@ -136,6 +155,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {
