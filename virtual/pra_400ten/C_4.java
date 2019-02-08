@@ -7,8 +7,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.TreeSet;
 
-public class C {
+public class C_4 {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -30,54 +31,40 @@ public class C {
 
 	static class TaskX {
 
-		int size = 26;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
 			char[] s = in.nextChars();
 			int n = s.length;
 
-			int[][] next = new int[n + 1][size];
-			fill(next, n);
-			for (int i = n - 1; i >= 0; i--) {
-				for (int j = 0; j < size; j++) {
-					next[i][j] = next[i + 1][j];
-					next[i][s[i] - 'a'] = i;
-				}
-			}
-
-			// 部分列の最小の長さを求める
-			int[] dp = new int[n+1];
-			for (int i = n-1; i >= 0; i--) {
-				int p = 0;
-				for (int j = 0; j < size; j++) {
-					p = Math.max(p, next[i][j]);
-				}
-				dp[i] = dp[p] + 1;
-			}
+			int[] len = new int[n];
 			StringBuilder sb = new StringBuilder();
-			// 辞書順最小の部分列を復元する
-			int len = dp[0];
-			int idx = 0;
-			while (idx < n) {
-				for (int j = 0; j < size; j++) {
-					if (len - 1 == dp[next[idx][j]]) {
-						sb.append((char)(j + 'a'));
-						idx = next[idx][j];
-						len--;
-						break;
-					}
+			TreeSet<Character> tmp = new TreeSet<>();
+			for (int i = n-1; i >= 0; i--) {
+				tmp.add(s[i]);
+				if (tmp.size() == 26) {
+					tmp.clear();
 				}
+				len[i] = tmp.size();
 			}
-			out.println(sb.toString());
-		}
 
-		void fill(int[][] a, int v) {
-			for (int i = 0; i < a.length; i++) {
-				for (int j = 0; j < a[0].length; j++) {
-					a[i][j] = v;
-				}
-			}
+			printArrayLine(len, out);
+			printArrayLine(s, out);
 		}
+	}
+
+	static void printArrayLine(int[] a, PrintWriter out) {
+		int n = a.length;
+		for (int i = 0; i < n; i++) {
+			out.printf("%3d", a[i]);
+		}
+		out.print("\n");
+	}
+	static void printArrayLine(char[] a, PrintWriter out) {
+		int n = a.length;
+		for (int i = 0; i < n; i++) {
+			out.printf("%3c", a[i]);
+		}
+		out.print("\n");
 	}
 
 	static class MyInput {
