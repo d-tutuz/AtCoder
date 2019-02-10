@@ -139,10 +139,11 @@ public class GraphUtils {
 		while (!q.isEmpty()) {
 
 			P pp = q.remove();
-			for (P p : g[pp.first]) {
-				if (cost[pp.first] + p.second < cost[p.first]) {
-					cost[p.first] = cost[pp.first] + p.second;
-					q.add(new P(p.first, cost[p.first]));
+			if (pp.cost != cost[pp.node]) continue;
+			for (P p : g[pp.node]) {
+				if (cost[pp.node] + p.cost < cost[p.node]) {
+					cost[p.node] = cost[pp.node] + p.cost;
+					q.add(new P(p.node, cost[p.node]));
 				}
 			}
 
@@ -152,30 +153,30 @@ public class GraphUtils {
 	}
 
 	class P implements Comparable<P> {
-		int first, second;
+		int node, cost;
 
-		public P(int first, int second) {
+		public P(int node, int cost) {
 			super();
-			this.first = first;
-			this.second = second;
+			this.node = node;
+			this.cost = cost;
 		}
 
 		@Override
 		public String toString() {
-			return "P [first=" + first + ", second=" + second + "]";
+			return "P [node=" + node + ", cost=" + cost + "]";
 		}
 
 		@Override
 		public int compareTo(P o) {
-			return Integer.compare(this.second, o.second);
+			return Integer.compare(this.cost, o.cost);
 		}
 
 		@Override
 		public int hashCode() {
 			final int prime = 31;
 			int result = 1;
-			result = prime * result + first;
-			result = prime * result + second;
+			result = prime * result + node;
+			result = prime * result + cost;
 			return result;
 		}
 
@@ -188,13 +189,12 @@ public class GraphUtils {
 			if (getClass() != obj.getClass())
 				return false;
 			P other = (P) obj;
-			if (first != other.first)
+			if (node != other.node)
 				return false;
-			if (second != other.second)
+			if (cost != other.cost)
 				return false;
 			return true;
 		}
-
 	}
 
 	/**
