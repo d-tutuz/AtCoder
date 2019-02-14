@@ -7,8 +7,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 public class F {
 
@@ -35,12 +33,14 @@ public class F {
 		int[] t;
 		long[] a;
 		int n, k;
-		Map<P, Long> map = new HashMap<>();
+		long[][] memo;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
 			n = in.nextInt(); k = in.nextInt();
 			t = new int[n];
 			a = new long[n];
+			memo = new long[n+1][k+1];
+			fill(memo, -1);
 			for (int i = 0; i < n; i++) {
 				t[i] = in.nextInt();
 				a[i] = in.nextLong();
@@ -53,7 +53,7 @@ public class F {
 		long dfs(int i, int j) {
 
 			if (i == n) return 0L;
-			if (map.containsKey(new P(i, j))) map.get(new P(i, j));
+			if (memo[i][j] != -1) return memo[i][j];
 
 			long ret1 = dfs(i + 1, j);
 			long ret2 = 0;
@@ -61,7 +61,6 @@ public class F {
 				ret2 = dfs(i + 1, j + f(t[i])) + a[i];
 			}
 			long ret = Math.max(ret1, ret2);
-			map.put(new P(i, j), ret);
 			return ret;
 
 		}
@@ -116,6 +115,14 @@ public class F {
 				return "P [i=" + i + ", j=" + j + "]";
 			}
 
+		}
+	}
+
+	static void fill(long[][] a, long v) {
+		for (int i = 0; i < a.length; i++) {
+			for (int j = 0; j < a[0].length; j++) {
+				a[i][j] = v;
+			}
 		}
 	}
 

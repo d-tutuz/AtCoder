@@ -1,7 +1,5 @@
 package codefestival2018final_parallel;
 
-import static java.lang.Math.*;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,22 +40,22 @@ public class F_2 {
 				a[i] = in.nextLong();
 			}
 
-			long[][] dp = new long[n+1][k+1];
+			long[] dp = new long[k+1];
+			Arrays.fill(dp, -LINF);
+			dp[0] = 0;
 			for (int i = 0; i < n; i++) {
-				for (int j = 0; j <= k; j++) {
-					dp[i+1][j] = max(dp[i+1][j], dp[i][j]);
-					if (0 <= j - f(t[i]) && j - f(t[i]) <= k) {
-						dp[i+1][j] = max(dp[i+1][j], dp[i][j - f(t[i])] + a[i]);
+				if (t[i] == 0) {
+					for (int j = 1; j <= k; j++) {
+						dp[j-1] = Math.max(dp[j-1], dp[j] + a[i]);
+					}
+				} else {
+					for (int j = k-1; j >= 0; j--) {
+						dp[j+1] = Math.max(dp[j+1], dp[j] + a[i]);
 					}
 				}
 			}
 
-			out.println(Arrays.stream(dp[n]).max().getAsLong());
-
-		}
-
-		int f(int t) {
-			return t == 0 ? -1 : 1;
+			out.println(Arrays.stream(dp).max().getAsLong());
 		}
 	}
 

@@ -34,7 +34,7 @@ public class Sample {
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
 			Random rnd = new Random();
-			int n = 10, k = 5;
+			int n = 100000, k = 100000;
 			out.printf("%d %d\n",n ,k );
 			for (int i = 0; i < n; i++) {
 				out.printf("%d %d\n", rnd.nextInt(2), rnd.nextInt(100000));
