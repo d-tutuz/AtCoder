@@ -1,4 +1,4 @@
-package sample;
+package codefestival2018final_parallel;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,11 +7,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.Random;
+import java.util.HashMap;
+import java.util.Map;
 
-public class Sample {
+public class F {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		InputStream inputStream = System.in;
 		OutputStream outputStream = System.out;
 		MyInput in = new MyInput(inputStream);
@@ -31,17 +32,92 @@ public class Sample {
 
 	static class TaskX {
 
+		int[] t;
+		long[] a;
+		int n, k;
+		Map<P, Long> map = new HashMap<>();
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			Random rnd = new Random();
-			int n = 10, k = 5;
-			out.printf("%d %d\n",n ,k );
+			n = in.nextInt(); k = in.nextInt();
+			t = new int[n];
+			a = new long[n];
 			for (int i = 0; i < n; i++) {
-				out.printf("%d %d\n", rnd.nextInt(2), rnd.nextInt(100000));
+				t[i] = in.nextInt();
+				a[i] = in.nextLong();
 			}
+
+			long ans = dfs(0, 0);
+			out.println(ans);
+		}
+
+		long dfs(int i, int j) {
+
+			if (i == n) return 0L;
+			if (map.containsKey(new P(i, j))) map.get(new P(i, j));
+
+			long ret1 = dfs(i + 1, j);
+			long ret2 = 0;
+			if (0 <= j + f(t[i]) && j + f(t[i]) <= k) {
+				ret2 = dfs(i + 1, j + f(t[i])) + a[i];
+			}
+			long ret = Math.max(ret1, ret2);
+			map.put(new P(i, j), ret);
+			return ret;
+
+		}
+
+		int f(int t) {
+			return t == 0 ? -1 : 1;
+		}
+
+		class P {
+			int i, j;
+
+			public P(int i, int j) {
+				super();
+				this.i = i;
+				this.j = j;
+			}
+
+			@Override
+			public int hashCode() {
+				final int prime = 31;
+				int result = 1;
+				result = prime * result + getOuterType().hashCode();
+				result = prime * result + i;
+				result = prime * result + j;
+				return result;
+			}
+
+			@Override
+			public boolean equals(Object obj) {
+				if (this == obj)
+					return true;
+				if (obj == null)
+					return false;
+				if (getClass() != obj.getClass())
+					return false;
+				P other = (P) obj;
+				if (!getOuterType().equals(other.getOuterType()))
+					return false;
+				if (i != other.i)
+					return false;
+				if (j != other.j)
+					return false;
+				return true;
+			}
+
+			private TaskX getOuterType() {
+				return TaskX.this;
+			}
+
+			@Override
+			public String toString() {
+				return "P [i=" + i + ", j=" + j + "]";
+			}
+
 		}
 	}
-
 
 	static class MyInput {
 		private final BufferedReader in;
@@ -133,6 +209,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {

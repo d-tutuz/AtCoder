@@ -1,4 +1,6 @@
-package sample;
+package codefestival2018final_parallel;
+
+import static java.lang.Math.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,11 +9,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.Random;
 
-public class Sample {
+public class F_2 {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		InputStream inputStream = System.in;
 		OutputStream outputStream = System.out;
 		MyInput in = new MyInput(inputStream);
@@ -33,15 +34,32 @@ public class Sample {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			Random rnd = new Random();
-			int n = 10, k = 5;
-			out.printf("%d %d\n",n ,k );
+			int n = in.nextInt(), k = in.nextInt();
+			int[] t = new int[n];
+			long[] a = new long[n];
 			for (int i = 0; i < n; i++) {
-				out.printf("%d %d\n", rnd.nextInt(2), rnd.nextInt(100000));
+				t[i] = in.nextInt();
+				a[i] = in.nextLong();
 			}
+
+			long[][] dp = new long[n+1][k+1];
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j <= k; j++) {
+					dp[i+1][j] = max(dp[i+1][j], dp[i][j]);
+					if (0 <= j - f(t[i]) && j - f(t[i]) <= k) {
+						dp[i+1][j] = max(dp[i+1][j], dp[i][j - f(t[i])] + a[i]);
+					}
+				}
+			}
+
+			out.println(Arrays.stream(dp[n]).max().getAsLong());
+
+		}
+
+		int f(int t) {
+			return t == 0 ? -1 : 1;
 		}
 	}
-
 
 	static class MyInput {
 		private final BufferedReader in;
@@ -133,6 +151,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {
