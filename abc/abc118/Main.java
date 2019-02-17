@@ -1,4 +1,6 @@
-package test;
+package abc118;
+
+import static java.lang.Math.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,10 +8,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Random;
+import java.util.Collections;
+import java.util.List;
+import java.util.TreeMap;
 
-public class Stress {
+public class Main {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -23,7 +28,7 @@ public class Stress {
 
 	static int INF = 1 << 30;
 	static long LINF = 1L << 55;
-	static int MOD = 998244353;
+	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
@@ -33,102 +38,154 @@ public class Stress {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int cnt = 100;
-			while (cnt-- > 0) {
-				execute(testNumber, in, out);
-			}
-		}
+			int n = in.nextInt(), m = in.nextInt();
+			int[] a = in.nextIntArray(m);
 
-		void execute(int testNumber, MyInput in, PrintWriter out) {
-			Random rnd = new Random();
-			int n = rnd.nextInt(1001);
-//			out.printf("%d\n", n);
-			int[] a = new int[n];
-			for (int i = 0; i < n; i++) {
-				a[i] = rnd.nextInt(n+1);
-			}
-//			printArrayLine(a, out);
-			int[] b = new int[1010];
-			for (int i : a) {
-				b[i]++;
+			Arrays.sort(a);
+
+			P[] p = new P[10];
+			p[0] = new P(0, INF);
+			p[1] = new P(1, 2);
+			p[2] = new P(2, 5);
+			p[3] = new P(3, 5);
+			p[4] = new P(4, 4);
+			p[5] = new P(5, 5);
+			p[6] = new P(6, 6);
+			p[7] = new P(7, 3);
+			p[8] = new P(8, 7);
+			p[9] = new P(9, 6);
+
+			List<P> use = new ArrayList<>();
+			boolean[] can = new boolean[10];
+			for (int l : a) {
+				use.add(p[l]);
+				can[l] = true;
 			}
 
-			long[][] dp = new long[1010][1010];
-			dp[n+1][0] = 1;
+			Collections.sort(use);
 
-			for (int t = n+1; t >= 2; t--) {
-				for (int j = 0; j < n+1; j++) {
-					int nt = t - 1;
-					int rest = j + b[nt];
-					long p = 1;
-					for (int k = 0; k * nt <= rest; k++) {
-						dp[nt][rest - k * nt] += dp[t][j] * p % MOD * factInv[k];
-						dp[nt][rest - k * nt] %= MOD;
-						p *= comb(rest - k * nt, nt);
-						p %= MOD;
+			// 上から i 桁目
+			int idx = 0;
+			TreeMap<Integer, Integer> map = new TreeMap<>();
+			for (int i = 0; i < m; i++) {
+				while (n >= use.get(i).cnt) {
+					map.put(idx, use.get(i).num);
+					idx++;
+					n -= use.get(i).cnt;
+				}
+			}
+
+			// 上から辞書順最大
+			for (int number = 9; number >= 1; number--) {
+				if (!can[number]) continue;
+				for (int i = 0; i < idx; i++) {
+					if (n + p[map.get(i)].cnt >= p[number].cnt && map.get(i) < number) {
+						n += p[map.get(i)].cnt;
+						map.put(i, number);
+						n -= p[number].cnt;
 					}
 				}
 			}
 
-			out.println(dp[1][0]);
+			can[0] = true;
+			// 下 5 桁を調整
+			List<T> list = new ArrayList<>();
+			for (int n5 = 9; n5 >= 0; n5--) {
+				if (!can[n5]) continue;
+				for (int n4 = 9; n4 >= 0; n4--) {
+					if (!can[n4]) continue;
+					for (int n3 = 9; n3 >= 0; n3--) {
+						if (!can[n3]) continue;
+						for (int n2 = 9; n2 >= 0; n2--) {
+							if (!can[n2]) continue;
+							for (int n1 = 9; n1 >= 0; n1--) {
+								if (!can[n1]) continue;
+								int need = 0;
+								String str = "";
+								need += n1 == 0 ? 0 : p[n1].cnt;
+								need += n2 == 0 ? 0 : p[n2].cnt;
+								need += n3 == 0 ? 0 : p[n3].cnt;
+								need += n4 == 0 ? 0 : p[n4].cnt;
+								need += n5 == 0 ? 0 : p[n5].cnt;
+								str += n1;
+								str += n2;
+								str += n3;
+								str += n4;
+								str += n5;
+								list.add(new T(Integer.parseInt(str), need));
+							}
+						}
+					}
+				}
+			}
+
+			Collections.sort(list);
+			for (T t : list) {
+				int len = String.valueOf(t.str).length();
+				if (String.valueOf(t.str).contains("0")) continue;
+				int rev = 0;
+				for (int i = idx - 1; i >= max(idx - len, 0); i--) {
+					rev += p[map.get(i)].cnt;
+				}
+				if (n + rev == t.need) {
+					for (int i = idx - 1; i >= max(idx - len, 0); i--) {
+						map.put(i, t.str % 10);
+						t.str /= 10;
+					}
+					break;
+				}
+			}
+
+			StringBuilder sb = new StringBuilder();
+			for (int keta : map.keySet()) {
+				sb.append(map.get(keta));
+			}
+
+			out.println(sb.toString());
 		}
-	}
 
-	/**
-	 * 二項係数
-	 * 前提 n < modP
-	 * nCr = n!/(r!*(n-r)!)である。この時分子分母にMODが来る場合は以下のように使用する
-	 * */
-	public static long comb(int n, int r) {
-		if (r < 0 || r > n)
-			return 0L;
-		return fact[n] % MOD * factInv[r] % MOD * factInv[n - r] % MOD;
-	}
+		class P implements Comparable<P> {
+			int num, cnt;
 
-	public static int MAXN = 200000;
+			public P(int num, int cnt) {
+				super();
+				this.num = num;
+				this.cnt = cnt;
+			}
 
-	static long[] fact = factorialArray(MAXN, MOD);
-	static long[] factInv = factorialInverseArray(MAXN, MOD,
-			inverseArray(MAXN, MOD));
+			@Override
+			public String toString() {
+				return "P [num=" + num + ", cnt=" + cnt + "]";
+			}
 
-	public static long[] factorialArray(int maxN, long mod) {
-		long[] fact = new long[maxN + 1];
-		fact[0] = 1 % mod;
-		for (int i = 1; i <= maxN; i++) {
-			fact[i] = fact[i - 1] * i % mod;
-		}
-		return fact;
-	}
-
-	public static long[] inverseArray(int maxN, long modP) {
-		long[] inv = new long[maxN + 1];
-		inv[1] = 1;
-		for (int i = 2; i <= maxN; i++) {
-			inv[i] = modP - (modP / i) * inv[(int) (modP % i)] % modP;
-		}
-		return inv;
-	}
-
-	public static long[] factorialInverseArray(int maxN, long modP,
-			long[] inverseArray) {
-		long[] factInv = new long[maxN + 1];
-		factInv[0] = 1;
-		for (int i = 1; i <= maxN; i++) {
-			factInv[i] = factInv[i - 1] * inverseArray[i] % modP;
-		}
-		return factInv;
-	}
-
-	static void printArrayLine(int[] a, PrintWriter out) {
-		int n = a.length;
-		for (int i = 0; i < n; i++) {
-			if (i == 0) {
-				out.print(a[i]);
-			} else {
-				out.print(" " + a[i]);
+			@Override
+			public int compareTo(P o) {
+				int c1 = Integer.compare(this.cnt, o.cnt);
+				int c2 = -Integer.compare(this.num, o.num);
+				return c1 == 0 ? c2 : c1;
 			}
 		}
-		out.print("\n");
+
+		class T implements Comparable<T> {
+			int str, need;
+
+			public T(int str, int need) {
+				super();
+				this.str = str;
+				this.need = need;
+			}
+
+			@Override
+			public int compareTo(T o) {
+				return -Integer.compare(this.str, o.str);
+			}
+
+			@Override
+			public String toString() {
+				return "T [str=" + str + ", need=" + need + "]";
+			}
+
+		}
 	}
 
 	static class MyInput {

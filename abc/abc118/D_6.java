@@ -1,4 +1,4 @@
-package test;
+package abc118;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,9 +7,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.Random;
 
-public class Stress {
+public class D_6 {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -23,7 +22,7 @@ public class Stress {
 
 	static int INF = 1 << 30;
 	static long LINF = 1L << 55;
-	static int MOD = 998244353;
+	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
@@ -31,104 +30,50 @@ public class Stress {
 
 	static class TaskX {
 
+		int n, m;
+		int[] a;
+		int[] cnt = {0, 2, 5, 5, 4, 5, 6, 3, 7, 6};
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int cnt = 100;
-			while (cnt-- > 0) {
-				execute(testNumber, in, out);
-			}
-		}
+			n = in.nextInt(); m = in.nextInt();
+			a = in.nextIntArray(m);
+			Arrays.sort(a);
 
-		void execute(int testNumber, MyInput in, PrintWriter out) {
-			Random rnd = new Random();
-			int n = rnd.nextInt(1001);
-//			out.printf("%d\n", n);
-			int[] a = new int[n];
-			for (int i = 0; i < n; i++) {
-				a[i] = rnd.nextInt(n+1);
-			}
-//			printArrayLine(a, out);
-			int[] b = new int[1010];
-			for (int i : a) {
-				b[i]++;
-			}
-
-			long[][] dp = new long[1010][1010];
-			dp[n+1][0] = 1;
-
-			for (int t = n+1; t >= 2; t--) {
-				for (int j = 0; j < n+1; j++) {
-					int nt = t - 1;
-					int rest = j + b[nt];
-					long p = 1;
-					for (int k = 0; k * nt <= rest; k++) {
-						dp[nt][rest - k * nt] += dp[t][j] * p % MOD * factInv[k];
-						dp[nt][rest - k * nt] %= MOD;
-						p *= comb(rest - k * nt, nt);
-						p %= MOD;
+			String[] dp = new String[n + 10];
+			dp[0] = "";
+			for (int i = 0; i <= n; i++) {
+				if (dp[i] == null) continue;
+				for (int j : a) {
+					if (compare(dp[i] + String.valueOf(j), dp[i + cnt[j]])) {
+						dp[i + cnt[j]] = dp[i] + String.valueOf(j);
 					}
 				}
 			}
 
-			out.println(dp[1][0]);
+			out.println(dp[n]);
+
 		}
-	}
 
-	/**
-	 * 二項係数
-	 * 前提 n < modP
-	 * nCr = n!/(r!*(n-r)!)である。この時分子分母にMODが来る場合は以下のように使用する
-	 * */
-	public static long comb(int n, int r) {
-		if (r < 0 || r > n)
-			return 0L;
-		return fact[n] % MOD * factInv[r] % MOD * factInv[n - r] % MOD;
-	}
-
-	public static int MAXN = 200000;
-
-	static long[] fact = factorialArray(MAXN, MOD);
-	static long[] factInv = factorialInverseArray(MAXN, MOD,
-			inverseArray(MAXN, MOD));
-
-	public static long[] factorialArray(int maxN, long mod) {
-		long[] fact = new long[maxN + 1];
-		fact[0] = 1 % mod;
-		for (int i = 1; i <= maxN; i++) {
-			fact[i] = fact[i - 1] * i % mod;
-		}
-		return fact;
-	}
-
-	public static long[] inverseArray(int maxN, long modP) {
-		long[] inv = new long[maxN + 1];
-		inv[1] = 1;
-		for (int i = 2; i <= maxN; i++) {
-			inv[i] = modP - (modP / i) * inv[(int) (modP % i)] % modP;
-		}
-		return inv;
-	}
-
-	public static long[] factorialInverseArray(int maxN, long modP,
-			long[] inverseArray) {
-		long[] factInv = new long[maxN + 1];
-		factInv[0] = 1;
-		for (int i = 1; i <= maxN; i++) {
-			factInv[i] = factInv[i - 1] * inverseArray[i] % modP;
-		}
-		return factInv;
-	}
-
-	static void printArrayLine(int[] a, PrintWriter out) {
-		int n = a.length;
-		for (int i = 0; i < n; i++) {
-			if (i == 0) {
-				out.print(a[i]);
-			} else {
-				out.print(" " + a[i]);
+		// tar の方が数字が大きいかどうか
+		boolean compare(String tar, String src) {
+			if (src == null) return true;
+			if (src.length() == tar.length()) {
+				int len = tar.length();
+				for (int i = 0; i < len; i++) {
+					if (src.charAt(i) > tar.charAt(i)) {
+						return false;
+					} else if (src.charAt(i) < tar.charAt(i)) {
+						return true;
+					}
+				}
+			} else if (src.length() < tar.length()) {
+				return true;
+			} else if (src.length() > tar.length()) {
+				return false;
 			}
+
+			return false;
 		}
-		out.print("\n");
 	}
 
 	static class MyInput {

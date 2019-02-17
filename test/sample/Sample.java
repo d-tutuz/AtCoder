@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.Random;
 
 public class Sample {
 
@@ -33,12 +32,12 @@ public class Sample {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			Random rnd = new Random();
-			int n = 100000, k = 100000;
-			out.printf("%d %d\n",n ,k );
-			for (int i = 0; i < n; i++) {
-				out.printf("%d %d\n", rnd.nextInt(2), rnd.nextInt(100000));
-			}
+			out.println("111".compareTo("222"));
+			out.println("333".compareTo("222"));
+			out.println("33333".compareTo("222"));
+			out.println("199".compareTo("222"));
+			out.println("1234".charAt(2));
+
 		}
 	}
 

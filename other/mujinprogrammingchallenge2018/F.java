@@ -1,4 +1,4 @@
-package test;
+package mujinprogrammingchallenge2018;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,9 +7,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.Random;
 
-public class Stress {
+public class F {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -33,38 +32,23 @@ public class Stress {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int cnt = 100;
-			while (cnt-- > 0) {
-				execute(testNumber, in, out);
-			}
-		}
-
-		void execute(int testNumber, MyInput in, PrintWriter out) {
-			Random rnd = new Random();
-			int n = rnd.nextInt(1001);
-//			out.printf("%d\n", n);
-			int[] a = new int[n];
-			for (int i = 0; i < n; i++) {
-				a[i] = rnd.nextInt(n+1);
-			}
-//			printArrayLine(a, out);
-			int[] b = new int[1010];
+			int n = in.nextInt();
+			int[] a = in.nextIntArray(n);
+			int[] cnt = new int[2020];
 			for (int i : a) {
-				b[i]++;
+				cnt[i]++;
 			}
 
-			long[][] dp = new long[1010][1010];
+			long[][] dp = new long[2020][2020];
 			dp[n+1][0] = 1;
 
-			for (int t = n+1; t >= 2; t--) {
+			for (int i = n+1; i >= 2; i--) {
 				for (int j = 0; j < n+1; j++) {
-					int nt = t - 1;
-					int rest = j + b[nt];
 					long p = 1;
-					for (int k = 0; k * nt <= rest; k++) {
-						dp[nt][rest - k * nt] += dp[t][j] * p % MOD * factInv[k];
-						dp[nt][rest - k * nt] %= MOD;
-						p *= comb(rest - k * nt, nt);
+					for (int k = 0; k * (i-1) <= j + cnt[i-1]; k++) {
+						dp[i-1][j + cnt[i-1] - k * (i-1)] += dp[i][j] * p % MOD * factInv[k];
+						dp[i-1][j + cnt[i-1] - k * (i-1)] %= MOD;
+						p *= comb(j + cnt[i-1] - k * (i-1), i-1);
 						p %= MOD;
 					}
 				}
@@ -74,18 +58,13 @@ public class Stress {
 		}
 	}
 
-	/**
-	 * 二項係数
-	 * 前提 n < modP
-	 * nCr = n!/(r!*(n-r)!)である。この時分子分母にMODが来る場合は以下のように使用する
-	 * */
 	public static long comb(int n, int r) {
 		if (r < 0 || r > n)
 			return 0L;
 		return fact[n] % MOD * factInv[r] % MOD * factInv[n - r] % MOD;
 	}
 
-	public static int MAXN = 200000;
+	public static int MAXN = 400000;
 
 	static long[] fact = factorialArray(MAXN, MOD);
 	static long[] factInv = factorialInverseArray(MAXN, MOD,
@@ -117,18 +96,6 @@ public class Stress {
 			factInv[i] = factInv[i - 1] * inverseArray[i] % modP;
 		}
 		return factInv;
-	}
-
-	static void printArrayLine(int[] a, PrintWriter out) {
-		int n = a.length;
-		for (int i = 0; i < n; i++) {
-			if (i == 0) {
-				out.print(a[i]);
-			} else {
-				out.print(" " + a[i]);
-			}
-		}
-		out.print("\n");
 	}
 
 	static class MyInput {
