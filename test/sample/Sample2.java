@@ -8,9 +8,9 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class Sample {
+public class Sample2 {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		InputStream inputStream = System.in;
 		OutputStream outputStream = System.out;
 		MyInput in = new MyInput(inputStream);
@@ -32,50 +32,20 @@ public class Sample {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			long[] dpq = crt(2, 3, 3, 5);
-			out.printf("x ≡ %d (mod. %d)", dpq[0], dpq[1]);
-
-		}
-
-		// 負の数にも対応した mod
-		long mod(long a, long m) {
-			return (a % m + m) % m;
-		}
-
-		// 拡張 Euclid の互除法
-		// ap + bq = gcd(a, b) となる (p, q) を求め、d = gcd(a, b) をリターンします
-		//
-		// long[] pq = new long[3];
-		// pq[0] = d, pq[1] = p, pq[2] = q;
-		long extGcd(long a, long b, long[] pq) {
-			if (b == 0) {
-				pq[1] = 1;
-				pq[2] = 0;
-				return a;
+			long d = 1;
+			for (int i = 2; i <= 30; i++) {
+				d = lcm(d, i);
 			}
-			long d = extGcd(b, a % b, pq);
-			long tmp = pq[2];
-			pq[2] = pq[1] - a/b * tmp;
-			pq[1] = tmp;
-			return d;
+			out.println(d);
+
 		}
 
+		public static long gcd(long a, long b) {
+			return (b == 0) ? a : gcd(b, a % b);
+		}
 
-		// 中国剰余定理
-		// リターン値を (r, m) とすると解は x ≡ r (mod. m)
-		// 解なしの場合は (0, -1) をリターン
-		long[] crt(long b1, long m1, long b2, long m2) {
-			long[] pq = new long[3];
-			long d = extGcd(m1, m2, pq);
-			if ((b2 - b1) % d != 0) {
-				return new long[]{0, -1};
-			}
-			long m = m1 * (m2/d);
-			long tmp = (b2 - b1) / d * pq[1] % (m2/d);
-			long r = mod(b1 + m1 * tmp, m);
-			pq[1] = r;
-			pq[2] = m;
-			return new long[]{r, m};
+		public static long lcm(long a, long b) {
+			return a / gcd(a, b) * b;
 		}
 	}
 
@@ -169,6 +139,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {

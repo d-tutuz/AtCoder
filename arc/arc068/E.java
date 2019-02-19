@@ -1,4 +1,4 @@
-package sample;
+package arc068;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,9 +8,9 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class Sample {
+public class E {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		InputStream inputStream = System.in;
 		OutputStream outputStream = System.out;
 		MyInput in = new MyInput(inputStream);
@@ -32,50 +32,104 @@ public class Sample {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			long[] dpq = crt(2, 3, 3, 5);
-			out.printf("x ≡ %d (mod. %d)", dpq[0], dpq[1]);
-
-		}
-
-		// 負の数にも対応した mod
-		long mod(long a, long m) {
-			return (a % m + m) % m;
-		}
-
-		// 拡張 Euclid の互除法
-		// ap + bq = gcd(a, b) となる (p, q) を求め、d = gcd(a, b) をリターンします
-		//
-		// long[] pq = new long[3];
-		// pq[0] = d, pq[1] = p, pq[2] = q;
-		long extGcd(long a, long b, long[] pq) {
-			if (b == 0) {
-				pq[1] = 1;
-				pq[2] = 0;
-				return a;
+			int n = in.nextInt(), m = in.nextInt();
+			P[] p = new P[n];
+			for (int i = 0; i < n; i++) {
+				p[i] = new P(in.nextInt(), in.nextInt());
 			}
-			long d = extGcd(b, a % b, pq);
-			long tmp = pq[2];
-			pq[2] = pq[1] - a/b * tmp;
-			pq[1] = tmp;
-			return d;
+			Arrays.sort(p);
+
+			BIT cnt = new BIT(m+1);
+
+			int idx = 0;
+			for (int d = 1; d <= m; d++) {
+
+				while (idx < n && p[idx].r - p[idx].l + 1 < d) {
+					cnt.accumulate(p[idx].l, p[idx].r + 1, 1);
+					idx++;
+				}
+
+				int ans = n - idx;
+				for (int i = 0; i <= m; i += d) {
+					ans += cnt.get(i);
+				}
+
+				out.println(ans);
+			}
+
+		}
+
+		class P implements Comparable<P> {
+			int l, r;
+
+			public P(int l, int r) {
+				super();
+				this.l = l;
+				this.r = r;
+			}
+
+			@Override
+			public String toString() {
+				return "P [l=" + l + ", r=" + r + "]";
+			}
+
+			@Override
+			public int compareTo(P o) {
+				return Integer.compare(this.r - this.l, o.r - o.l);
+			}
 		}
 
 
-		// 中国剰余定理
-		// リターン値を (r, m) とすると解は x ≡ r (mod. m)
-		// 解なしの場合は (0, -1) をリターン
-		long[] crt(long b1, long m1, long b2, long m2) {
-			long[] pq = new long[3];
-			long d = extGcd(m1, m2, pq);
-			if ((b2 - b1) % d != 0) {
-				return new long[]{0, -1};
+		/**
+		 * 0-indexed BinaryIndexTree
+		 * 区間加算あり
+		 * */
+		class BIT {
+			private int n;
+			private long[] bit;
+
+			public BIT(int n) {
+				this.n = n;
+				bit = new long[n + 2];
 			}
-			long m = m1 * (m2/d);
-			long tmp = (b2 - b1) / d * pq[1] % (m2/d);
-			long r = mod(b1 + m1 * tmp, m);
-			pq[1] = r;
-			pq[2] = m;
-			return new long[]{r, m};
+
+			public void accumulate(int begin, int end, long num) {
+				accumulate(begin, num);
+				accumulate(end, -num);
+			}
+
+			private void accumulate(int index, long num) {
+				index++;
+				while (index <= n + 1) {
+					bit[index] += num;
+					index += index & -index;
+				}
+			}
+
+			private long sum(int i) {
+				long s = 0;
+				while (i > 0) {
+					s += bit[i];
+					i -= i & -i;
+				}
+				return s;
+			}
+
+			public long get(int index) {
+				return sum(index + 1);
+			}
+
+			public void set(int index, long num) {
+				accumulate(index, index + 1, num - get(index));
+			}
+
+			public String toString() {
+				long[] value = new long[n];
+				for (int i = 0; i < n; i++) {
+					value[i] = get(i);
+				}
+				return Arrays.toString(value);
+			}
 		}
 	}
 
@@ -169,6 +223,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {

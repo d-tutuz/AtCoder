@@ -1,4 +1,6 @@
-package sample;
+package educational.dp.contest;
+
+import static java.lang.Math.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,9 +10,9 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class Sample {
+public class Z {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		InputStream inputStream = System.in;
 		OutputStream outputStream = System.out;
 		MyInput in = new MyInput(inputStream);
@@ -32,50 +34,67 @@ public class Sample {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			long[] dpq = crt(2, 3, 3, 5);
-			out.printf("x ≡ %d (mod. %d)", dpq[0], dpq[1]);
+			int n = in.nextInt();
+			long c = in.nextLong();
+			long[] h = in.nextLongArray(n);
 
-		}
+			ConvexHullTrick cht = new ConvexHullTrick(n);
+			long[] dp = new long[n];
+			Arrays.fill(dp, LINF);
+			dp[0] = 0;
+			cht.addLine(-2 * h[0], h[0] * h[0] + dp[0]);
 
-		// 負の数にも対応した mod
-		long mod(long a, long m) {
-			return (a % m + m) % m;
-		}
-
-		// 拡張 Euclid の互除法
-		// ap + bq = gcd(a, b) となる (p, q) を求め、d = gcd(a, b) をリターンします
-		//
-		// long[] pq = new long[3];
-		// pq[0] = d, pq[1] = p, pq[2] = q;
-		long extGcd(long a, long b, long[] pq) {
-			if (b == 0) {
-				pq[1] = 1;
-				pq[2] = 0;
-				return a;
+			for (int i = 1; i < n; i++) {
+				dp[i] = min(dp[i], cht.query(h[i]) + h[i] * h[i] + c);
+				cht.addLine(-2 * h[i], h[i] * h[i] + dp[i]);
 			}
-			long d = extGcd(b, a % b, pq);
-			long tmp = pq[2];
-			pq[2] = pq[1] - a/b * tmp;
-			pq[1] = tmp;
-			return d;
+			out.println(dp[n-1]);
 		}
 
+		/**
+		 * 追加クエリの直線の傾きが単調減少の場合
+		 * - insert (a, b): add y = ax + b
+		 * - query (x)    : min_i{a[i]x + b}
+		 * */
+		class ConvexHullTrick {
+			long[] A, B;
+			int len;
 
-		// 中国剰余定理
-		// リターン値を (r, m) とすると解は x ≡ r (mod. m)
-		// 解なしの場合は (0, -1) をリターン
-		long[] crt(long b1, long m1, long b2, long m2) {
-			long[] pq = new long[3];
-			long d = extGcd(m1, m2, pq);
-			if ((b2 - b1) % d != 0) {
-				return new long[]{0, -1};
+			public ConvexHullTrick(int n) {
+				A = new long[n];
+				B = new long[n];
 			}
-			long m = m1 * (m2/d);
-			long tmp = (b2 - b1) / d * pq[1] % (m2/d);
-			long r = mod(b1 + m1 * tmp, m);
-			pq[1] = r;
-			pq[2] = m;
-			return new long[]{r, m};
+
+			private boolean check(long a, long b) {
+				return (B[len - 2] - B[len - 1]) * (a - A[len - 1]) >= (B[len - 1] - b) * (A[len - 1] - A[len - 2]);
+			}
+
+			public void addLine(long a, long b) {
+				while (len >= 2 && check(a, b)) {
+					len--;
+				}
+				A[len] = a;
+				B[len] = b;
+				len++;
+			}
+
+			public long query(long x) {
+				int l = -1, r = len - 1;
+				while (r - l > 1) {
+					int mid = (r + l) / 2;
+					if (get(mid, x) >= get(mid + 1, x)) {
+						l = mid;
+					} else {
+						r = mid;
+					}
+				}
+				return get(r, x);
+			}
+
+			private long get(int k, long x) {
+				return A[k] * x + B[k];
+			}
+
 		}
 	}
 
@@ -169,6 +188,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {
