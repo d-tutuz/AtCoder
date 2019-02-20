@@ -1,4 +1,4 @@
-package sample;
+package arc058;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,9 +8,9 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class Sample {
+public class E_3 {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		InputStream inputStream = System.in;
 		OutputStream outputStream = System.out;
 		MyInput in = new MyInput(inputStream);
@@ -30,11 +30,60 @@ public class Sample {
 
 	static class TaskX {
 
+		int n, x, y, z;
+		long[][] memo;
+		int mask;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			out.println(1 >> 1);
+			n = in.nextInt(); x = in.nextInt(); y = in.nextInt(); z = in.nextInt();
+			memo = new long[n][1 << x + y + z];
+			mask = (1 << x + y + z) - 1;
+			fill(memo, -1);
+
+			long ans = power(10, n, MOD) - rec(0, 0) + MOD;
+			ans %= MOD;
+			out.println(ans);
 
 		}
+
+		long rec(int i, int state) {
+			if (i == n) return 1;
+			if (memo[i][state] != -1) return memo[i][state];
+
+			long ret = 0;
+			for (int j = 1; j <= 10; j++) {
+				int nex = state << j | 1 << j - 1;
+				if (ng(nex)) continue;
+				ret += rec(i+1, nex & mask);
+				ret %= MOD;
+			}
+			return memo[i][state] = ret;
+		}
+
+		boolean ng(int state) {
+			return (state >> z - 1 & 1) == 1
+					&& (state >> y + z - 1 & 1) == 1
+					&& (state >> x + y + z - 1 & 1) == 1;
+		}
+	}
+
+	static void fill(long[][] a, long v) {
+		for (int i = 0; i < a.length; i++) {
+			for (int j = 0; j < a[0].length; j++) {
+				a[i][j] = v;
+			}
+		}
+	}
+
+	static long power(long a, long e, long modP) {
+		long ret = 1;
+		for (; e > 0; e /= 2) {
+			if (e % 2 != 0) {
+				ret = (ret * a) % modP;
+			}
+			a = (a * a) % modP;
+		}
+		return ret;
 	}
 
 	static class MyInput {
@@ -127,6 +176,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {

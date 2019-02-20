@@ -1,4 +1,4 @@
-package sample;
+package codefestival2018final_parallel;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,9 +8,9 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class Sample {
+public class D_2 {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		InputStream inputStream = System.in;
 		OutputStream outputStream = System.out;
 		MyInput in = new MyInput(inputStream);
@@ -32,8 +32,83 @@ public class Sample {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			out.println(1 >> 1);
+			int N = in.nextInt();
+			char[][] strs = new char[N][];
+			for (int i = 0; i < N; i++) {
+				strs[i] = in.nextChars();
+			}
 
+			int[][][] cnt = new int[52][52][52];
+			boolean[][][] used = new boolean[52][52][52];
+			int max = -1;
+
+			for (char[] str : strs) {
+				int m = str.length;
+
+				int[] L = new int[52], R = new int[52];
+				fill(used, false);
+
+				for (char c : str) R[c2i(c)]++;
+
+				for (int i = 0; i < m; i++) {
+					int n = c2i(str[i]);
+					R[n]--;
+					for (int left = 0; left < 52; left++) {
+						for (int right = 0; right < 52; right++) {
+							if (L[left] >= 1 && R[right] >= 1 && !used[left][n][right]) {
+								max = Math.max(max, ++cnt[left][n][right]);
+								used[left][n][right] = true;
+							}
+						}
+					}
+					L[n]++;
+				}
+			}
+
+			out.println(max);
+
+			for (int i = 0; i < 52; i++) {
+				for (int j = 0; j < 52; j++) {
+					for (int k = 0; k < 52; k++) {
+						if (max == cnt[i][j][k]) {
+							String ans = String.valueOf(i2c(i)) + String.valueOf(i2c(j)) + String.valueOf(i2c(k));
+							out.println(ans);
+							return;
+						}
+					}
+				}
+			}
+
+		}
+
+		int c2i(char c) {
+			int ret = -1;
+			if ('A' <= c && c <= 'Z') {
+				ret = c - 'A';
+			} else if ('a' <= c && c <= 'z') {
+				ret = c - 'a' + 26;
+			}
+			return ret;
+		}
+
+		char i2c(int i) {
+			char ret = '*';
+			if (0 <= i && i < 26) {
+				ret = (char)(i + 'A');
+			} else {
+				ret = (char)(i - 26 + 'a');
+			}
+			return ret;
+		}
+
+		void fill(boolean[][][] used, boolean state) {
+			for (int i = 0; i < used.length; i++) {
+				for (int j = 0; j < used[0].length; j++) {
+					for (int k = 0; k < used[0][0].length; k++) {
+						used[i][j][k] = state;
+					}
+				}
+			}
 		}
 	}
 
@@ -127,6 +202,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {

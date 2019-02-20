@@ -1,4 +1,4 @@
-package sample;
+package arc058;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,11 +6,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
-public class Sample {
+public class E {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		InputStream inputStream = System.in;
 		OutputStream outputStream = System.out;
 		MyInput in = new MyInput(inputStream);
@@ -28,13 +30,75 @@ public class Sample {
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
 	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
+	/**
+	 * 実験用コード
+	 * */
 	static class TaskX {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			out.println(1 >> 1);
+			int n = 4;
+			List<int[]> list = new ArrayList<>();
+			for (int a1 = 1; a1 <= 10; a1++) {
+				for (int a2 = 1; a2 <= 10; a2++) {
+					for (int a3 = 1; a3 <= 10; a3++) {
+						for (int a4 = 1; a4 <= 10; a4++) {
+//							for (int a5 = 1; a5 <= 10; a5++) {
+//								for (int a6 = 1; a6 <= 10; a6++) {
+									int[] tar = new int[n];
+									tar[0] = a1;
+									tar[1] = a2;
+									tar[2] = a3;
+									tar[3] = a4;
+//									tar[4] = a5;
+//									tar[5] = a6;
+									list.add(tar);
+//								}
+//							}
+						}
+					}
+				}
+			}
+
+			long ans = 0;
+			int X = 5, Y = 7, Z = 5;
+			for (int[] tmp : list) {
+				int[] a = tmp.clone();
+				Arrays.parallelPrefix(a, Math::addExact);
+				for (int x = 0; x < n; x++) {
+					for (int y = x+1; y < n; y++) {
+						for (int z = y+1; z < n; z++) {
+							for (int w = z+1; w <= n; w++) {
+								int tX = a[y-1] - (x == 0 ? 0 : a[x-1]);
+								int tY = a[z-1] - a[y-1];
+								int tZ = a[w-1] - a[z-1];
+								if (X == tX && Y == tY && Z == tZ) {
+									printArrayLine(tmp, out);
+									out.printf("[%d, %d], [%d, %d], [%d, %d]\n", x, y-1, y, z-1, z, w-1);
+									ans++;
+									out.println("--------------------------------");
+								}
+							}
+						}
+					}
+				}
+			}
+
+			out.println(ans);
 
 		}
+	}
+
+	static void printArrayLine(int[] a, PrintWriter out) {
+		int n = a.length;
+		for (int i = 0; i < n; i++) {
+			if (i == 0) {
+				out.print(a[i]);
+			} else {
+				out.print(" " + a[i]);
+			}
+		}
+		out.print("\n");
 	}
 
 	static class MyInput {
@@ -127,6 +191,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {

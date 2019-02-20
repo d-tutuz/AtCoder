@@ -1,4 +1,4 @@
-package sample;
+package codefestival2018final_parallel;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,11 +6,19 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
-public class Sample {
+public class D {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		InputStream inputStream = System.in;
 		OutputStream outputStream = System.out;
 		MyInput in = new MyInput(inputStream);
@@ -32,9 +40,58 @@ public class Sample {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			out.println(1 >> 1);
+			int n = in.nextInt();
+			char[][] s = new char[n][];
+			for (int i = 0; i < n; i++) {
+				s[i] = in.nextChars();
+			}
+
+			TreeSet<String> set = new TreeSet<>();
+			TreeMap<String, Integer> map = new TreeMap<>();
+			for (char[] str : s) {
+				set.clear();
+				int m = str.length;
+				for (int i = 0; i < m; i++) {
+					for (int j = i+1; j < m; j++) {
+						for (int k = j+1; k < m; k++) {
+							String tar = String.valueOf(str[i]) + String.valueOf(str[j]) + String.valueOf(str[k]);
+							set.add(tar);
+						}
+					}
+				}
+
+				for (String tar : set) {
+					map.merge(tar, 1, Integer::sum);
+				}
+			}
+
+			List<Entry<String, Integer>> list = getSortMapList(map);
+			int max = list.get(0).getValue();
+			String ans = "zzz";
+			for (Entry<String, Integer> entry : list) {
+				if (entry.getValue() == max) {
+					ans = ans.compareTo(entry.getKey()) > 0 ? entry.getKey() : ans;
+					continue;
+				}
+				break;
+			}
+			out.println(ans);
 
 		}
+	}
+
+	static <T> List<Map.Entry<T, Integer>> getSortMapList(Map<T, Integer> map) {
+		List<Map.Entry<T, Integer>> list = new ArrayList<Map.Entry<T, Integer>>(
+				map.entrySet());
+		Collections.sort(list, new Comparator<Map.Entry<T, Integer>>() {
+
+			@Override
+			public int compare(Entry<T, Integer> entry1, Entry<T, Integer> entry2) {
+				int c1 = ((Integer) entry2.getValue()).compareTo((Integer) entry1.getValue());
+				return c1;
+			}
+		});
+		return list;
 	}
 
 	static class MyInput {
@@ -127,6 +184,14 @@ public class Sample {
 			str[len++] = nextChar();
 			len = reads(len, isSpace);
 			return Arrays.copyOf(str, len);
+		}
+
+		public char[][] next2DChars(int h, int w) {
+			char[][] s = new char[h][w];
+			for (int i = 0; i < h; i++) {
+				s[i] = nextChars();
+			}
+			return s;
 		}
 
 		int reads(int len, boolean[] accept) {
