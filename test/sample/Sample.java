@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.Random;
 
 public class Sample {
 
@@ -34,6 +35,46 @@ public class Sample {
 
 			out.println(1 >> 1);
 
+		}
+
+		class RandomGraphGenerator {
+			int n, m, w;
+			int[] graph;
+
+			Random rnd = new Random();
+
+			void init() {
+				graph = new int[this.n];
+			}
+
+			public RandomGraphGenerator(int n, int m) {
+				this.n = n;
+				this.m = m;
+				this.w = 1;
+				init();
+			}
+
+			public RandomGraphGenerator(int n, int m, int w) {
+				this.n = n;
+				this.m = m;
+				this.w = w;
+				init();
+			}
+
+			void addEdge(int i, int j) {
+				int a = rnd.nextInt() % w;
+			}
+
+			class P {
+				int f, t;
+
+				public P(int f, int t) {
+					super();
+					this.f = f;
+					this.t = t;
+				}
+
+			}
 		}
 	}
 

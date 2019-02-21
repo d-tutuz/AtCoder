@@ -44,7 +44,6 @@ public class D_2 {
 
 			for (char[] str : strs) {
 				int m = str.length;
-
 				int[] L = new int[52], R = new int[52];
 				fill(used, false);
 

@@ -1,4 +1,4 @@
-package test;
+package soundhoundinc_programmingcontest_2018_masters;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,11 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Random;
+import java.util.List;
+import java.util.stream.Stream;
 
-public class Stress {
+public class E_4 {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -24,7 +25,7 @@ public class Stress {
 
 	static int INF = 1 << 30;
 	static long LINF = 1L << 55;
-	static int MOD = 998244353;
+	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
@@ -32,112 +33,100 @@ public class Stress {
 
 	static class TaskX {
 
+		int n, m;
+		List<P>[] g;
+		long[][][] cost;
+		@SuppressWarnings("unchecked")
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int cnt = 1;
-			while (cnt-- > 0) {
-				execute(testNumber, in, out);
-			}
-		}
+			n = in.nextInt(); m = in.nextInt();
+			int[] u = new int[m], v = new int[m], s = new int[m];
+			g = new ArrayList[n];
+			g = Stream.generate(ArrayList::new).limit(n).toArray(List[]::new);
 
-		void execute(int testNumber, MyInput in, PrintWriter out) {
-			Random rnd = new Random();
-			int n = 100000, m = 100000;
-			long k = (long)1e8;
-
-			long[] a = new long[n], b = new long[m];
-			for (int i = 0; i < n; i++) {
-				a[i] = Math.abs(rnd.nextLong() % k);
-			}
+			// [初期コスト][偶奇][頂点] = コスト
+			cost = new long[2][2][n];
 			for (int i = 0; i < m; i++) {
-				b[i] = Math.abs(rnd.nextLong() % k);
+				u[i] = in.nextInt()-1;
+				v[i] = in.nextInt()-1;
+				s[i] = in.nextInt();
+				g[u[i]].add(new P(v[i], s[i]));
+				g[v[i]].add(new P(u[i], s[i]));
 			}
 
-			BigInteger x = new BigInteger("0");
-			BigInteger y = new BigInteger("0");
+			fill(cost, LINF);
+			dfs(0, 0, 0, 0);
+			dfs(1, 0, 0, 1);
 
-			BigInteger[] pow = new BigInteger[Math.max(n, m)+1];
-			pow[0] = new BigInteger("1");
-			for (int i = 1; i < Math.max(n, m)+1; i++) {
-				pow[i] = pow[i-1].multiply(BigInteger.valueOf(k));
-			}
+			// 奇数長の閉路があるので二部グラフではない場合
+			if (cost[0][1][0] != LINF) {
 
-//			for (int i = 1; i <= n; i++) {
-//				BigInteger t = BigInteger.valueOf(a[i-1]).multiply(pow[n-i]);
-//				x = x.add(t);
-//			}
-//
-//			for (int i = 1; i <= m; i++) {
-//				BigInteger t = BigInteger.valueOf(b[i-1]).multiply(pow[m-i]);
-//				y = y.add(t);
-//			}
+				// 条件を満たすとすると、同一頂点で偶奇が異なるグラフを考えたときに
+				// 偶奇のグラフのコストの差/2 が初期値になる
+				long ret = Math.abs(cost[0][0][0] - cost[0][1][0]);
+				for (int x = 0; x < n; x++) cost[0][0][x] = cost[0][1][x] = LINF;
+				dfs(0, 0, 0, ret / 2);
+				for (int i = 0; i < n; i++) {
+					if (Math.min(cost[0][0][i], cost[0][1][i]) <= 0) {
+						out.println(0);
+						return;
+					}
+				}
+				out.println(1);
 
-			int res = x.compareTo(y);
-			if (res > 0) {
-				out.println("Y");
-			} else if (res == 0) {
-				out.println("Same");
-			} else if (res < 0) {
-				out.println("X");
-			}
-		}
-	}
-
-	/**
-	 * 二項係数
-	 * 前提 n < modP
-	 * nCr = n!/(r!*(n-r)!)である。この時分子分母にMODが来る場合は以下のように使用する
-	 * */
-	public static long comb(int n, int r) {
-		if (r < 0 || r > n)
-			return 0L;
-		return fact[n] % MOD * factInv[r] % MOD * factInv[n - r] % MOD;
-	}
-
-	public static int MAXN = 200000;
-
-	static long[] fact = factorialArray(MAXN, MOD);
-	static long[] factInv = factorialInverseArray(MAXN, MOD,
-			inverseArray(MAXN, MOD));
-
-	public static long[] factorialArray(int maxN, long mod) {
-		long[] fact = new long[maxN + 1];
-		fact[0] = 1 % mod;
-		for (int i = 1; i <= maxN; i++) {
-			fact[i] = fact[i - 1] * i % mod;
-		}
-		return fact;
-	}
-
-	public static long[] inverseArray(int maxN, long modP) {
-		long[] inv = new long[maxN + 1];
-		inv[1] = 1;
-		for (int i = 2; i <= maxN; i++) {
-			inv[i] = modP - (modP / i) * inv[(int) (modP % i)] % modP;
-		}
-		return inv;
-	}
-
-	public static long[] factorialInverseArray(int maxN, long modP,
-			long[] inverseArray) {
-		long[] factInv = new long[maxN + 1];
-		factInv[0] = 1;
-		for (int i = 1; i <= maxN; i++) {
-			factInv[i] = factInv[i - 1] * inverseArray[i] % modP;
-		}
-		return factInv;
-	}
-
-	static void printArrayLine(int[] a, PrintWriter out) {
-		int n = a.length;
-		for (int i = 0; i < n; i++) {
-			if (i == 0) {
-				out.print(a[i]);
 			} else {
-				out.print(" " + a[i]);
+
+				// 各頂点の値が正になるような初期値の範囲[L, R]
+				long L = 1, R = LINF;
+				for (int i = 1; i < n; i++) {
+
+					// 頂点 i が偶数長の頂点なのかそうでないのか
+					int cur = (cost[0][0][i] == LINF ? 1 : 0);
+
+					// 偶数長の場合は初期値を上げると頂点のコストが上がるので、0以下にならない最小の値を求める
+					if (cur == 0) L = Math.max(L, -cost[0][cur][i] + 1);
+
+					// 奇数長の場合は初期値を上げると頂点のコストが下がるので、0以下にならない最大の値を求める
+					if (cur == 1) R = Math.min(R, cost[0][cur][i] - 1);
+				}
+				out.println(Math.max(0, R - L + 1));
+			}
+
+		}
+
+		void dfs(int id, int st, int cur, long v) {
+			if (cost[id][st][cur] == LINF) {
+				cost[id][st][cur] = v;
+				for (P p : g[cur]) {
+					dfs(id, st^1, p.t, p.c - v);
+				}
+			}
+			if (cost[id][st][cur] != v) {
+				System.out.println(0);
+				System.exit(0);
 			}
 		}
-		out.print("\n");
+
+		class P {
+			int t;
+			long c;
+
+			public P(int t, long c) {
+				super();
+				this.t = t;
+				this.c = c;
+			}
+		}
+	}
+
+	static void fill(long[][][] a, long v) {
+		for (int i = 0; i < a.length; i++) {
+			for (int j = 0; j < a[0].length; j++) {
+				for (int k = 0; k < a[0][0].length; k++) {
+					a[i][j][k] = v;
+				}
+			}
+		}
 	}
 
 	static class MyInput {
