@@ -1,6 +1,8 @@
 package test;
 
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 // TODO: inputのクラスを定義して、それに対応するように結果の出力などを実装できるとbetter
 public class DiffCheck {
@@ -18,8 +20,8 @@ public class DiffCheck {
 	//////////////////////////////////////
 	// ここは適宜変更する
 	//////////////////////////////////////
-	static int n, m, k;
-	static long[] a, b;
+	static int n;
+	static int[] x, y;
 
 	// input init
 	static void init() {
@@ -27,14 +29,13 @@ public class DiffCheck {
 		// ここは input に合わせて適宜変更する
 		//////////////////////////////////////
 		Random rnd = new Random();
-		n = 100; m = 1000; k = 50;
-		a = new long[n];
-		b = new long[m];
-		for (int i = 0; i < n; i++) {
-			a[i] = rnd.nextInt(100000);
-		}
-		for (int i = 0; i < m; i++) {
-			b[i] = rnd.nextInt(1000000);
+		n = 10000;
+		x = new int[n+1]; y = new int[n+1];
+		for (int i = 1; i < n+1; i++) {
+
+			x[i] = rnd.nextInt(100) + x[i-1];
+			y[i] = rnd.nextInt(100) + y[i-1];
+
 		}
 	}
 
@@ -44,18 +45,18 @@ public class DiffCheck {
 	static void print(long correctAnswer, long testAnswer) {
 		// input print
 		System.out.println("Input:");
-		System.out.printf("%d %d %d\n", n, m, k);
-		printArrayLine(a);
-		printArrayLine(b);
-
+		System.out.printf("%d\n", n);
+		for (int i = 1; i < n+1; i++) {
+			System.out.printf("%d %d\n", x[i], y[i]);
+		}
 
 		System.out.println("----------------------------------------");
 		// diff
 		System.out.println("Expected output:");
-		System.out.printf("%d\n", correctAnswer);
+		System.out.printf("%s\n", correctAnswer);
 
 		System.out.println("Execution result:");
-		System.out.printf("%d\n", testAnswer);
+		System.out.printf("%s\n", testAnswer);
 		System.out.println("========================================");
 	}
 
@@ -63,8 +64,8 @@ public class DiffCheck {
 	public static void main(String[] args) {
 
 		// n - loop
-		boolean loop = false;
-		int loopCount = 1000;
+		boolean loop = true;
+		int loopCount = 100;
 
 		if (loop) {
 			while (loopCount-- > 0) {
@@ -101,7 +102,50 @@ public class DiffCheck {
 	 * */
 	static class TestAnswer {
 		long solve() {
-			return 0;
+
+			long[] min = new long[n+1], max = new long[n+1];
+			for (int i = 1; i < n+1; i++) {
+				min[i] = Math.min(x[i], y[i]);
+				max[i] = Math.max(x[i], y[i]);
+			}
+
+			long ans = 1;
+			for (int i = 1; i < n+1; i++) {
+				if (x[i-1] == x[i] && y[i-1] == y[i]) continue;
+
+				if (x[i-1] > y[i-1] && x[i] < y[i]) {
+					ans += min[i] - max[i-1] + 1;
+					continue;
+				}
+
+				if (x[i-1] == y[i-1] && x[i] < y[i]) {
+					ans += min[i] - max[i-1];
+					continue;
+				}
+
+				if (x[i-1] < y[i-1] && x[i] > y[i]) {
+					ans += min[i] - max[i-1] + 1;
+					continue;
+				}
+
+				if (x[i-1] == y[i-1] && x[i] > y[i]) {
+					ans += min[i] - max[i-1];
+					continue;
+				}
+
+				if (x[i] == y[i]) {
+					int d = x[i-1] == y[i-1] ? 0 : 1;
+					ans += x[i] - max[i-1] + d;
+					continue;
+				}
+
+				if ((x[i-1] < y[i-1] && x[i] < y[i]) || (x[i-1] > y[i-1] && x[i] > y[i])) {
+					ans += Math.max(min[i] - max[i-1] + 1, 0);
+				}
+			}
+			return ans;
+
+
 		}
 	}
 
@@ -111,7 +155,26 @@ public class DiffCheck {
 	 * */
 	static class CorrectAnswer {
 		long solve() {
-			return 0;
+
+			long ans = 1;
+
+			Set<Long> dx = new HashSet<>(), dy = new HashSet<>();
+
+			for (int i = 1; i < n+1; i++) {
+				dx.clear();
+				dy.clear();
+				int d = x[i-1] == y[i-1] ? 1 : 0;
+				for (long j = x[i-1] + d; j <= x[i]; j++) {
+					dx.add(j);
+				}
+				for (long j = y[i-1] + d; j <= y[i]; j++) {
+					dy.add(j);
+				}
+				dx.retainAll(dy);
+				ans += dx.size();
+			}
+
+			return ans;
 		}
 	}
 
