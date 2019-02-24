@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class E_2 {
+public class A_2 {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -21,7 +21,7 @@ public class E_2 {
 	}
 
 	static int INF = 1 << 30;
-	static long LINF = 1L << 55;
+	static long LINF = 1L << 60;
 	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
@@ -32,119 +32,71 @@ public class E_2 {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt(), m = in.nextInt();
+			int n = in.nextInt();
+			long x = in.nextLong();
+			long[] a = in.nextLongArray(n);
 
-			// i 回目の操作で箱 j に赤いボールが r 個、白いボールが b 個入っている可能性があるかどうか
-			boolean[][][][] dp = new boolean[m+1][n][n+1][n+1];
-			for (int i = 0; i < n; i++) {
-				dp[0][i][i == 0 ? 1 : 0][i != 0 ? 1 : 0] = true;
+			RMQ rmq = new RMQ(2*n);
+			for (int i = 0; i < 2*n; i++) {
+				rmq.update(i, a[i%n]);
 			}
 
-			for (int i = 0; i < m; i++) {
-				int x = in.nextInt()-1, y = in.nextInt()-1;
-
-				// 赤いボールと白いボールがある場合
-				boolean done = false;
-				for (int r = 1; r <= n; r++) {
-					for (int w = 1; w <= n; w++) {
-						if (dp[i][x][r][w]) {
-
-							// 赤いボールを渡す場合
-							for (int r2 = 0; r2 <= n; r2++) {
-								for (int w2 = 0; w2 <= n; w2++) {
-									if (dp[i][y][r2][w2]) {
-										dp[i+1][y][r2+1][w2] = true;
-										dp[i][x][r][w] = false;
-										dp[i+1][x][r-1][w] = true;
-									}
-								}
-							}
-
-							// 白いボールを渡す場合
-							for (int r2 = 0; r2 <= n; r2++) {
-								for (int w2 = 0; w2 <= n; w2++) {
-									if (dp[i][y][r2][w2]) {
-										dp[i+1][y][r2][w2+1] = true;
-										dp[i][x][r][w] = false;
-										dp[i+1][x][r][w-1] = true;
-									}
-								}
-							}
-
-							done = true;
-						}
-					}
+			long ans = Long.MAX_VALUE;
+			for (int k = 0; k < n; k++) {
+				long tmp = 0;
+				for (int i = 0; i < n; i++) {
+					tmp += rmq.query(i + n - k, i + n + 1);
 				}
-
-				// 赤いボールしかない場合
-				if (!done) {
-					for (int r = 1; r <= n; r++) {
-						if (dp[i][x][r][0]) {
-
-							// 赤いボールを渡す場合
-							for (int r2 = 0; r2 <= n; r2++) {
-								for (int w2 = 0; w2 <= n; w2++) {
-									if (dp[i][y][r2][w2]) {
-										dp[i+1][y][r2+1][w2] = true;
-										dp[i][x][r][0] = false;
-										dp[i+1][x][r-1][0] = true;
-									}
-								}
-							}
-
-							done = true;
-						}
-					}
-				}
-
-				// 白いボールしかない場合
-				if (!done) {
-					for (int w = 1; w <= n; w++) {
-						if (dp[i][x][0][w]) {
-
-							// 白いボールを渡す場合
-							for (int r2 = 0; r2 <= n; r2++) {
-								for (int w2 = 0; w2 <= n; w2++) {
-									if (dp[i][y][r2][w2]) {
-										dp[i+1][y][r2][w2+1] = true;
-										dp[i][x][0][w] = false;
-										dp[i+1][x][0][w-1] = true;
-									}
-								}
-							}
-						}
-					}
-				}
-
-				if (!done) new RuntimeException();
-
-				// 直前の状態のマージ(移動しなかった分)
-				for (int j = 0; j < n; j++) {
-					if (j == y) continue;
-					for (int r = 0; r <= n; r++) {
-						for (int w = 0; w <= n; w++) {
-							dp[i+1][j][r][w] |= dp[i][j][r][w];
-						}
-					}
-				}
-			}
-
-			// m回操作後の最終的な状態で赤いボールが入っている可能性がある箱の数を数える
-			int ans = 0;
-			for (int i = 0; i < n; i++) {
-				boolean ok = false;
-				top:
-				for (int r = 1; r <= n; r++) {
-					for (int w = 0; w <= n; w++) {
-						if (dp[m][i][r][w]) {
-							ok = true;
-							break top;
-						}
-					}
-				}
-				if (ok) ans++;
+				ans = Math.min(ans, tmp + k * x);
 			}
 			out.println(ans);
+
+		}
+
+		class RMQ {
+			final long inf = Long.MAX_VALUE/2-1;
+
+			int size;
+			long[] dat;
+
+			// 初期化
+			public RMQ(int n) {
+				size = 1;
+				while (size < n) {
+					size *= 2;
+				}
+				dat = new long[size * 2];
+				for (int i = 0; i < size * 2; i++) {
+					dat[i] = inf;
+				}
+			}
+
+			// k 番目(0-indexed) を a に更新
+			void update(int k, long a) {
+				k += size;
+				dat[k] = a;
+				while (k > 0) {
+					k /= 2;
+					dat[k] = Math.min(dat[2 * k], dat[2 * k + 1]);
+				}
+			}
+
+			// [a, b) の最小値を求める
+			private long query(int a, int b, int k, int l, int r) {
+				if (r <= a || b <= l) return inf;
+
+				if (a <= l && r <= b) {
+					return dat[k];
+				} else {
+					long vl = query(a, b, 2 * k, l, (l + r) / 2);
+					long vr = query(a, b, 2 * k + 1, (l + r) / 2, r);
+					return Math.min(vl, vr);
+				}
+			}
+
+			long query(int a, int b) {
+				return query(a, b, 1, 0, size);
+			}
 		}
 	}
 

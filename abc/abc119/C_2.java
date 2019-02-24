@@ -1,4 +1,4 @@
-package p400;
+package abc119;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class D {
+public class C_2 {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -21,34 +21,23 @@ public class D {
 	}
 
 	static int INF = 1 << 30;
-	static long LINF = 1L << 55;
+	static long LINF = 1L << 60;
 	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
 	static int[] mh8 = { -1, -1, -1, 0, 0, 1, 1, 1 };
-	static int[] mw8 = { -1, 	0, 1, -1, 1, -1, 0, 1 };
+	static int[] mw8 = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
 	static class TaskX {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
 			int n = in.nextInt();
-			long[] a = in.nextLongArray(n);
-			Arrays.sort(a);
-			long[] ac = a.clone();
-			Arrays.parallelPrefix(ac, Math::addExact);
+			int a = in.nextInt(), b = in.nextInt(), c = in.nextInt();
+			int[] l = in.nextIntArray(n);
+			Arrays.sort(l);
 
-			int l = -1, r = n-2;
-			while (r - l > 1) {
-				int i = (r + l) / 2;
-				if (a[i+1] <= 2 * ac[i]) {
-					r = i;
-				} else {
-					l = i;
-				}
-			}
 
-			out.println(n - r);
 		}
 	}
 

@@ -1,13 +1,18 @@
 
-
-class RangeMinimumQuery {
+/**
+ * RangeMinimumQuery
+ *
+ * 1点の更新と半開区間 [l, r) の値が O(logN) を計算
+ * */
+class RMQ {
 	final int inf = (1 << 31) - 1;
+//	final long inf = (1 << 62) - 1;
 
 	int size;
 	int[] dat;
 
 	// 初期化
-	public RangeMinimumQuery(int n) {
+	public RMQ(int n) {
 		size = 1;
 		while (size < n) {
 			size *= 2;

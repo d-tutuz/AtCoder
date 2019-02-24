@@ -1,4 +1,6 @@
-package p400;
+package abc119;
+
+import static java.lang.Math.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,8 +9,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.TreeSet;
 
-public class F {
+public class D {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -21,7 +24,7 @@ public class F {
 	}
 
 	static int INF = 1 << 30;
-	static long LINF = 1L << 55;
+	static long LINF = 1L << 60;
 	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
@@ -32,22 +35,56 @@ public class F {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt();
-			long[] a = in.nextLongArray(n);
-
-			long ans = 0;
-			for (int i = 0; i < n; i++) {
-				if (i == n-1) {
-					ans += a[i] / 2;
-					continue;
-				}
-				long p = Math.min(a[i], a[i+1]);
-				ans += p;
-				a[i] -= p; a[i+1] -= p;
-				ans += a[i] / 2;
+			int a = in.nextInt(), b = in.nextInt(), q = in.nextInt();
+			TreeSet<Long> ji = new TreeSet<>(), te = new TreeSet<>();
+			for (int i = 0; i < a; i++) {
+				ji.add(in.nextLong());
+			}
+			for (int i = 0; i < b; i++) {
+				te.add(in.nextLong());
 			}
 
-			out.println(ans);
+			ji.add(-LINF);
+			ji.add(LINF);
+			te.add(-LINF);
+			te.add(LINF);
+
+			while (q-- > 0) {
+				long cur = in.nextLong();
+				long jl = ji.floor(cur);
+				long jr = ji.higher(cur-1);
+				long tl = te.floor(cur);
+				long tr = te.higher(cur-1);
+
+				long ans = LINF;
+				// 右右
+				ans = min(ans, min(jr, tr) - cur + max(jr, tr) - min(jr, tr));
+
+				// 左左
+				ans = min(ans, cur - max(jl, tl) + max(jl, tl) - min(jl, tl));
+
+				// 右寺 左神
+				if (tr >= 0 && jl >= 0) {
+					ans = min(ans, abs(tr - cur) * 2 + abs(jl - cur));
+				}
+
+				// 右神 左寺
+				if (jr >= 0 && tl >= 0) {
+					ans = min(ans, abs(jr - cur) * 2 + abs(tl - cur));
+				}
+
+				// 左寺 右神
+				if (tl >= 0 && jr >= 0) {
+					ans = min(ans, abs(tl - cur) * 2 + abs(jr - cur));
+				}
+
+				// 左神 右寺
+				if (jl >= 0 && tr >= 0) {
+					ans = min(ans, abs(jl - cur) * 2 + abs(tr - cur));
+				}
+
+				out.println(ans);
+			}
 		}
 	}
 

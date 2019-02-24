@@ -1,4 +1,4 @@
-package p400;
+package abc119;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class G {
+public class B {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -21,7 +21,7 @@ public class G {
 	}
 
 	static int INF = 1 << 30;
-	static long LINF = 1L << 55;
+	static long LINF = 1L << 60;
 	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
@@ -32,29 +32,20 @@ public class G {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt(), k = in.nextInt();
-			long[] a = in.nextLongArray(n);
-			long[] b = new long[n];
+			int n = in.nextInt();
+			double ans = 0;
 			for (int i = 0; i < n; i++) {
-				b[i] = Math.max(a[i], 0);
-			}
-			long sum = Arrays.stream(b).sum();
-
-			Arrays.parallelPrefix(a, Math::addExact);
-			Arrays.parallelPrefix(b, Math::addExact);
-
-			long ans = Long.MIN_VALUE;
-			for (int l = 0; l + k - 1 < n; l++) {
-				int r = l + k - 1;
-				long tmp = sum;
-
-				tmp -= b[r] - (l >= 1 ? b[l-1] : 0);
-				tmp += Math.max(a[r] - (l >= 1 ? a[l-1] : 0), 0);
-
-				ans = Math.max(ans, tmp);
+				double x = in.nextDouble();
+				String u = in.nextString();
+				if ("JPY".equals(u)) {
+					ans += x;
+				} else if ("BTC".equals(u)) {
+					ans += 380000.0 * x;
+				}
 			}
 
 			out.println(ans);
+
 		}
 	}
 

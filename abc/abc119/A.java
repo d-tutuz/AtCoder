@@ -1,4 +1,4 @@
-package p400;
+package abc119;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class E {
+public class A {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -21,7 +21,7 @@ public class E {
 	}
 
 	static int INF = 1 << 30;
-	static long LINF = 1L << 55;
+	static long LINF = 1L << 60;
 	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
@@ -32,24 +32,16 @@ public class E {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt(), m = in.nextInt();
-			boolean[] red = new boolean[n];
-			int[] cnt = new int[n];
-			Arrays.fill(cnt, 1);
-			red[0] = true;
+			String[] str = in.nextString().split("/");
+			int y = Integer.parseInt(str[0]);
+			int m = Integer.parseInt(str[1]);
+			int d = Integer.parseInt(str[2]);
 
-			for (int i = 0; i < m; i++) {
-				int x = in.nextInt()-1, y = in.nextInt()-1;
-				if (red[x]) red[y] = true;
-				cnt[x]--; cnt[y]++;
-				if (cnt[x] == 0) red[x] = false;
+			if (y <= 2019 && m <= 4 && d <= 30) {
+				out.println("Heisei");
+			} else {
+				out.println("TBD");
 			}
-
-			long ans = 0;
-			for (int i = 0; i < n; i++) {
-				if (red[i]) ans++;
-			}
-			out.println(ans);
 		}
 	}
 

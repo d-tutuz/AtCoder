@@ -32,104 +32,29 @@ public class A {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt(), k = in.nextInt();
-			long[] b = in.nextLongArray(n);
+			int n = in.nextInt();
+			long x = in.nextLong();
+			long[] a = in.nextLongArray(n);
 
-			if (k == 1) {
-				long ret = 0;
-				for (long l : b) if (l >= 0) ret += l;
-				out.println(ret);
-				return;
-			}
-
-			SegmentTree seg = new SegmentTree(n, -LINF);
-
-			// [0, i] の最大値
-			long[] dp = new long[n];
-			Arrays.fill(dp, -LINF);
-			dp[0] = b[0];
-			seg.update(0, dp[0]);
-
-			for (int i = 1; i < n; i++) {
-
-				// [0, i] 全体を 0 にする
-				if (i - k + 1 >= 0) dp[i] = 0;
-
-				// [j, i] を 0 にする
-				if (i - k >= 0) dp[i] = Math.max(dp[i], seg.query(0, i - k + 1));
-
-				// b[i] を足す
-				dp[i] = Math.max(dp[i], dp[i-1] + b[i]);
-
-				seg.update(i, dp[i]);
-			}
-
-			out.println(Math.max(0, dp[n-1]));
-
-		}
-
-		class SegmentTree extends AbstractSegmentTree<Long> {
-
-			public SegmentTree(int n, Long initial_value) {
-				super(n, initial_value);
-			}
-
-			@Override
-			Long merge(Long x, Long y) {
-				return Math.max(x, y);
-			}
-
-		}
-
-		@SuppressWarnings("unchecked")
-		abstract class AbstractSegmentTree<T> {
-			int size;
-			T[] dat;
-			T INITIAL_VALUE;
-
-			abstract T merge(T x, T y);
-
-			public AbstractSegmentTree(int n, T initial_value) {
-				size = 1;
-				this.INITIAL_VALUE = initial_value;
-				while (size < n) {
-					size *= 2;
+			long ans = 0;
+			long k = 0;
+			for (int i = 0; i < n; i++) {
+				long add = LINF;
+				for (int j = 0; j < n; j++) {
+					long tmp = (n + i - j) % n;
+					if (a[j] + tmp * x < a[i]) {
+						k = Math.max(k, tmp);
+						add = Math.min(add, a[j]);
+					}
 				}
-				dat = (T[])new Object[size * 2];
-				for (int i = 0; i < size * 2; i++) {
-					dat[i] = INITIAL_VALUE;
-				}
+				ans += add;
 			}
 
-			void update(int k, T a) {
-				k += size;
-				dat[k] = a;
-				while (k > 0) {
-					k /= 2;
-					dat[k] = merge(dat[2 * k], dat[2 * k + 1]);
-				}
-			}
+			ans += k * x;
 
-			private T query(int a, int b, int k, int l, int r) {
-				if (r <= a || b <= l) return INITIAL_VALUE;
-
-				if (a <= l && r <= b) {
-					return dat[k];
-				} else {
-					T vl = query(a, b, 2 * k, l, (l + r) / 2);
-					T vr = query(a, b, 2 * k + 1, (l + r) / 2, r);
-					return merge(vl, vr);
-				}
-			}
-
-			T query(int a, int b) {
-				return query(a, b, 1, 0, size);
-			}
+			out.println(ans);
 		}
 	}
-
-
-
 
 	static class MyInput {
 		private final BufferedReader in;

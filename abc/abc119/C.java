@@ -1,4 +1,4 @@
-package p400;
+package abc119;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class H {
+public class C {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -21,7 +21,7 @@ public class H {
 	}
 
 	static int INF = 1 << 30;
-	static long LINF = 1L << 55;
+	static long LINF = 1L << 60;
 	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
@@ -33,20 +33,90 @@ public class H {
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
 			int n = in.nextInt();
-			long[] a = in.nextLongArray(n);
+			int a = in.nextInt(), b = in.nextInt(), c = in.nextInt();
+			int[] l = in.nextIntArray(n);
+			Arrays.sort(l);
 
-			long ans = 0;
-			for (int l = 0; l < n; l++) {
-				for (int r = l; r < n; r++) {
-					long add = LINF;
-					for (int i = l; i <= r; i++) {
-						add = Math.min(add, a[i]);
+			int ans = INF;
+			do {
+				for (int i = 1; i < n-1; i++) {
+					for (int j = i+1; j < n-1; j++) {
+						for (int m = j+1; m <= n; m++) {
+
+							int cost = 0;
+
+							// a
+							int tmp = 0, cnt = 0;
+							for (int k = 0; k < i; k++) {
+								tmp += l[k];
+								cnt++;
+							}
+							cost += (cnt - 1) * 10;
+							cost += Math.abs(a - tmp);
+
+							tmp = 0; cost = 0;
+							// b
+							for (int k = i; k < j; k++) {
+								tmp += l[k];
+								cnt++;
+							}
+							cost += (cnt - 1) * 10;
+							cost += Math.abs(b - tmp);
+
+							tmp = 0; cost = 0;
+							// c
+							for (int k = j; k < m; k++) {
+								tmp += l[k];
+								cnt++;
+							}
+							cost += (cnt - 1) * 10;
+							cost += Math.abs(c - tmp);
+
+							if (cost == 22) {
+								out.print("");
+							}
+
+							ans = Math.min(ans, cost);
+						}
 					}
-					ans += add;
 				}
-			}
+
+
+			} while (Permutation.next(l));
+
 			out.println(ans);
 		}
+	}
+
+	static class Permutation {
+
+		public static boolean next(int[] a) {
+			int n = a.length;
+
+			int i = n - 1;
+			while (i > 0 && a[i - 1] >= a[i])
+				i--;
+			if (i <= 0)
+				return false;
+
+			int j = n - 1;
+			while (a[j] <= a[i - 1])
+				j--;
+			swap(a, i - 1, j);
+
+			int k = n - 1;
+			while (i < k)
+				swap(a, i++, k--);
+
+			return true;
+		}
+
+		private static void swap(int[] a, int i, int j) {
+			int tmp = a[i];
+			a[i] = a[j];
+			a[j] = tmp;
+		}
+
 	}
 
 	static class MyInput {
