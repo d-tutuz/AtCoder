@@ -21,7 +21,7 @@ public class B {
 	}
 
 	static int INF = 1 << 30;
-	static long LINF = 1L << 55;
+	static long LINF = 1L << 60;
 	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
@@ -30,18 +30,42 @@ public class B {
 
 	static class TaskX {
 
+		int n;
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt();
-			long a = in.nextLong(), b = in.nextLong();
-			long[] x = in.nextLongArray(n);
+			n = in.nextInt();
+			char[][] s = in.next2DChars(n, n);
 
-			long ans = 0;
-			for (int i = 0; i < n-1; i++) {
-				ans += Math.min(a * (x[i+1] - x[i]), b);
+			int cnt = 0;
+			for (int a = 0; a < n; a++) {
+				char[][] t = new char[n][n];
+				for (int h = 0; h < n; h++) {
+					for (int w = 0; w < n; w++) {
+						t[(h+a)%n][w] = s[h][w];
+					}
+				}
+				if (check(t)) cnt++;
 			}
-			out.println(ans);
 
+			out.println(cnt * n);
+		}
+
+		boolean check(char[][] t) {
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < n; j++) {
+					if (t[i][j] != t[j][i]) return false;
+				}
+			}
+			return true;
+		}
+	}
+
+	static void print(char[][] a, PrintWriter out) {
+		for (int i = 0; i < a.length; i++) {
+			for (int j = 0; j < a[0].length; j++) {
+				out.print(a[i][j]);
+			}
+			out.print("\n");
 		}
 	}
 

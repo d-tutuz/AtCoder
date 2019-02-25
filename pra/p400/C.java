@@ -1,4 +1,4 @@
-package abc119;
+package p400;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class C_2 {
+public class C {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -32,42 +32,54 @@ public class C_2 {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt();
-			int a = in.nextInt(), b = in.nextInt(), c = in.nextInt();
-			int[] l = in.nextIntArray(n);
-			Arrays.sort(l);
-
-			long ans = INF;
-			do {
-				for (int i = 1; i < n; i++) {
-					for (int j = i+1; j < n; j++) {
-						for (int k = j+1; k <= n; k++) {
-
-							long cost = 0;
-							cost += calc(0, i, l, a);
-							cost += calc(i, j, l, b);
-							cost += calc(j, k, l, c);
-
-							ans = Math.min(ans, cost);
-						}
-					}
-				}
-			} while (Permutation.next(l));
-
-			out.println(ans);
-		}
-
-		long calc(int l, int r, int[] a, int tar) {
-			int ret = 0;
-			int tmp = 0, cnt = 0;
-			for (int i = l; i < r; i++) {
-				tmp += a[i];
-				cnt++;
+			int n = 3;
+			int[] a = new int[2*n+1];
+			for (int i = 0; i < 2*n+1; i++) {
+				a[i] = i+1;
 			}
-			ret += (cnt - 1) * 10;
-			ret += Math.abs(tar - tmp);
-			return ret;
+			Arrays.sort(a);
+
+			do {
+				int[] t = a.clone();
+				while (t.length > 1) {
+					t = f(t);
+				}
+				printArrayLine(a, out);
+				out.println(t[0]);
+			} while (Permutation.next(a));
+
+
 		}
+
+		int[] f(int[] a) {
+			int n = a.length;
+			int[] na = new int[n-2];
+			for (int i = 1; i < na.length+1; i++) {
+				na[i-1] = g(a[i-1], a[i], a[i+1]);
+			}
+			return na;
+		}
+
+		int g(int a, int b, int c) {
+			int[] tmp = new int[3];
+			tmp[0] = a;
+			tmp[1] = b;
+			tmp[2] = c;
+			Arrays.sort(tmp);
+			return tmp[1];
+		}
+	}
+
+	static void printArrayLine(int[] a, PrintWriter out) {
+		int n = a.length;
+		for (int i = 0; i < n; i++) {
+			if (i == 0) {
+				out.print(a[i]);
+			} else {
+				out.print(" " + a[i]);
+			}
+		}
+		out.print(" -> ");
 	}
 
 	static class Permutation {
@@ -98,6 +110,7 @@ public class C_2 {
 			a[i] = a[j];
 			a[j] = tmp;
 		}
+
 	}
 
 	static class MyInput {

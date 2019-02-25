@@ -39,8 +39,8 @@ public class C {
 
 			int ans = INF;
 			do {
-				for (int i = 1; i < n-1; i++) {
-					for (int j = i+1; j < n-1; j++) {
+				for (int i = 1; i < n; i++) {
+					for (int j = i+1; j < n; j++) {
 						for (int m = j+1; m <= n; m++) {
 
 							int cost = 0;
@@ -54,7 +54,7 @@ public class C {
 							cost += (cnt - 1) * 10;
 							cost += Math.abs(a - tmp);
 
-							tmp = 0; cost = 0;
+							tmp = 0; cnt = 0;
 							// b
 							for (int k = i; k < j; k++) {
 								tmp += l[k];
@@ -63,7 +63,7 @@ public class C {
 							cost += (cnt - 1) * 10;
 							cost += Math.abs(b - tmp);
 
-							tmp = 0; cost = 0;
+							tmp = 0; cnt = 0;
 							// c
 							for (int k = j; k < m; k++) {
 								tmp += l[k];
@@ -72,7 +72,7 @@ public class C {
 							cost += (cnt - 1) * 10;
 							cost += Math.abs(c - tmp);
 
-							if (cost == 22) {
+							if (cost == 32) {
 								out.print("");
 							}
 

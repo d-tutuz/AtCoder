@@ -21,7 +21,7 @@ public class A {
 	}
 
 	static int INF = 1 << 30;
-	static long LINF = 1L << 55;
+	static long LINF = 1L << 60;
 	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
@@ -33,52 +33,12 @@ public class A {
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
 			int n = in.nextInt();
-			long[][] a = new long[n][n], b = new long[n][n];
+			int[] p = in.nextIntArray(n);
+			int[] dp = new int[n+1];
 			for (int i = 0; i < n; i++) {
-				for (int j = 0; j < n; j++) {
-					long t = in.nextLong();
-					a[i][j] = t;
-					b[i][j] = t;
-				}
+				dp[p[i]] = dp[p[i]-1] + 1;
 			}
-
-			for (int k = 0; k < n; k++) {
-				for (int i = 0; i < n; i++) {
-					for (int j = 0; j < n; j++) {
-						b[i][j] = Math.min(b[i][j], b[i][k] + b[k][j]);
-					}
-				}
-			}
-
-			for (int i = 0; i < n; i++) {
-				for (int j = 0; j < n; j++) {
-					if (a[i][j] == b[i][j]) continue;
-					out.println(-1);
-					return;
-				}
-			}
-
-			for (int k = 0; k < n; k++) {
-				for (int i = 0; i < n; i++) {
-					for (int j = 0; j < n; j++) {
-						if (i == j || j == k || k == i) continue;
-						if (a[i][j] == 0 || a[i][k] == 0 || a[k][j] == 0) continue;
-						if (a[i][j] == a[i][k] + a[k][j]) {
-							a[i][j] = 0;
-							a[j][i] = 0;
-						}
-					}
-				}
-			}
-
-			long ans = 0;
-			for (int i = 0; i < n; i++) {
-				for (int j = 0; j < n; j++) {
-					ans += a[i][j];
-				}
-			}
-
-			out.println(ans / 2);
+			out.println(n - Arrays.stream(dp).max().getAsInt());
 
 		}
 	}

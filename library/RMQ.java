@@ -1,4 +1,5 @@
 
+
 /**
  * RangeMinimumQuery
  *
@@ -6,7 +7,7 @@
  * */
 class RMQ {
 	final int inf = (1 << 31) - 1;
-//	final long inf = (1 << 62) - 1;
+//	final long inf = (1L << 62) - 1;
 
 	int size;
 	int[] dat;

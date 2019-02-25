@@ -1,4 +1,4 @@
-package abc119;
+package p500;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,8 +7,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.Random;
 
-public class C_2 {
+public class B_2 {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -32,71 +33,86 @@ public class C_2 {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt();
-			int a = in.nextInt(), b = in.nextInt(), c = in.nextInt();
-			int[] l = in.nextIntArray(n);
-			Arrays.sort(l);
+			int n = 3;
+			char[][] s = RandomGenerator.makeCharArrays(n, n);
 
-			long ans = INF;
-			do {
-				for (int i = 1; i < n; i++) {
-					for (int j = i+1; j < n; j++) {
-						for (int k = j+1; k <= n; k++) {
-
-							long cost = 0;
-							cost += calc(0, i, l, a);
-							cost += calc(i, j, l, b);
-							cost += calc(j, k, l, c);
-
-							ans = Math.min(ans, cost);
-						}
-					}
-				}
-			} while (Permutation.next(l));
-
-			out.println(ans);
+			int cnt = execute(testNumber, in, out);
+			out.println(cnt);
 		}
 
-		long calc(int l, int r, int[] a, int tar) {
-			int ret = 0;
-			int tmp = 0, cnt = 0;
-			for (int i = l; i < r; i++) {
-				tmp += a[i];
-				cnt++;
+		int execute(int testNumber, MyInput in, PrintWriter out) {
+			int n = 3;
+			char[][] s = RandomGenerator.makeCharArrays(n, n);
+
+			print(s, out);
+			out.println("=====================");
+
+			int cnt = 0;
+			for (int a = 0; a < n; a++) {
+				for (int b = 0; b < n; b++) {
+					char[][] t = new char[n][n];
+					for (int h = 0; h < n; h++) {
+						for (int w = 0; w < n; w++) {
+							t[(h+a)%n][(w+b)%n] = s[h][w];
+						}
+					}
+					if (check(t, n)) {
+						out.printf("Good a=%d b=%d\n", a, b);
+						cnt++;
+					}
+					print(t, out);
+					out.println("=====================");
+				}
 			}
-			ret += (cnt - 1) * 10;
-			ret += Math.abs(tar - tmp);
-			return ret;
+
+			return cnt;
+		}
+
+		boolean check(char[][] t, int n) {
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < n; j++) {
+					if (t[i][j] != t[j][i]) return false;
+				}
+			}
+			return true;
 		}
 	}
 
-	static class Permutation {
+	public static class RandomGenerator {
 
-		public static boolean next(int[] a) {
-			int n = a.length;
-
-			int i = n - 1;
-			while (i > 0 && a[i - 1] >= a[i])
-				i--;
-			if (i <= 0)
-				return false;
-
-			int j = n - 1;
-			while (a[j] <= a[i - 1])
-				j--;
-			swap(a, i - 1, j);
-
-			int k = n - 1;
-			while (i < k)
-				swap(a, i++, k--);
-
-			return true;
+		public RandomGenerator() {
 		}
 
-		private static void swap(int[] a, int i, int j) {
-			int tmp = a[i];
-			a[i] = a[j];
-			a[j] = tmp;
+		static Random rnd = new Random();
+
+		// 英小文字のみ
+		// n は文字数
+		static String makeString(int n) {
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < n; i++) {
+				sb.append((char)('a' + rnd.nextInt(2)));
+			}
+			return sb.toString();
+		}
+
+		// 2次元配列の文字列(char[][])
+		static char[][] makeCharArrays(int row, int len) {
+			char[][] ret = new char[row][len];
+			for (int i = 0; i < row; i++) {
+				ret[i] = makeString(len).toCharArray();
+			}
+			return ret;
+		}
+
+	}
+
+
+	static void print(char[][] a, PrintWriter out) {
+		for (int i = 0; i < a.length; i++) {
+			for (int j = 0; j < a[0].length; j++) {
+				out.print(a[i][j]);
+			}
+			out.print("\n");
 		}
 	}
 

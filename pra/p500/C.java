@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.Random;
 
 public class C {
 
@@ -21,7 +22,7 @@ public class C {
 	}
 
 	static int INF = 1 << 30;
-	static long LINF = 1L << 55;
+	static long LINF = 1L << 60;
 	static int MOD = 1000000007;
 	static int[] mh4 = { 0, -1, 1, 0 };
 	static int[] mw4 = { -1, 0, 0, 1 };
@@ -32,76 +33,80 @@ public class C {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt(), a = in.nextInt(), b = in.nextInt();
-			int c = in.nextInt(), d = in.nextInt();
+//			int k = in.nextInt();
+//			int[] a = in.nextIntArray(k);
 
-			long[][] dp = new long[2020][2020];
-			dp[a][0] = 1;
+			int k = 10;
+			int[] a = RandomGenerator.makeIntArray(k, 10);
+			out.println(k);
+			printArrayLine(a, out);
 
-			for (int i = a; i <= b; i++) {
-				for (int j = 0; j <= n; j++) {
-					if (dp[i][j] == 0) continue;
+			int min = INF, max = -INF;
+			for (int n = 1; n <= 100; n++) {
+				int t = n;
+				for (int i = 0; i < k; i++) {
+					t = t - t % a[i];
+				}
 
-					dp[i+1][j] += dp[i][j];
-					dp[i+1][j] %= MOD;
-
-					long prod = 1;
-					for (int k = 1; k <= d; k++) {
-						if (n - j - i * (k-1) < 0) break;
-						prod *= comb(n - j - i * (k-1), i);
-						prod %= MOD;
-
-						if (k < c) continue;
-						dp[i+1][j + k * i] += dp[i][j] * prod % MOD * factInv[k];
-						dp[i+1][j + k * i] %= MOD;
-					}
+				if (t == a[k-1]) {
+					out.println(n);
+					min = Math.min(min, n);
+					max = Math.max(max, n);
 				}
 			}
 
-			out.println(dp[b+1][n]);
-
+			out.printf("%d %d\n", min, max);
 		}
 	}
 
-	public static long comb(int n, int r) {
-		if (r < 0 || r > n)
-			return 0L;
-		return fact[n] % MOD * factInv[r] % MOD * factInv[n - r] % MOD;
-	}
-
-	public static int MAXN = 200000;
-
-	static long[] fact = factorialArray(MAXN, MOD);
-	static long[] factInv = factorialInverseArray(MAXN, MOD,
-			inverseArray(MAXN, MOD));
-
-	public static long[] factorialArray(int maxN, long mod) {
-		long[] fact = new long[maxN + 1];
-		fact[0] = 1 % mod;
-		for (int i = 1; i <= maxN; i++) {
-			fact[i] = fact[i - 1] * i % mod;
+	static void printArrayLine(int[] a, PrintWriter out) {
+		int n = a.length;
+		for (int i = 0; i < n; i++) {
+			if (i == 0) {
+				out.print(a[i]);
+			} else {
+				out.print(" " + a[i]);
+			}
 		}
-		return fact;
+		out.print("\n");
 	}
 
-	public static long[] inverseArray(int maxN, long modP) {
-		long[] inv = new long[maxN + 1];
-		inv[1] = 1;
-		for (int i = 2; i <= maxN; i++) {
-			inv[i] = modP - (modP / i) * inv[(int) (modP % i)] % modP;
+	static public class RandomGenerator {
+
+		public RandomGenerator() {
 		}
-		return inv;
+
+		static Random rnd = new Random();
+
+		// 英小文字のみ
+		// n は文字数
+		static String makeString(int n) {
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < n; i++) {
+				sb.append((char)('a' + rnd.nextInt(26)));
+			}
+			return sb.toString();
+		}
+
+		// 2次元配列の文字列(char[][])
+		static char[][] makeCharArrays(int row, int len) {
+			char[][] ret = new char[row][len];
+			for (int i = 0; i < row; i++) {
+				ret[i] = makeString(len).toCharArray();
+			}
+			return ret;
+		}
+
+		//
+		static int[] makeIntArray(int n, int max) {
+			int[] ret = new int[n];
+			for (int i = 0; i < n; i++) {
+				ret[i] = rnd.nextInt(max) + 1;
+			}
+			return ret;
+		}
 	}
 
-	public static long[] factorialInverseArray(int maxN, long modP,
-			long[] inverseArray) {
-		long[] factInv = new long[maxN + 1];
-		factInv[0] = 1;
-		for (int i = 1; i <= maxN; i++) {
-			factInv[i] = factInv[i - 1] * inverseArray[i] % modP;
-		}
-		return factInv;
-	}
 
 	static class MyInput {
 		private final BufferedReader in;

@@ -1,4 +1,4 @@
-package abc119;
+package p400;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,7 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Queue;
 
 public class C_2 {
 
@@ -32,72 +34,49 @@ public class C_2 {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt();
-			int a = in.nextInt(), b = in.nextInt(), c = in.nextInt();
-			int[] l = in.nextIntArray(n);
-			Arrays.sort(l);
-
-			long ans = INF;
-			do {
-				for (int i = 1; i < n; i++) {
-					for (int j = i+1; j < n; j++) {
-						for (int k = j+1; k <= n; k++) {
-
-							long cost = 0;
-							cost += calc(0, i, l, a);
-							cost += calc(i, j, l, b);
-							cost += calc(j, k, l, c);
-
-							ans = Math.min(ans, cost);
-						}
-					}
-				}
-			} while (Permutation.next(l));
-
-			out.println(ans);
-		}
-
-		long calc(int l, int r, int[] a, int tar) {
-			int ret = 0;
-			int tmp = 0, cnt = 0;
-			for (int i = l; i < r; i++) {
-				tmp += a[i];
-				cnt++;
+			int n = in.nextInt(), x = in.nextInt();
+			if (x == 1 || x == 2*n-1) {
+				out.println("No");
+				return;
 			}
-			ret += (cnt - 1) * 10;
-			ret += Math.abs(tar - tmp);
-			return ret;
+
+			int m = 2*n-1;
+			int[] res = new int[m];
+			Arrays.fill(res, -1);
+			Queue<Integer> q = new ArrayDeque<>();
+			for (int i = 1; i <= m; i++) q.add(i);
+			res[m/2] = x;
+			res[m/2-1] = x-1;
+			res[m/2+1] = x+1;
+			q.remove(x);
+			q.remove(x-1);
+			q.remove(x+1);
+
+			for (int i = 0; i < m; i++) {
+				if (res[i] == -1) {
+					int num = q.remove();
+					res[i] = num;
+				}
+			}
+
+
+			out.println("Yes");
+			for (int i : res) {
+				out.println(i);
+			}
 		}
 	}
 
-	static class Permutation {
-
-		public static boolean next(int[] a) {
-			int n = a.length;
-
-			int i = n - 1;
-			while (i > 0 && a[i - 1] >= a[i])
-				i--;
-			if (i <= 0)
-				return false;
-
-			int j = n - 1;
-			while (a[j] <= a[i - 1])
-				j--;
-			swap(a, i - 1, j);
-
-			int k = n - 1;
-			while (i < k)
-				swap(a, i++, k--);
-
-			return true;
+	static void printArrayLine(int[] a, PrintWriter out) {
+		int n = a.length;
+		for (int i = 0; i < n; i++) {
+			if (i == 0) {
+				out.print(a[i]);
+			} else {
+				out.print(" " + a[i]);
+			}
 		}
-
-		private static void swap(int[] a, int i, int j) {
-			int tmp = a[i];
-			a[i] = a[j];
-			a[j] = tmp;
-		}
+		out.print("\n");
 	}
 
 	static class MyInput {

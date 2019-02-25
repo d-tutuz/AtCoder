@@ -1,5 +1,7 @@
 package abc119;
 
+import static java.lang.Math.*;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,8 +9,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.TreeSet;
 
-public class C_2 {
+public class D_2 {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -32,71 +35,48 @@ public class C_2 {
 
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
-			int n = in.nextInt();
-			int a = in.nextInt(), b = in.nextInt(), c = in.nextInt();
-			int[] l = in.nextIntArray(n);
-			Arrays.sort(l);
-
-			long ans = INF;
-			do {
-				for (int i = 1; i < n; i++) {
-					for (int j = i+1; j < n; j++) {
-						for (int k = j+1; k <= n; k++) {
-
-							long cost = 0;
-							cost += calc(0, i, l, a);
-							cost += calc(i, j, l, b);
-							cost += calc(j, k, l, c);
-
-							ans = Math.min(ans, cost);
-						}
-					}
-				}
-			} while (Permutation.next(l));
-
-			out.println(ans);
-		}
-
-		long calc(int l, int r, int[] a, int tar) {
-			int ret = 0;
-			int tmp = 0, cnt = 0;
-			for (int i = l; i < r; i++) {
-				tmp += a[i];
-				cnt++;
+			int a = in.nextInt(), b = in.nextInt(), q = in.nextInt();
+			TreeSet<Long> ji = new TreeSet<>(), te = new TreeSet<>();
+			for (int i = 0; i < a; i++) {
+				ji.add(in.nextLong());
 			}
-			ret += (cnt - 1) * 10;
-			ret += Math.abs(tar - tmp);
-			return ret;
-		}
-	}
+			for (int i = 0; i < b; i++) {
+				te.add(in.nextLong());
+			}
 
-	static class Permutation {
+			ji.add(-LINF);
+			ji.add(LINF);
+			te.add(-LINF);
+			te.add(LINF);
 
-		public static boolean next(int[] a) {
-			int n = a.length;
+			while (q-- > 0) {
+				long cur = in.nextLong();
+				long jl = ji.floor(cur);
+				long jr = ji.higher(cur-1);
+				long tl = te.floor(cur);
+				long tr = te.higher(cur-1);
 
-			int i = n - 1;
-			while (i > 0 && a[i - 1] >= a[i])
-				i--;
-			if (i <= 0)
-				return false;
+				long ans = LINF;
+				// 右右
+				ans = min(ans, min(jr, tr) - cur + max(jr, tr) - min(jr, tr));
 
-			int j = n - 1;
-			while (a[j] <= a[i - 1])
-				j--;
-			swap(a, i - 1, j);
+				// 左左
+				ans = min(ans, cur - max(jl, tl) + max(jl, tl) - min(jl, tl));
 
-			int k = n - 1;
-			while (i < k)
-				swap(a, i++, k--);
+				// 右寺 左神
+				ans = min(ans, abs(tr - cur) * 2 + abs(jl - cur));
 
-			return true;
-		}
+				// 右神 左寺
+				ans = min(ans, abs(jr - cur) * 2 + abs(tl - cur));
 
-		private static void swap(int[] a, int i, int j) {
-			int tmp = a[i];
-			a[i] = a[j];
-			a[j] = tmp;
+				// 左寺 右神
+				ans = min(ans, abs(tl - cur) * 2 + abs(jr - cur));
+
+				// 左神 右寺
+				ans = min(ans, abs(jl - cur) * 2 + abs(tr - cur));
+
+				out.println(ans);
+			}
 		}
 	}
 

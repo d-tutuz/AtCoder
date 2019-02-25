@@ -1,4 +1,4 @@
-package abc119;
+package p400;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class C_2 {
+public class B {
 
 	public static void main(String[] args) {
 		InputStream inputStream = System.in;
@@ -33,71 +33,39 @@ public class C_2 {
 		public void solve(int testNumber, MyInput in, PrintWriter out) {
 
 			int n = in.nextInt();
-			int a = in.nextInt(), b = in.nextInt(), c = in.nextInt();
-			int[] l = in.nextIntArray(n);
-			Arrays.sort(l);
+			int[] p = in.nextIntArrayDec(n);
 
-			long ans = INF;
-			do {
-				for (int i = 1; i < n; i++) {
-					for (int j = i+1; j < n; j++) {
-						for (int k = j+1; k <= n; k++) {
-
-							long cost = 0;
-							cost += calc(0, i, l, a);
-							cost += calc(i, j, l, b);
-							cost += calc(j, k, l, c);
-
-							ans = Math.min(ans, cost);
-						}
-					}
-				}
-			} while (Permutation.next(l));
-
-			out.println(ans);
-		}
-
-		long calc(int l, int r, int[] a, int tar) {
-			int ret = 0;
-			int tmp = 0, cnt = 0;
-			for (int i = l; i < r; i++) {
-				tmp += a[i];
-				cnt++;
+			long[] a = new long[n], b = new long[n];
+			for (int i = 0; i < n; i++) {
+				a[p[i]] = i+1;
 			}
-			ret += (cnt - 1) * 10;
-			ret += Math.abs(tar - tmp);
-			return ret;
+
+			for (int i = 1; i < n; i++) {
+				a[i] = a[i-1] + a[i];
+				b[i] = -a[i-1];
+			}
+
+			long add = Arrays.stream(b).min().getAsLong();
+			for (int i = 0; i < n; i++) {
+				b[i] += -add + 1;
+			}
+
+			printArrayLine(a, out);
+			printArrayLine(b, out);
+
 		}
 	}
 
-	static class Permutation {
-
-		public static boolean next(int[] a) {
-			int n = a.length;
-
-			int i = n - 1;
-			while (i > 0 && a[i - 1] >= a[i])
-				i--;
-			if (i <= 0)
-				return false;
-
-			int j = n - 1;
-			while (a[j] <= a[i - 1])
-				j--;
-			swap(a, i - 1, j);
-
-			int k = n - 1;
-			while (i < k)
-				swap(a, i++, k--);
-
-			return true;
+	static void printArrayLine(long[] a, PrintWriter out) {
+		int n = a.length;
+		for (int i = 0; i < n; i++) {
+			if (i == 0) {
+				out.print(a[i]);
+			} else {
+				out.print(" " + a[i]);
+			}
 		}
-
-		private static void swap(int[] a, int i, int j) {
-			int tmp = a[i];
-			a[i] = a[j];
-			a[j] = tmp;
-		}
+		out.print("\n");
 	}
 
 	static class MyInput {
