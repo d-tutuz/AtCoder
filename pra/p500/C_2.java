@@ -37,39 +37,54 @@ public class C_2 {
 			k = in.nextInt();
 			a = in.nextIntArray(k);
 
-			int l = INF, r = -1;
-			while (Math.abs(l - r) > 1) {
-				int m = (l + r) / 2;
-				if (check(m)) {
-					l = m;
-				} else {
-					r = m;
-				}
-			}
 
-			int min = r;
-
-			l = -1; r = INF;
+			// 条件を満たす最小の値
+			long l = -1, r = LINF;
 			while (r - l > 1) {
-				int m = (l + r) / 2;
-				if (check(m)) {
+				long m = (l + r) / 2;
+				if (g1(m)) {
+					r = m;
+				} else {
+					l = m;
+				}
+			}
+
+			long min = r;
+
+			// 条件を満たす最大の値
+			l = -1; r = LINF;
+			while (r - l > 1) {
+				long m = (l + r) / 2;
+				if (g2(m)) {
 					l = m;
 				} else {
 					r = m;
 				}
 			}
 
-			int max = l;
+			long max = l;
+
+			if (min > max) {
+				out.println(-1);
+				return;
+			}
 
 			out.printf("%d %d\n", min, max);
 
 		}
 
-		boolean check(int t) {
+		boolean g1(long t) {
 			for (int i = 0; i < k; i++) {
 				t = t - t % a[i];
 			}
-			return t == a[k-1];
+			return t >= 2;
+		}
+
+		boolean g2(long t) {
+			for (int i = 0; i < k; i++) {
+				t = t - t % a[i];
+			}
+			return t <= 2;
 		}
 	}
 

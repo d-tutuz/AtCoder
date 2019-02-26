@@ -38,7 +38,7 @@ public class C_3 {
 			a = in.nextIntArray(k);
 
 			long left = 0;
-			long right = INF;
+			long right = 1000;
 
 			for (int i = 0; i < 1000; i++) {
 				long c1 = (left * 2L + right) / 3;

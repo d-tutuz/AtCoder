@@ -36,26 +36,43 @@ public class C {
 //			int k = in.nextInt();
 //			int[] a = in.nextIntArray(k);
 
-			int k = 10;
-			int[] a = RandomGenerator.makeIntArray(k, 10);
-			out.println(k);
-			printArrayLine(a, out);
+			for (int loop = 0; loop < 10000; loop++) {
 
-			int min = INF, max = -INF;
-			for (int n = 1; n <= 100; n++) {
-				int t = n;
-				for (int i = 0; i < k; i++) {
-					t = t - t % a[i];
+				int k = 10;
+				int[] a = RandomGenerator.makeIntArray(k, 60);
+				revSort(a);
+				a[k-1] = 2;
+
+				int min = INF, max = -INF;
+				for (int n = 1; n <= 1000; n++) {
+					int t = n;
+					for (int i = 0; i < k; i++) {
+						t = t - t % a[i];
+					}
+
+					if (t == 2) {
+						min = Math.min(min, n);
+						max = Math.max(max, n);
+					}
 				}
 
-				if (t == a[k-1]) {
-					out.println(n);
-					min = Math.min(min, n);
-					max = Math.max(max, n);
+				if (min <= max) {
+					out.println(k);
+					printArrayLine(a, out);
+					out.printf("%d %d\n", min, max);
+					out.println("================");
 				}
 			}
+		}
+	}
 
-			out.printf("%d %d\n", min, max);
+	static void revSort(int[] v) {
+		int n = v.length;
+		int[] vv = v.clone();
+		Arrays.sort(vv);
+
+		for (int i = 0; i < n; i++) {
+			v[i] = vv[n - i - 1];
 		}
 	}
 
