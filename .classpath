@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="abc"/>
+	<classpathentry kind="src" path="arc"/>
+	<classpathentry kind="src" path="library"/>
+	<classpathentry kind="src" path="agc"/>
+	<classpathentry kind="src" path="other"/>
+	<classpathentry kind="src" path="virtual"/>
+	<classpathentry kind="src" path="review"/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="src" path="ant"/>
+	<classpathentry kind="src" path="pra"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="C:/Program Files/pleiades/eclipse/plugins/org.junit_4.11.0.v201303080030/junit.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
