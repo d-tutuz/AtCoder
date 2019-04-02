@@ -20,7 +20,6 @@ public class A {
 		out.close();
 	}
 
-	// test
 	static int INF = 1 << 30;
 	static long LINF = 1L << 55;
 	static int MOD = 1000000007;
